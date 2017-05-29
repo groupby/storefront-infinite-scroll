@@ -1,0 +1,15 @@
+{
+  "env": {
+    "type": "node"
+  },
+  "testFramework": "mocha",
+
+  "files": [
+    "src/**/*.ts",
+    {
+      "pattern": "test/**/_suite.ts",
+      "instrument": false
+    }
+  ],
+  "tests": ["test/**/*.ts"]
+}

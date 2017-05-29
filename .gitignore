@@ -1,0 +1,12 @@
+node_modules/
+dist/
+bundle/
+coverage/
+typings/
+.scratch/
+src/**/*.js
+src/**/*.d.ts
+test/**/*.js
+test/**/*.d.ts
+
+*.log

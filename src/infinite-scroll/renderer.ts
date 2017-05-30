@@ -1,5 +1,5 @@
-import { Tag } from '@storefront/core';
-import { InfiniteScroll, ScrollAnchor } from './index';
+import { utils, Tag } from '@storefront/core';
+import InfiniteScroll, { ScrollAnchor } from '.';
 
 export const ANIMATION_DURATION_MS = 200;
 export const RUNWAY_ITEMS_ABOVE = 10;
@@ -15,8 +15,8 @@ export type AnimationMap = {
 
 export class Renderer {
 
-  tombstones: Array<HTMLElement & { _tag: Tag.Instance}>;
-  unusedNodes: Array<HTMLElement & { _tag: Tag.Instance}>;
+  tombstones: Array<HTMLElement & { _tag: Tag.Instance}> = [];
+  unusedNodes: Array<HTMLElement & { _tag: Tag.Instance}> = [];
   tombstoneHeight: number;
   tombstoneWidth: number;
   currentPosition: number;
@@ -101,6 +101,7 @@ export class Renderer {
     this.animateScroller();
     this.collectTombstones(animations);
     this.tag.maybeRequestContent(this);
+    console.log('Renderer: ', this);
   }
 
   findUnusedNodes() {
@@ -274,7 +275,7 @@ export class Renderer {
 
   static createTombstone(structure: any) {
     const node = document.createElement('li');
-    riot.mount(node, 'gb-product', {
+    utils.riot.mount(node, 'gb-product', {
       structure,
       infinite: true,
       tombstone: true

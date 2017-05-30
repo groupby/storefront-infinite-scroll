@@ -16,16 +16,20 @@
   "homepage": "https://github.com/groupby/storefront-infinite-scroll#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "module:esnext": "esnext/index.js",
   "files": [
-    "dist/"
+    "dist/",
+    "esnext/",
+    "src/"
   ],
   "scripts": {
     "start": "start-runner -p re-start/presets/typescript",
+    "esnext": "npm start build -- -- --compileOpts.configFile tsconfig.esnext.json --outDir esnext",
     "dev": "npm start dev",
     "test": "npm start test",
     "tdd": "npm start tdd",
     "prepush": "npm start prepush",
-    "prepublish": "npm start build"
+    "prepublish": "npm start build && npm run esnext"
   },
   "release": {
     "verifyConditions": "condition-circle"
@@ -40,7 +44,10 @@
       "testFiles": [
         "test/bootstrap.ts",
         "test/**/*.ts"
-      ]
+      ],
+      "releaseOpts": {
+        "public": true
+      }
     }
   },
   "devDependencies": {
@@ -54,7 +61,7 @@
     "husky": "^0.13.3",
     "mocha-suite": "^1.0.9",
     "mock-require": "^2.0.2",
-    "re-start": "^1.13.0",
+    "re-start": "^1.14.6",
     "sinon": "^2.2.0",
     "start-babel-cli": "^4.0.1",
     "tslint": "^5.2.0",

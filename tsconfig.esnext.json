@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ES2015",
+      "DOM"
+    ],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  }
+}

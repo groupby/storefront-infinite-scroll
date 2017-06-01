@@ -1,16 +1,15 @@
-import { utils, view, Component, Events, Selectors, Store, Tag } from '@storefront/core';
+import { tag, utils, Component, Events, Selectors, Store, Tag } from '@storefront/core';
 import { Renderer } from './renderer';
 import WINDOW = utils.WINDOW;
 
 export const MIN_REQUEST_SIZE = 25;
 export const MAX_REQUEST_SIZE = 120;
 
-@view('gb-infinite-scroll', require('./index.html'), require('./index.css'), [
+@tag('gb-infinite-scroll', require('./index.html'), require('./index.css'), [
   { name: 'maxRecords', default: 500 },
 ])
-class InfiniteScroll extends Component {
+class InfiniteScroll {
 
-  props: InfiniteScroll.Props;
   state: Partial<InfiniteScroll.State> = {
     items: [],
     loadedItems: 0,
@@ -20,11 +19,12 @@ class InfiniteScroll extends Component {
     scroller: HTMLUListElement;
     runway: HTMLElement;
   };
+  renderer: Renderer;
 
-  constructor() {
-    super();
+  init() {
     WINDOW.addEventListener('resize', this.onResize);
     this.flux.on(Events.PRODUCTS_UPDATED, this.reset);
+    this.flux.on(Events.MORE_PRODUCTS_ADDED, (records) => this.updateItems(records, this.renderer));
   }
 
   onMount() {
@@ -32,8 +32,8 @@ class InfiniteScroll extends Component {
     this.onResize();
   }
 
-  reset = () => {
-    console.log('reset');
+  reset = (records: Store.Product[]) => {
+    console.log('reset: ', records);
     this.state.items = [];
     this.state.loadedItems = 0;
     this.state.runwayEnd = 0;
@@ -53,7 +53,8 @@ class InfiniteScroll extends Component {
   }
 
   attachRenderer() {
-    new Renderer(this).attachToView();
+    this.renderer = new Renderer(this);
+    this.renderer.attachToView();
   }
 
   onResize = () => {
@@ -79,14 +80,17 @@ class InfiniteScroll extends Component {
     if (this.state.updating) { return; }
     this.state.updating = true;
 
-    // this.fetch(itemsNeeded)
+    // this.flux.moreProducts(Math.floor(Math.random() * 100));
+    this.fetch(itemsNeeded);
     //   .then((records) => this.updateItems(records, renderer));
-    this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.updateItems(records, renderer));
+    // this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.updateItems(records, renderer));
   }
 
   fetch(count: number) {
+    console.log('eyyo am fetchun', this.flux.store);
     // const request = this.flux.query.build();
-    // request.pageSize = Math.min(MAX_REQUEST_SIZE, Math.max(MIN_REQUEST_SIZE, count));
+    const pageSize = Math.min(MAX_REQUEST_SIZE, Math.max(MIN_REQUEST_SIZE, count));
+    this.flux.moreProducts(pageSize);
     // request.skip = this.state.loadedItems;
 
     // return this.flux.bridge.search(request)
@@ -94,10 +98,11 @@ class InfiniteScroll extends Component {
     //   .then((res) => res.records);
     //
     // this.flux.skip()
-    this.flux.search('test');
+    // this.flux.search('test');
   }
 
   updateItems(records: Store.Product[], renderer: Renderer) {
+    console.log('updating items');
     records.forEach((record) => {
       if (this.state.items.length <= this.state.loadedItems) {
         this.addBlankItem();
@@ -120,26 +125,27 @@ class InfiniteScroll extends Component {
   }
 }
 
+interface InfiniteScroll extends Tag<InfiniteScroll.Props, InfiniteScroll.State> {}
 namespace InfiniteScroll {
   export interface Props {
     maxRecords?: number;
   }
   export interface State {
-    tombstoneLayout: { height: number; width: number; };
-    items: ScrollItem[];
-    loadedItems: number;
-    updating: boolean;
-    oldScroll: number;
+    tombstoneLayout?: { height: number; width: number; };
+    items?: ScrollItem[];
+    loadedItems?: number;
+    updating?: boolean;
+    oldScroll?: number;
 
     // must be kept here to preserve state
-    runwayEnd: number;
-    anchor: ScrollAnchor;
-    anchorScrollTop: number;
+    runwayEnd?: number;
+    anchor?: ScrollAnchor;
+    anchorScrollTop?: number;
   }
 }
 
 export interface ScrollItem {
-  node: HTMLElement & { _tag: Tag.Instance };
+  node: HTMLElement & { _tag: Tag };
   data: any;
   top: number;
   height: number;

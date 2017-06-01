@@ -8,15 +8,15 @@ export const RUNWAY_LENGTH = 2000;
 
 export type AnimationMap = {
   [index: number]: {
-    node: HTMLElement & { _tag: Tag.Instance},
+    node: HTMLElement & { _tag: Tag},
     delta: number
   }
 };
 
 export class Renderer {
 
-  tombstones: Array<HTMLElement & { _tag: Tag.Instance}> = [];
-  unusedNodes: Array<HTMLElement & { _tag: Tag.Instance}> = [];
+  tombstones: Array<HTMLElement & { _tag: Tag}> = [];
+  unusedNodes: Array<HTMLElement & { _tag: Tag}> = [];
   tombstoneHeight: number;
   tombstoneWidth: number;
   currentPosition: number;
@@ -127,7 +127,7 @@ export class Renderer {
     }
   }
 
-  sortNode(node: HTMLElement & { _tag: Tag.Instance }) {
+  sortNode(node: HTMLElement & { _tag: Tag }) {
     if (node.classList.contains('tombstone')) {
       this.tombstones.push(node);
       this.tombstones[this.tombstones.length - 1].classList.add('invisible');
@@ -233,7 +233,7 @@ export class Renderer {
         }
       }
 
-      let node: HTMLElement & { _tag: Tag.Instance };
+      let node: HTMLElement & { _tag: Tag };
       if (item.data) {
         node = this.render(item.data, this.unusedNodes.pop());
       } else {
@@ -249,7 +249,7 @@ export class Renderer {
     return animations;
   }
 
-  getTombstone(): HTMLElement & { _tag: Tag.Instance} {
+  getTombstone(): HTMLElement & { _tag: Tag } {
     const tombstone = this.tombstones.pop();
     if (tombstone) {
       tombstone.classList.remove('invisible');
@@ -261,7 +261,7 @@ export class Renderer {
     }
   }
 
-  render(data: any, elem?: HTMLElement & { _tag: Tag.Instance }) {
+  render(data: any, elem?: HTMLElement & { _tag: Tag }) {
     if (!elem) {
       elem = Renderer.createTombstone(this.tag.config.structure);
       elem.classList.remove('tombstone');
@@ -281,6 +281,6 @@ export class Renderer {
       tombstone: true
     });
 
-    return <HTMLLIElement & { _tag: Tag.Instance }>node;
+    return <HTMLLIElement & { _tag: Tag }>node;
   }
 }

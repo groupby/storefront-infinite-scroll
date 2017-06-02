@@ -10,6 +10,7 @@
   box-sizing: border-box;
   contain: layout;
   will-change: transform;
+  border: 1px solid green;
 }
 .gb-runway {
   position: absolute;

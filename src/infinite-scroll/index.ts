@@ -29,6 +29,8 @@ class InfiniteScroll {
 
   onMount() {
     this.refs.scroller.addEventListener('scroll', this.onScroll);
+    this.refs.scroller.addEventListener('click', () => console.log('clickin'));
+    console.log(this.refs.scroller);
     this.onResize();
   }
 
@@ -46,6 +48,7 @@ class InfiniteScroll {
   }
 
   onScroll = () => {
+    console.log('scrollin');
     if (this.state.oldScroll !== this.refs.scroller.scrollTop) {
       this.attachRenderer();
     }
@@ -59,6 +62,7 @@ class InfiniteScroll {
 
   onResize = () => {
     const tombstone = Renderer.createTombstone(this.config.structure);
+    console.log('onResize', tombstone);
     this.refs.scroller.appendChild(tombstone);
     this.state.tombstoneLayout = {
       height: tombstone.offsetHeight,
@@ -74,6 +78,7 @@ class InfiniteScroll {
   }
 
   maybeRequestContent(renderer: Renderer) {
+    console.log('lastItem: ', renderer.lastItem);
     const itemsNeeded = this.capRecords(renderer.lastItem) - this.state.loadedItems;
     if (itemsNeeded <= 0) { return; }
 
@@ -108,8 +113,8 @@ class InfiniteScroll {
         this.addBlankItem();
       }
       this.state.items[this.state.loadedItems++].data = record;
-      console.log(this.state.items);
     });
+    console.log(this.state.items);
     this.state.updating = false;
     renderer.attachToView();
   }

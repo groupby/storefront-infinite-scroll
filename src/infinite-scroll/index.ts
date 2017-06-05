@@ -25,8 +25,8 @@ class InfiniteScroll {
 
   init() {
     WINDOW.addEventListener('resize', this.onResize);
-    this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.updateItems(records, this.renderer));
-    // this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.reset(records));
+    // this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.updateItems(records, this.renderer));
+    this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.reset(records));
     this.flux.on(Events.MORE_PRODUCTS_ADDED, (records) => this.updateItems(records, this.renderer));
   }
 
@@ -48,7 +48,8 @@ class InfiniteScroll {
     while (this.refs.scroller.hasChildNodes()) {
       this.refs.scroller.removeChild(this.refs.scroller.lastChild);
     }
-    this.attachRenderer();
+    this.updateItems(records, this.renderer);
+    // this.attachRenderer();
   }
 
   onScroll = () => {

@@ -1,4 +1,4 @@
-import { utils, Tag } from '@storefront/core';
+import { utils, Tag, ProductTransformer } from '@storefront/core';
 import InfiniteScroll, { ScrollAnchor } from '.';
 
 export const ANIMATION_DURATION_MS = 200;
@@ -39,14 +39,14 @@ export class Renderer {
       this.tag.state.anchor = this.getAnchoredItem(this.tag.state.anchor, delta);
     }
     this.tag.state.anchorScrollTop = this.tag.refs.scroller.scrollTop;
-    console.log('this.tag.state.anchorScrollTop', this.tag.state.anchorScrollTop);
+    // console.log('this.tag.state.anchorScrollTop', this.tag.state.anchorScrollTop);
   }
 
   calculateVisibleItems(delta: number) {
-    console.log('delta', delta);
+    // console.log('delta', delta);
     const lastScreenItem = this.getAnchoredItem(this.tag.state.anchor, this.tag.refs.scroller.offsetHeight);
-    console.log('this.tag.state.anchor', lastScreenItem);
-    console.log('this.tag.refs.scroller.offsetHeight', this.tag.refs.scroller.offsetHeight);
+    // console.log('this.tag.state.anchor', lastScreenItem);
+    // console.log('this.tag.refs.scroller.offsetHeight', this.tag.refs.scroller.offsetHeight);
 
     let firstItem: number;
     if (delta < 0) {
@@ -54,16 +54,16 @@ export class Renderer {
       this.lastItem = this.tag.capRecords(lastScreenItem.index + RUNWAY_ITEMS_ABOVE);
     } else {
       firstItem = this.tag.state.anchor.index - RUNWAY_ITEMS_ABOVE;
-      console.log('lastItem else', lastScreenItem.index);
+      // console.log('lastItem else', lastScreenItem.index);
       this.lastItem = this.tag.capRecords(lastScreenItem.index + RUNWAY_ITEMS_BELOW);
+      // console.log('this.lastItem', this.lastItem);
     }
-    console.log('this.lastItem', this.lastItem);
     this.firstItem = Math.max(0, firstItem);
-    console.log('this.firstItem', this.firstItem);
+    // console.log('this.firstItem', this.firstItem);
   }
 
   getAnchoredItem(anchor: ScrollAnchor, delta: number): ScrollAnchor {
-    console.log('delta', delta);
+    // console.log('delta', delta);
     if (delta === 0) {
       return anchor;
     }
@@ -88,17 +88,17 @@ export class Renderer {
         tombstones = Math.floor(Math.max(delta, 0) / this.tombstoneHeight);
       }
     }
-
-    console.log('tombstones', tombstones);
+    // console.log('tombstones', tombstones);
 
     index += tombstones;
     delta -= tombstones * this.tombstoneHeight;
 
-    console.log('index: ', index, 'offset: ', delta);
+    // console.log('index: ', index, 'offset: ', delta);
     return { index, offset: delta };
   }
 
   attachToView() {
+    // console.log('attach????');
     this.findUnusedNodes();
 
     const animations = this.generateNodes();
@@ -111,7 +111,7 @@ export class Renderer {
     this.animateScroller();
     this.collectTombstones(animations);
     this.tag.maybeRequestContent(this);
-    console.log('Renderer: ', this);
+    // console.log('Renderer: ', this);
   }
 
   findUnusedNodes() {
@@ -128,9 +128,11 @@ export class Renderer {
 
       items[i].node = null;
     }
+    // console.log('items: ', items[0]);
   }
 
   dropUnusedNodes() {
+    // console.log('unusedNodes length', this.unusedNodes.length);
     while (this.unusedNodes.length) {
       this.tag.refs.scroller.removeChild(this.unusedNodes.pop());
       // TODO: also unmount nodes if mounted
@@ -153,6 +155,7 @@ export class Renderer {
         item.height = item.node.offsetHeight;
         item.width = item.node.offsetWidth;
       });
+    // console.log('items: ', this.tag.state.items[0]);
   }
 
   calculateScrollTop() {
@@ -160,6 +163,8 @@ export class Renderer {
     this.tag.state.items.slice(0, this.tag.state.anchor.index)
       .forEach((item) => this.tag.state.anchorScrollTop += item.height || this.tombstoneHeight);
     this.tag.state.anchorScrollTop += this.tag.state.anchor.offset;
+    // console.log('anchorScrollTop:', this.tag.state.anchorScrollTop);
+    // console.log('items: ', this.tag.state.items[0]);
   }
 
   calculateCurrentPosition() {
@@ -172,6 +177,8 @@ export class Renderer {
       currentPosition += this.tag.state.items[index++].height || this.tombstoneHeight;
     }
     this.currentPosition = currentPosition;
+    // console.log('index: ', index);
+    // console.log('this.currentPosition: ', this.currentPosition);
   }
 
   preAnimateNodes(animations: AnimationMap) {
@@ -183,6 +190,7 @@ export class Renderer {
       node.offsetTop; // tslint:disable-line:no-unused-expression
       item.node.style.transition = `transform ${ANIMATION_DURATION_MS}ms`;
     }
+    // console.log('items: ', this.tag.state.items[0]);
   }
 
   animateNodes(animations: AnimationMap) {
@@ -204,12 +212,17 @@ export class Renderer {
       item.top = this.currentPosition;
       this.currentPosition += item.height || this.tombstoneHeight;
     }
+    // console.log('items:', this.tag.state.items[0]);
+    // console.log('cur:', this.currentPosition);
   }
 
   animateScroller() {
     this.tag.state.runwayEnd = Math.max(this.tag.state.runwayEnd, this.currentPosition + RUNWAY_LENGTH);
     this.tag.refs.runway.style.transform = `translate(0, ${this.tag.state.runwayEnd}px)`;
     this.tag.refs.scroller.scrollTop = this.tag.state.anchorScrollTop;
+    // console.log('this.tag.state.runwayEnd', this.tag.state.runwayEnd);
+    // console.log('this.tag.refs.runway.style.transform', this.tag.refs.runway.style.transform);
+    // console.log('this.tag.refs.scroller.scrollTop', this.tag.refs.scroller.scrollTop);
   }
 
   collectTombstones(animations: AnimationMap) {
@@ -224,12 +237,15 @@ export class Renderer {
 
   generateNodes() {
     const animations: AnimationMap = {};
+    // console.log('this.firstItem: ', this.firstItem);
+    // console.log('this.lastItem: ', this.lastItem);
     for (let i = this.firstItem; i < this.lastItem; i++) {
       while (this.tag.state.items.length <= i) {
         this.tag.addBlankItem();
       }
 
       const item = this.tag.state.items[i];
+      // console.log('item: ', item);
       if (item.node) {
         if (item.node.classList.contains('tombstone') && item.data) {
           item.node.style.zIndex = '1';
@@ -242,9 +258,9 @@ export class Renderer {
           continue;
         }
       }
-
       let node: HTMLElement & { _tag: Tag };
       if (item.data) {
+        // console.log('renderin');
         node = this.render(item.data, this.unusedNodes.pop());
       } else {
         node = this.getTombstone();
@@ -255,6 +271,8 @@ export class Renderer {
       this.tag.refs.scroller.appendChild(node);
       item.node = node;
     }
+    // console.log('items: ', this.tag.state.items[0]);
+    // console.log('animations: ', animations);
 
     return animations;
   }
@@ -277,13 +295,13 @@ export class Renderer {
       elem.classList.remove('tombstone');
     }
     const tag: any = elem._tag;
-    tag.opts.allMeta = data.allMeta;
-    tag.update();
+    tag.set(ProductTransformer.transform(data, this.tag.config.structure));
 
     return elem;
   }
 
   static createTombstone(structure: any) {
+    // console.log('creatin');
     const node = document.createElement('li');
     utils.riot.mount(node, 'gb-product', {
       structure,

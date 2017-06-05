@@ -1,14 +1,16 @@
-import { tag, utils, Component, Events, Selectors, Store, Tag } from '@storefront/core';
+import { tag, utils, Events, Selectors, Store, Tag } from '@storefront/core';
 import { Renderer } from './renderer';
 import WINDOW = utils.WINDOW;
 
 export const MIN_REQUEST_SIZE = 25;
 export const MAX_REQUEST_SIZE = 120;
 
-@tag('gb-infinite-scroll', require('./index.html'), require('./index.css'), [
-  { name: 'maxRecords', default: 500 },
-])
+@tag('gb-infinite-scroll', require('./index.html'), require('./index.css'))
 class InfiniteScroll {
+
+  props: InfiniteScroll.Props = {
+    maxRecords: 500
+  };
 
   state: Partial<InfiniteScroll.State> = {
     items: [],
@@ -23,14 +25,16 @@ class InfiniteScroll {
 
   init() {
     WINDOW.addEventListener('resize', this.onResize);
-    this.flux.on(Events.PRODUCTS_UPDATED, this.reset);
+    this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.updateItems(records, this.renderer));
+    // this.flux.on(Events.PRODUCTS_UPDATED, (records) => this.reset(records));
     this.flux.on(Events.MORE_PRODUCTS_ADDED, (records) => this.updateItems(records, this.renderer));
   }
 
   onMount() {
+    console.log('it mounted');
     this.refs.scroller.addEventListener('scroll', this.onScroll);
     this.refs.scroller.addEventListener('click', () => console.log('clickin'));
-    console.log(this.refs.scroller);
+    // console.log(this.refs.scroller);
     this.onResize();
   }
 
@@ -48,7 +52,7 @@ class InfiniteScroll {
   }
 
   onScroll = () => {
-    console.log('scrollin');
+    // console.log('scrollin');
     if (this.state.oldScroll !== this.refs.scroller.scrollTop) {
       this.attachRenderer();
     }
@@ -61,25 +65,34 @@ class InfiniteScroll {
   }
 
   onResize = () => {
+    // console.log('config:', this.config.structure);
     const tombstone = Renderer.createTombstone(this.config.structure);
-    console.log('onResize', tombstone);
+    // console.log('onResize', tombstone.classList.contains('tombstone'));
     this.refs.scroller.appendChild(tombstone);
     this.state.tombstoneLayout = {
       height: tombstone.offsetHeight,
       width: tombstone.offsetWidth
     };
     tombstone._tag.unmount();
+    // console.log(this.state.items[0])
     this.state.items.forEach((item) => item.height = item.width = 0);
     this.attachRenderer();
   }
 
   capRecords(items: number) {
-    return Math.min(items, Selectors.recordCount(this.flux.store.getState()));
+    const recordCount = Selectors.recordCount(this.flux.store.getState());
+    if (recordCount) {
+      // console.log('recordCount: ', recordCount);
+      return Math.min(items, recordCount);
+    } else {
+      return items;
+    }
   }
 
   maybeRequestContent(renderer: Renderer) {
-    console.log('lastItem: ', renderer.lastItem);
+    // console.log('lastItem: ', renderer.lastItem);
     const itemsNeeded = this.capRecords(renderer.lastItem) - this.state.loadedItems;
+    // console.log('itemsNeeded:', itemsNeeded);
     if (itemsNeeded <= 0) { return; }
 
     if (this.state.updating) { return; }
@@ -92,7 +105,7 @@ class InfiniteScroll {
   }
 
   fetch(count: number) {
-    console.log('eyyo am fetchun', this.flux.store);
+    // console.log('eyyo am fetchun');
     // const request = this.flux.query.build();
     const pageSize = Math.min(MAX_REQUEST_SIZE, Math.max(MIN_REQUEST_SIZE, count));
     this.flux.moreProducts(pageSize);
@@ -107,14 +120,15 @@ class InfiniteScroll {
   }
 
   updateItems(records: Store.Product[], renderer: Renderer) {
-    console.log('updating items');
+    // console.log('updating yo');
+    // console.log('records: ', records[0]);
     records.forEach((record) => {
       if (this.state.items.length <= this.state.loadedItems) {
         this.addBlankItem();
       }
       this.state.items[this.state.loadedItems++].data = record;
     });
-    console.log(this.state.items);
+    // console.log(this.state.items[0]);
     this.state.updating = false;
     renderer.attachToView();
   }

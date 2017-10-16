@@ -1,0 +1,76 @@
+{
+  "name": "@storefront/infinite-scroll",
+  "version": "0.0.0-development",
+  "description": "StoreFront infinite-scroll component",
+  "keywords": [
+    "storefront",
+    "storefront-component"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/groupby/storefront-infinite-scroll.git"
+  },
+  "bugs": {
+    "url": "https://github.com/groupby/storefront-infinite-scroll/issues"
+  },
+  "homepage": "https://github.com/groupby/storefront-infinite-scroll#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module:esnext": "esnext/index.js",
+  "files": [
+    "dist/",
+    "esnext/",
+    "src/"
+  ],
+  "scripts": {
+    "prepare": "install-self-peers -- --ignore-scripts",
+    "build": "npm start build && npm run esnext",
+    "start": "start-runner -p re-start/presets/typescript",
+    "esnext": "npm start build -- -- --compileOpts.configFile tsconfig.esnext.json --outDir esnext",
+    "dev": "npm start dev",
+    "test": "npm start test",
+    "tdd": "npm start tdd",
+    "prepush": "npm start prepush",
+    "prepublishOnly": "npm run build",
+    "docs": "typedoc src/**/*.ts",
+    "docs:json": "npm run docs -- --json component.docs.json"
+  },
+  "release": {
+    "verifyConditions": "condition-circle"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    },
+    "restart": {
+      "watchFiles": "src/**/*.{ts,html,css}",
+      "copyFiles": "src/**/*.{html,css}",
+      "testFiles": [
+        "test/bootstrap.ts",
+        "test/**/*.ts"
+      ],
+      "releaseOpts": {
+        "public": true
+      }
+    }
+  },
+  "devDependencies": {
+    "@storefront/testing": "^1.0.2",
+    "@team-griffin/install-self-peers": "^1.1.1",
+    "@types/node": "^8.0.17",
+    "babel-preset-stage-3": "^6.24.1",
+    "chai": "^4.1.0",
+    "condition-circle": "^1.5.0",
+    "cz-conventional-changelog": "^2.0.0",
+    "husky": "^0.14.3",
+    "re-start": "^1.14.8",
+    "start-simple-cli": "^4.1.1",
+    "tslint": "^5.5.0",
+    "tslint-config-groupby": "^1.0.0",
+    "typedoc": "^0.8.0",
+    "typescript": "^2.4.2"
+  },
+  "peerDependencies": {
+    "@storefront/core": "~1.26.0"
+  }
+}

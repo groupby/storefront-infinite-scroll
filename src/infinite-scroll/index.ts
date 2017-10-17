@@ -29,20 +29,32 @@ class InfiniteScroll {
   updateProducts = (products: Store.Product[]) => {
     console.log(products);
     this.set({
-      items: products.map(ProductTransformer.transformer(this.config.structure))
+      items: this.state.items.concat(products.map(ProductTransformer.transformer(this.config.structure)))
     });
     this.state = {
       ...this.state,
-      elItems: this.state.scroller.tags['gb-list-item']
+      elItems: this.state.scroller.tags['gb-list-item'],
+      nextPage: this.flux.store.getState().data.present.page.next,
     };
     console.log(this.state);
   }
 
   scroll = (event) => {
-    const scrollerHeight = this.state.scroller.root.getBoundingClientRect().height;
-    const { elItems } = this.state;
-    const lastElHeight = elItems[elItems.length - 1].root.getBoundingClientRect().height;
-    console.log(event, 'imm scrollin', scrollerHeight, lastElHeight);
+    const { elItems, scroller } = this.state;
+    const scrollerHeight = scroller.root.getBoundingClientRect().height;
+    const lastEl = elItems[elItems.length - 1]
+    const lastElHeight = lastEl.root.getBoundingClientRect().height;
+    const lastElBottom = lastEl.root.getBoundingClientRect().bottom;
+    const scrollerBottom = scroller.root.getBoundingClientRect().bottom;
+    // console.log(event, 'imm scrollin', scrollerHeight, lastElHeight, lastElBottom, scrollerBottom, lastElBottom === scrollerBottom);
+    // TODO: Don't use exactly the bottom
+    if (lastElBottom >= scrollerBottom - lastElHeight) {
+      this.fetchMoreItems();
+    }
+  }
+
+  fetchMoreItems = () => {
+    this.actions.updateCurrentPage(this.state.nextPage);
   }
 }
 
@@ -53,6 +65,7 @@ namespace InfiniteScroll {
     scroller?: List;
     elItems?: ListItem[];
     itemHeight?: number;
+    nextPage?: number;
   }
 }
 

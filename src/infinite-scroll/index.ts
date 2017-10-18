@@ -15,6 +15,7 @@ class InfiniteScroll {
   };
 
   init() {
+    this.actions.updatePageSize(30);
     this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
   }
 
@@ -23,32 +24,47 @@ class InfiniteScroll {
     this.state = {
       ...this.state,
       scroller,
+      wrapper: scroller.refs.wrapper,
     };
   }
 
   updateProducts = (products: Store.Product[]) => {
-    console.log(products);
+    const items = this.state.items.concat(products.map(ProductTransformer.transformer(this.config.structure)));
+    // if (items.length > 2 * 30) {
+    //   items.splice(0, items.length - 30);
+    // }
+    const tombstone = {
+      tombstone: true
+    };
+    for (let i = 0; i < 30; i++) {
+      items.push(tombstone);
+    }
     this.set({
-      items: this.state.items.concat(products.map(ProductTransformer.transformer(this.config.structure)))
+      items
     });
+    const elItems = this.state.scroller.tags['gb-list-item']
+    console.log(elItems[0].isMounted, elItems[0].root.clientHeight, elItems[0].root.offsetHeight, elItems[0].root.scrollHeight, elItems[0].root.getBoundingClientRect());
     this.state = {
       ...this.state,
-      elItems: this.state.scroller.tags['gb-list-item'],
+      elItems,
       nextPage: this.flux.store.getState().data.present.page.next,
+      itemHeight: elItems[0].root.getBoundingClientRect().height,
     };
     console.log(this.state);
   }
 
   scroll = (event) => {
-    const { elItems, scroller } = this.state;
+    const { elItems, scroller, wrapper } = this.state;
     const scrollerHeight = scroller.root.getBoundingClientRect().height;
     const lastEl = elItems[elItems.length - 1]
     const lastElHeight = lastEl.root.getBoundingClientRect().height;
-    const lastElBottom = lastEl.root.getBoundingClientRect().bottom;
     const scrollerBottom = scroller.root.getBoundingClientRect().bottom;
+    const wrapperBottom = wrapper.getBoundingClientRect().bottom;
+    const wrapperHeight = wrapper.getBoundingClientRect().height;
     // console.log(event, 'imm scrollin', scrollerHeight, lastElHeight, lastElBottom, scrollerBottom, lastElBottom === scrollerBottom);
     // TODO: Don't use exactly the bottom
-    if (lastElBottom >= scrollerBottom - lastElHeight) {
+    console.log(wrapperHeight / 2, wrapperBottom + utils.WINDOW().pageYOffset)
+    if (wrapperHeight / 2 >= wrapperBottom + utils.WINDOW().pageYOffset) {
       this.fetchMoreItems();
     }
   }
@@ -63,6 +79,7 @@ namespace InfiniteScroll {
   export interface State {
     items: any[];
     scroller?: List;
+    wrapper?: HTMLUListElement;
     elItems?: ListItem[];
     itemHeight?: number;
     nextPage?: number;

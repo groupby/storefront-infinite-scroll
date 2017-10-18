@@ -1,5 +1,5 @@
 <gb-list items="{ $infinite.items }" layout="grid" onscroll="{ scroll }">
   <yield>
-    <gb-product product="{ $item }"></gb-product>
+    <gb-product product="{ $item }" class="{ tombstone: $item.tombstone }"></gb-product>
   </yield>
 </gb-list>

@@ -15,8 +15,18 @@ class InfiniteScroll {
   };
 
   init() {
-    this.actions.updatePageSize(30);
-    this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
+    this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
+    console.log(Events.MORE_PRODUCTS_ADDED);
+    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.updateProducts);
+  }
+
+  moreProds = (e) => {
+    const products = this.flux.selectors.products(this.flux.store.getState());
+    const prods = products.map(ProductTransformer.transformer(this.config.structure));
+    console.log('IM CONSQUALOGGING', e, prods);
+    this.set({
+      items: prods
+    });
   }
 
   onMount() {
@@ -31,33 +41,36 @@ class InfiniteScroll {
 
   updateProducts = (products: Store.Product[]) => {
     const items = this.state.items.concat(products.map(ProductTransformer.transformer(this.config.structure)));
+    // const prods = this.flux.selectors.products(this.flux.store.getState());
+    // const items = <any>products.map(ProductTransformer.transformer(this.config.structure));
+    console.log('setting items: ', items, 'from: ', products);
     this.set({
       items
     });
     const elItems = this.state.scroller.tags['gb-list-item'];
     const elMeasurements = elItems[0].root.getBoundingClientRect();
     console.log('length', items.length);
-    if (items.length > 2 * 30) {
-      const layout = {
-        height: elMeasurements.height,
-        width: elMeasurements.width
-      };
-      console.log('items too long, add tombstones', layout);
-      items.splice(0, items.length - 2 * 30);
-      const tombstone = {
-        tombstone: true,
-        layout
-      };
-      for (let i = 0; i < 30; i++) {
-        items.unshift(tombstone);
-      }
-      this.state.scroller.root.removeEventListener('scroll', this.scroll);
-      this.set({ items });
-      this.state.lastEl.scrollIntoView();
-      console.log(this.state.wrapper.getBoundingClientRect().height / 3,
-        this.state.wrapper.getBoundingClientRect().bottom + utils.WINDOW().pageYOffset,
-        this.state.scroller.root.scrollTop)
-    }
+    // if (items.length > 2 * 30) {
+    //   const layout = {
+    //     height: elMeasurements.height,
+    //     width: elMeasurements.width
+    //   };
+    //   console.log('items too long, add tombstones', layout);
+    //   items.splice(0, items.length - 2 * 30);
+    //   const tombstone = {
+    //     tombstone: true,
+    //     layout
+    //   };
+    //   for (let i = 0; i < 30; i++) {
+    //     items.unshift(tombstone);
+    //   }
+    //   this.state.scroller.root.removeEventListener('scroll', this.scroll);
+    //   this.set({ items });
+    //   this.state.lastEl.scrollIntoView();
+    //   console.log(this.state.wrapper.getBoundingClientRect().height / 3,
+    //     this.state.wrapper.getBoundingClientRect().bottom + utils.WINDOW().pageYOffset,
+    //     this.state.scroller.root.scrollTop)
+    // }
     console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
     this.state = {
       ...this.state,
@@ -89,7 +102,7 @@ class InfiniteScroll {
   }
 
   fetchMoreItems = () => {
-    this.actions.updateCurrentPage(this.state.nextPage);
+    this.actions.fetchMoreProducts(this.flux.selectors.pageSize(this.flux.store.getState()));
   }
 }
 

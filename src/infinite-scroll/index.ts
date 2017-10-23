@@ -15,7 +15,7 @@ class InfiniteScroll {
   };
 
   init() {
-    this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
+    this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.updateProducts);
   }
@@ -89,7 +89,7 @@ class InfiniteScroll {
     const wrapperBottom = wrapper.getBoundingClientRect().bottom;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     // TODO: Don't use exactly the bottom
-    console.log(wrapperHeight / 3, wrapperBottom + utils.WINDOW().pageYOffset,
+    console.log(wrapperHeight / 4, wrapperBottom + utils.WINDOW().pageYOffset,
       scroller.root.scrollTop,
       this.state.items)
     if (wrapperHeight / 3 >= wrapperBottom + utils.WINDOW().pageYOffset) {
@@ -97,7 +97,11 @@ class InfiniteScroll {
         ...this.state,
         lastEl
       }
-      this.fetchMoreItems();
+
+      if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items.length) {
+        console.log('im fetchin more');
+        this.fetchMoreItems();
+      }
     }
   }
 

@@ -11,7 +11,8 @@ class InfiniteScroll {
   };
 
   state: InfiniteScroll.State = {
-    items: []
+    items: [],
+    lastScroll: 0
   };
 
   init() {
@@ -89,20 +90,25 @@ class InfiniteScroll {
     const wrapperBottom = wrapper.getBoundingClientRect().bottom;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     // TODO: Don't use exactly the bottom
-    console.log(wrapperHeight / 4, wrapperBottom + utils.WINDOW().pageYOffset,
-      scroller.root.scrollTop,
-      this.state.items)
-    if (wrapperHeight / 3 >= wrapperBottom + utils.WINDOW().pageYOffset) {
+    console.log('scroller scrollTop: ', scroller.root.scrollTop,
+      'wrapper height: ', wrapperHeight,
+      'scroller.root.scrollTop >= wrapperHeight * .75', scroller.root.scrollTop >= wrapperHeight * .75);
+    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
       this.state = {
         ...this.state,
-        lastEl
-      }
+        lastEl,
+        lastScroll: scroller.root.scrollTop
+      };
 
       if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items.length) {
         console.log('im fetchin more');
         this.fetchMoreItems();
       }
     }
+    this.state = {
+      ...this.state,
+      lastScroll: scroller.root.scrollTop
+    };
   }
 
   fetchMoreItems = () => {
@@ -123,6 +129,7 @@ namespace InfiniteScroll {
       width: number;
     };
     nextPage?: number;
+    lastScroll?: number;
   }
 }
 

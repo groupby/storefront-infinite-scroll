@@ -1,4 +1,5 @@
 import { alias, configurable, tag, utils, Events, ProductTransformer, Store, Tag } from '@storefront/core';
+import { Routes } from '@storefront/flux-capacitor';
 import { List, ListItem } from '@storefront/structure';
 
 @configurable
@@ -18,10 +19,11 @@ class InfiniteScroll {
   init() {
     this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
-    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.updateProducts);
+    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
   }
 
   moreProds = (e) => {
+    this.updatePage();
     const products = this.flux.selectors.products(this.flux.store.getState());
     const prods = products.map(ProductTransformer.transformer(this.config.structure));
     console.log('IM CONSQUALOGGING', e, prods);
@@ -38,6 +40,12 @@ class InfiniteScroll {
       wrapper: scroller.refs.wrapper,
     };
     scroller.root.addEventListener('scroll', this.scroll);
+  }
+
+  updatePage() {
+    const store = this.flux.store.getState();
+    this.actions.receivePage(this.flux.selectors.recordCount(store), this.flux.selectors.page(store) + 1);
+    this.flux.saveState(Routes.SEARCH);
   }
 
   updateProducts = (products: Store.Product[]) => {

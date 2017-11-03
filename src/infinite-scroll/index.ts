@@ -17,6 +17,7 @@ class InfiniteScroll {
   };
 
   init() {
+    // test
     this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);

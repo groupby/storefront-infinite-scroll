@@ -45,12 +45,28 @@ class InfiniteScroll {
 
   onMount() {
     const scroller = this.tags['gb-list'];
+    const wrapper = scroller.refs.wrapper;
+    scroller.root.addEventListener('scroll', this.scroll);
+    const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
+    const page = this.flux.selectors.page(this.flux.store.getState());
+    const width = scroller.root.getBoundingClientRect().width;
+    const itemHeight = 340;
+    const itemWidth = 220;
+    const row = Math.floor(width / itemWidth);
+    const rows = pageSize / row;
+    const baseHeight = rows * itemHeight;
+    const currentScroll = baseHeight * (page - 1);
+
+    // TODO: try using padding to push products down and then remove padding as you add items above
+    wrapper.style.minHeight = `${baseHeight * page}px`;
+    scroller.root.scrollTop = currentScroll
+    console.log('on load scroller', scroller.root.scrollTop);
     this.state = {
       ...this.state,
       scroller,
-      wrapper: scroller.refs.wrapper,
+      wrapper,
+      lastScroll: currentScroll,
     };
-    scroller.root.addEventListener('scroll', this.scroll);
   }
 
   updatePage() {

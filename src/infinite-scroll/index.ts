@@ -1,5 +1,5 @@
 import { alias, configurable, tag, utils, Events, ProductTransformer, Store, Tag } from '@storefront/core';
-import { Routes } from '@storefront/flux-capacitor';
+import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List, ListItem } from '@storefront/structure';
 
 @configurable
@@ -16,21 +16,32 @@ class InfiniteScroll {
     lastScroll: 0
   };
 
+  productTransformer = ({ data, meta, index }: Store.ProductWithMetadata) =>
+    ({ ...ProductTransformer.transformer(this.config.structure)(data), meta, index })
+
   init() {
-    this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
+    this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
   }
 
   moreProds = (e) => {
+    console.log('oldScroll', this.state.lastScroll, this.state.scroller.root.scrollTop);
     this.updatePage();
-    const products = this.flux.selectors.products(this.flux.store.getState());
-    const prods = products.map(ProductTransformer.transformer(this.config.structure));
-    console.log('IM CONSQUALOGGING', e, prods);
+    const productsWithMetadata = this.flux.selectors.productsWithMetadata(this.flux.store.getState());
+    // tslint:disable-next-line max-line-length
+    // const products = Adapters.Search.extractData(productsWithMetadata).map(ProductTransformer.transformer(this.config.structure));
+    console.log('IM CONSQUALOGGING', e, productsWithMetadata.map(this.productTransformer));
     this.set({
-      items: prods
+      items: productsWithMetadata.map(this.productTransformer)
     });
+    console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
   }
+
+  // onUpdated = () => {
+  //   console.log('this.state.scroller.root.scrollTop', this.state.lastScroll);
+  //   this.state.scroller.root.scrollTop = this.state.lastScroll;
+  // }
 
   onMount() {
     const scroller = this.tags['gb-list'];
@@ -44,13 +55,13 @@ class InfiniteScroll {
 
   updatePage() {
     const store = this.flux.store.getState();
-    this.actions.receivePage(this.flux.selectors.recordCount(store), this.flux.selectors.page(store) + 1);
+    // this.actions.receivePage(this.flux.selectors.recordCount(store), this.flux.selectors.page(store) + 1);
     this.flux.saveState(Routes.SEARCH);
   }
 
   updateProducts = (products: Store.Product[]) => {
-    const items = this.state.items.concat(products.map(ProductTransformer.transformer(this.config.structure)));
-    // const prods = this.flux.selectors.products(this.flux.store.getState());
+    // const items = this.state.items.concat(products.map(this.productTransformer));
+    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
     // const items = <any>products.map(ProductTransformer.transformer(this.config.structure));
     console.log('setting items: ', items, 'from: ', products);
     this.set({
@@ -98,29 +109,39 @@ class InfiniteScroll {
     const wrapperBottom = wrapper.getBoundingClientRect().bottom;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     // TODO: Don't use exactly the bottom
-    console.log('scroller scrollTop: ', scroller.root.scrollTop,
-      'wrapper height: ', wrapperHeight,
-      'scroller.root.scrollTop >= wrapperHeight * .75', scroller.root.scrollTop >= wrapperHeight * .75);
+    // console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
+    //   'wrapper height: ', wrapperHeight,
+    //   'scroller.root.scrollTop >= wrapperHeight * .75', scroller.root.scrollTop >= wrapperHeight * .75);
     if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
-      this.state = {
-        ...this.state,
-        lastEl,
-        lastScroll: scroller.root.scrollTop
-      };
+      // this.state = {
+      //   ...this.state,
+      //   lastEl,
+      //   lastScroll: scroller.root.scrollTop
+      // };
 
-      if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items.length) {
+      // tslint:disable-next-line max-line-length
+      if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
         console.log('im fetchin more');
         this.fetchMoreItems();
+        scroller.root.removeEventListener('scroll', this.scroll);
+      }
+    // } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= wrapperHeight * .25) {
+    } else if (this.state.lastScroll > scroller.root.scrollTop) {
+      if (this.state.items[0].index !== 0) {
+        console.log('im fetchin less');
+        this.fetchMoreItems(false);
+        scroller.root.removeEventListener('scroll', this.scroll);
       }
     }
     this.state = {
       ...this.state,
       lastScroll: scroller.root.scrollTop
     };
+    console.log('oldScroll, im here', this.state.lastScroll, scroller.root.scrollTop);
   }
 
-  fetchMoreItems = () => {
-    this.actions.fetchMoreProducts(this.flux.selectors.pageSize(this.flux.store.getState()));
+  fetchMoreItems = (forward: boolean = true) => {
+    this.actions.fetchMoreProducts(this.flux.selectors.pageSize(this.flux.store.getState()), forward);
   }
 }
 

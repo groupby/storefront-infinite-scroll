@@ -12,8 +12,10 @@ class InfiniteScroll {
   };
 
   state: InfiniteScroll.State = {
+    setVisible: false,
+    alreadyVisible: false,
     items: [],
-    lastScroll: 0
+    lastScroll: 0,
   };
 
   productTransformer = ({ data, meta, index }: Store.ProductWithMetadata) =>
@@ -33,15 +35,21 @@ class InfiniteScroll {
     // const products = Adapters.Search.extractData(productsWithMetadata).map(ProductTransformer.transformer(this.config.structure));
     console.log('IM CONSQUALOGGING', e, productsWithMetadata.map(this.productTransformer));
     this.set({
-      items: productsWithMetadata.map(this.productTransformer)
+      items: productsWithMetadata.map(this.productTransformer),
+      setVisible: !this.state.alreadyVisible,
     });
     console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
   }
 
-  // onUpdated = () => {
-  //   console.log('this.state.scroller.root.scrollTop', this.state.lastScroll);
-  //   this.state.scroller.root.scrollTop = this.state.lastScroll;
-  // }
+  onUpdated = () => {
+    this.state.scroller.root.scrollTop = 1700;
+    if (this.state.setVisible) {
+      console.log('only happens once');
+      this.state.wrapper.style.visibility = 'visible';
+      this.state.alreadyVisible = true;
+    }
+    console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
+  }
 
   onMount() {
     const scroller = this.tags['gb-list'];
@@ -56,11 +64,18 @@ class InfiniteScroll {
     const rows = pageSize / row;
     const baseHeight = rows * itemHeight;
     const currentScroll = baseHeight * (page - 1);
+    let padding;
 
-    // TODO: try using padding to push products down and then remove padding as you add items above
-    wrapper.style.minHeight = `${baseHeight * page}px`;
-    scroller.root.scrollTop = currentScroll
-    console.log('on load scroller', scroller.root.scrollTop);
+    if (page > 1) {
+      this.fetchMoreItems(false);
+      padding = baseHeight * (page - 2);
+    } else {
+      padding = baseHeight * (page - 1);
+    }
+    wrapper.style.paddingTop = `${padding}px`;
+    wrapper.style.visibility = 'hidden';
+    // scroller.root.scrollTop = padding + 200;
+    // console.log('on load scroller', scroller.root.scrollTop, padding);
     this.state = {
       ...this.state,
       scroller,
@@ -139,14 +154,14 @@ class InfiniteScroll {
       if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
         console.log('im fetchin more');
         this.fetchMoreItems();
-        scroller.root.removeEventListener('scroll', this.scroll);
+        // scroller.root.removeEventListener('scroll', this.scroll);
       }
     // } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= wrapperHeight * .25) {
     } else if (this.state.lastScroll > scroller.root.scrollTop) {
       if (this.state.items[0].index !== 0) {
         console.log('im fetchin less');
         this.fetchMoreItems(false);
-        scroller.root.removeEventListener('scroll', this.scroll);
+        // scroller.root.removeEventListener('scroll', this.scroll);
       }
     }
     this.state = {
@@ -165,6 +180,8 @@ interface InfiniteScroll extends Tag<any, InfiniteScroll.State> { }
 namespace InfiniteScroll {
   export interface State {
     items: any[];
+    setVisible: boolean;
+    alreadyVisible: boolean;
     scroller?: List;
     wrapper?: HTMLUListElement;
     elItems?: ListItem[];

@@ -5,7 +5,7 @@ gb-infinite-scroll > gb-list {
 }
 
 gb-infinite-scroll > gb-list li {
-  min-height: 340px;
+  height: 340px;
   min-width: 220px;
 }
 

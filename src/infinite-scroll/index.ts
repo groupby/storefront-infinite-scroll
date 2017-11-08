@@ -12,10 +12,10 @@ class InfiniteScroll {
   };
 
   state: InfiniteScroll.State = {
-    setVisible: false,
-    alreadyVisible: false,
+    // isVisible: null,
     items: [],
     lastScroll: 0,
+    oneTime: true,
   };
 
   productTransformer = ({ data, meta, index }: Store.ProductWithMetadata) =>
@@ -36,51 +36,65 @@ class InfiniteScroll {
     console.log('IM CONSQUALOGGING', e, productsWithMetadata.map(this.productTransformer));
     this.set({
       items: productsWithMetadata.map(this.productTransformer),
-      setVisible: !this.state.alreadyVisible,
+      // isVisible: this.state.isVisible === null ? false : true,
     });
     console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
   }
 
   onUpdated = () => {
-    this.state.scroller.root.scrollTop = 1700;
-    if (this.state.setVisible) {
-      console.log('only happens once');
-      this.state.wrapper.style.visibility = 'visible';
-      this.state.alreadyVisible = true;
+    const firstItem = this.state.items[0];
+    if (firstItem) {
+      const page = this.flux.selectors.page(this.flux.store.getState());
+        console.log('first item', this.state.items[0].index);
+      const padding = this.calculatePadding(this.state.scroller, firstItem.index);
+      const scroll = this.calculatePadding(this.state.scroller, 61);
+      this.state.wrapper.style.paddingTop = `${padding}px`;
+      if (this.state.oneTime) {
+        this.state.scroller.root.scrollTop = padding;
+        this.state = {
+          ...this.state,
+          oneTime: false,
+        };
+      }
+      this.state = {
+        ...this.state,
+        lastScroll: padding,
+        padding,
+      };
+      console.log('padding and scroll', padding, scroll);
     }
-    console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
+  }
+
+  calculatePadding = (scroller: any, firstItemIndex: number) => {
+    const width = scroller.root.getBoundingClientRect().width;
+    const itemHeight = 340;
+    const itemWidth = 220;
+    const row = Math.floor(width / itemWidth);
+    const rows = (firstItemIndex - 1) / row;
+    return rows * itemHeight;
   }
 
   onMount() {
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
     scroller.root.addEventListener('scroll', this.scroll);
-    const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
+    // const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
     const page = this.flux.selectors.page(this.flux.store.getState());
-    const width = scroller.root.getBoundingClientRect().width;
-    const itemHeight = 340;
-    const itemWidth = 220;
-    const row = Math.floor(width / itemWidth);
-    const rows = pageSize / row;
-    const baseHeight = rows * itemHeight;
-    const currentScroll = baseHeight * (page - 1);
-    let padding;
+    // const width = scroller.root.getBoundingClientRect().width;
+    // const itemHeight = 340;
+    // const itemWidth = 220;
+    // const row = Math.floor(width / itemWidth);
+    // const rows = pageSize / row;
+    // const baseHeight = rows * itemHeight;
+    // const currentScroll = baseHeight * (page - 1);
+    const currentScroll = this.calculatePadding(scroller, page - 1);
 
-    if (page > 1) {
-      this.fetchMoreItems(false);
-      padding = baseHeight * (page - 2);
-    } else {
-      padding = baseHeight * (page - 1);
-    }
-    wrapper.style.paddingTop = `${padding}px`;
-    wrapper.style.visibility = 'hidden';
-    // scroller.root.scrollTop = padding + 200;
-    // console.log('on load scroller', scroller.root.scrollTop, padding);
     this.state = {
       ...this.state,
       scroller,
       wrapper,
       lastScroll: currentScroll,
+      setScroll: currentScroll,
     };
   }
 
@@ -91,37 +105,18 @@ class InfiniteScroll {
   }
 
   updateProducts = (products: Store.Product[]) => {
-    // const items = this.state.items.concat(products.map(this.productTransformer));
+    const page = this.flux.selectors.page(this.flux.store.getState());
+    if (page > 1) {
+      console.log('page greater than 1');
+      this.fetchMoreItems(false);
+    }
     const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
-    // const items = <any>products.map(ProductTransformer.transformer(this.config.structure));
-    console.log('setting items: ', items, 'from: ', products);
     this.set({
       items
     });
     const elItems = this.state.scroller.tags['gb-list-item'];
     const elMeasurements = elItems[0].root.getBoundingClientRect();
     console.log('length', items.length);
-    // if (items.length > 2 * 30) {
-    //   const layout = {
-    //     height: elMeasurements.height,
-    //     width: elMeasurements.width
-    //   };
-    //   console.log('items too long, add tombstones', layout);
-    //   items.splice(0, items.length - 2 * 30);
-    //   const tombstone = {
-    //     tombstone: true,
-    //     layout
-    //   };
-    //   for (let i = 0; i < 30; i++) {
-    //     items.unshift(tombstone);
-    //   }
-    //   this.state.scroller.root.removeEventListener('scroll', this.scroll);
-    //   this.set({ items });
-    //   this.state.lastEl.scrollIntoView();
-    //   console.log(this.state.wrapper.getBoundingClientRect().height / 3,
-    //     this.state.wrapper.getBoundingClientRect().bottom + utils.WINDOW().pageYOffset,
-    //     this.state.scroller.root.scrollTop)
-    // }
     console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
     this.state = {
       ...this.state,
@@ -139,7 +134,6 @@ class InfiniteScroll {
     const scrollerBottom = scroller.root.getBoundingClientRect().bottom;
     const wrapperBottom = wrapper.getBoundingClientRect().bottom;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    // TODO: Don't use exactly the bottom
     // console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
     //   'wrapper height: ', wrapperHeight,
     //   'scroller.root.scrollTop >= wrapperHeight * .75', scroller.root.scrollTop >= wrapperHeight * .75);
@@ -156,10 +150,12 @@ class InfiniteScroll {
         this.fetchMoreItems();
         // scroller.root.removeEventListener('scroll', this.scroll);
       }
-    // } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= wrapperHeight * .25) {
-    } else if (this.state.lastScroll > scroller.root.scrollTop) {
+      // tslint:disable-next-line max-line-length
+    // TODO: need ot fix this logic
+  } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
+    // } else if (this.state.lastScroll > scroller.root.scrollTop) {
       if (this.state.items[0].index !== 0) {
-        console.log('im fetchin less');
+        console.log('im fetchin less', this.state.lastScroll, scroller.root.scrollTop);
         this.fetchMoreItems(false);
         // scroller.root.removeEventListener('scroll', this.scroll);
       }
@@ -172,6 +168,7 @@ class InfiniteScroll {
   }
 
   fetchMoreItems = (forward: boolean = true) => {
+    console.log(`im fetching ${ forward ? 'more' : 'less' }`, this.flux.selectors.pageSize(this.flux.store.getState()));
     this.actions.fetchMoreProducts(this.flux.selectors.pageSize(this.flux.store.getState()), forward);
   }
 }
@@ -180,8 +177,8 @@ interface InfiniteScroll extends Tag<any, InfiniteScroll.State> { }
 namespace InfiniteScroll {
   export interface State {
     items: any[];
-    setVisible: boolean;
-    alreadyVisible: boolean;
+    oneTime: boolean;
+    // isVisible: string;
     scroller?: List;
     wrapper?: HTMLUListElement;
     elItems?: ListItem[];
@@ -192,6 +189,8 @@ namespace InfiniteScroll {
     };
     nextPage?: number;
     lastScroll?: number;
+    setScroll?: number;
+    padding?: number;
   }
 }
 

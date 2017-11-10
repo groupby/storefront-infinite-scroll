@@ -1,4 +1,4 @@
-import { alias, configurable, tag, utils, Events, ProductTransformer, Store, Tag } from '@storefront/core';
+import { alias, configurable, tag, utils, Events, ProductTransformer, Selectors, Store, Tag } from '@storefront/core';
 import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List, ListItem } from '@storefront/structure';
 
@@ -25,6 +25,12 @@ class InfiniteScroll {
     this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
+    this.flux.on(Events.PAGE_UPDATED, this.saveState);
+  }
+
+  saveState = () => {
+    console.log('page updated, should save');
+    this.flux.saveState(Routes.SEARCH);
   }
 
   moreProds = (e) => {
@@ -47,18 +53,19 @@ class InfiniteScroll {
       const page = this.flux.selectors.page(this.flux.store.getState());
         console.log('first item', this.state.items[0].index);
       const padding = this.calculatePadding(this.state.scroller, firstItem.index);
-      const scroll = this.calculatePadding(this.state.scroller, 61);
       this.state.wrapper.style.paddingTop = `${padding}px`;
       if (this.state.oneTime) {
         this.state.scroller.root.scrollTop = padding;
         this.state = {
           ...this.state,
           oneTime: false,
+          lastScroll: padding,
+          getPage: false,
         };
+        this.state.scroller.root.addEventListener('scroll', this.scroll);
       }
       this.state = {
         ...this.state,
-        lastScroll: padding,
         padding,
       };
       console.log('padding and scroll', padding, scroll);
@@ -77,7 +84,7 @@ class InfiniteScroll {
   onMount() {
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
-    scroller.root.addEventListener('scroll', this.scroll);
+    // scroller.root.addEventListener('scroll', this.scroll);
     // const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
     const page = this.flux.selectors.page(this.flux.store.getState());
     // const width = scroller.root.getBoundingClientRect().width;
@@ -121,22 +128,94 @@ class InfiniteScroll {
     this.state = {
       ...this.state,
       elItems,
-      nextPage: this.flux.store.getState().data.present.page.next
+      nextPage: this.flux.store.getState().data.present.page.next,
+      firstEl: items[0],
+      lastEl: items[items.length - 1],
+      getPage: false,
     };
     console.log(this.state);
   }
 
+  calculatePageChange = () => {
+    console.log('what do i have', this.state.firstEl, this.state.lastEl.index, this.state.items);
+    const first = this.getItem(this.state.firstEl.index - 1);
+    const last = this.getItem(this.state.lastEl.index + 1);
+    const scroller = this.state.scroller.root;
+    const state = this.flux.store.getState();
+    const recordCount = Selectors.recordCount(state);
+    const page = Selectors.page(state);
+    const pageSize = Selectors.pageSize(state);
+    console.log('prev page', first, 'next page', last);
+    console.log('the current page is', Selectors.page(this.flux.store.getState()), page, pageSize);
+    // console.log('first el', this.getItem(this.state.firstEl.index).root.getBoundingClientRect());
+    // console.log('last el', this.getItem(this.state.lastEl.index).root.getBoundingClientRect());
+    // console.log('items', this.state.items);
+    // console.log('wrapper', this.state.scroller.root.getBoundingClientRect());
+    if (first && this.topElBelowOffset(first.root, scroller)) {
+      console.log('switch page back', page, this.state.firstEl, this.getIndex(this.state.firstEl.index - pageSize));
+      this.state = {
+        ...this.state,
+        firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
+        lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
+      };
+      this.setPage(recordCount, page - 1);
+    } else if (last && this.bottomElBelowOffset(last.root, scroller)) {
+      console.log('switch page forward');
+      this.state = {
+        ...this.state,
+        firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
+        lastEl: this.state.items[this.getIndex(this.state.lastEl.index + pageSize)],
+      };
+      this.setPage(recordCount, page + 1);
+    }
+  }
+
+  setPage = (count: number, page: number) => {
+    const state = this.flux.store.getState();
+    this.flux.store.dispatch(this.actions.receivePage(count, page));
+  }
+
+  topElBelowOffset = (element, parent) => {
+    const { top, height } = element.getBoundingClientRect();
+    const { top: parentTop } = parent.getBoundingClientRect();
+    return top > (parentTop - (height * .25));
+  }
+
+  bottomElBelowOffset = (element, parent) => {
+    const { bottom, height } = element.getBoundingClientRect();
+    const { bottom: parentBottom } = parent.getBoundingClientRect();
+    return bottom < (parentBottom + (height * .25));
+  }
+
+  // elIsVisible = (element, parent) => {
+  //   console.log('wtf', element);
+  //   const { top, bottom, height } = element.getBoundingClientRect();
+  //   const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect();
+  //   return top > (parentTop - (height * .25)) && bottom < (parentBottom + (height * .25));
+  // }
+
+  getItem = (recordIndex: number) => {
+    console.log('getItem', this.getIndex(recordIndex), this.state.elItems, this.state.elItems[this.getIndex(recordIndex)]);
+    return this.state.elItems[this.getIndex(recordIndex)];
+  }
+
+  getIndex = (recordIndex: number) =>
+    this.state.items.findIndex((item) => item.index === recordIndex)
+
   scroll = (event) => {
     const { elItems, scroller, wrapper } = this.state;
     const scrollerHeight = scroller.root.getBoundingClientRect().height;
-    const lastEl = elItems[elItems.length - 1].root;
-    const lastElHeight = lastEl.getBoundingClientRect().height;
     const scrollerBottom = scroller.root.getBoundingClientRect().bottom;
     const wrapperBottom = wrapper.getBoundingClientRect().bottom;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    // console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
-    //   'wrapper height: ', wrapperHeight,
-    //   'scroller.root.scrollTop >= wrapperHeight * .75', scroller.root.scrollTop >= wrapperHeight * .75);
+
+    if (this.state.getPage) {
+      this.calculatePageChange();
+    }
+
+    console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
+      'wrapper height: ', wrapperHeight,
+      'scroller.root.scrollTop <= this.state.padding * 1.25', scroller.root.scrollTop <= this.state.padding * 1.25);
     if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
       // this.state = {
       //   ...this.state,
@@ -162,14 +241,15 @@ class InfiniteScroll {
     }
     this.state = {
       ...this.state,
-      lastScroll: scroller.root.scrollTop
+      lastScroll: scroller.root.scrollTop,
+      getPage: true,
     };
     console.log('oldScroll, im here', this.state.lastScroll, scroller.root.scrollTop);
   }
 
   fetchMoreItems = (forward: boolean = true) => {
     console.log(`im fetching ${ forward ? 'more' : 'less' }`, this.flux.selectors.pageSize(this.flux.store.getState()));
-    this.actions.fetchMoreProducts(this.flux.selectors.pageSize(this.flux.store.getState()), forward);
+    this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
   }
 }
 
@@ -182,7 +262,6 @@ namespace InfiniteScroll {
     scroller?: List;
     wrapper?: HTMLUListElement;
     elItems?: ListItem[];
-    lastEl?: HTMLElement;
     layout?: {
       height: number;
       width: number;
@@ -191,6 +270,9 @@ namespace InfiniteScroll {
     lastScroll?: number;
     setScroll?: number;
     padding?: number;
+    firstEl?: any;
+    lastEl?: any;
+    getPage?: boolean;
   }
 }
 

@@ -12,7 +12,6 @@ class InfiniteScroll {
   };
 
   state: InfiniteScroll.State = {
-    // isVisible: null,
     items: [],
     lastScroll: 0,
     oneTime: true,
@@ -23,11 +22,57 @@ class InfiniteScroll {
 
   init() {
     this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
-    console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
     // TODO: update url service to reset state instead of save state
     // replacestate instead of pushstate
     this.flux.on(Events.PAGE_UPDATED, this.saveState);
+  }
+
+  onMount() {
+    const scroller = this.tags['gb-list'];
+    const wrapper = scroller.refs.wrapper;
+    // scroller.root.addEventListener('scroll', this.scroll);
+    // const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
+    const page = this.flux.selectors.page(this.flux.store.getState());
+    // const width = scroller.root.getBoundingClientRect().width;
+    // const itemHeight = 340;
+    // const itemWidth = 220;
+    // const row = Math.floor(width / itemWidth);
+    // const rows = pageSize / row;
+    // const baseHeight = rows * itemHeight;
+    // const currentScroll = baseHeight * (page - 1);
+    const currentScroll = this.calculatePadding(scroller, page - 1);
+
+    this.state = {
+      ...this.state,
+      scroller,
+      wrapper,
+      lastScroll: currentScroll,
+    };
+  }
+
+  updateProducts = (products: Store.Product[]) => {
+    const page = this.flux.selectors.page(this.flux.store.getState());
+    if (page > 1) {
+      console.log('page greater than 1');
+      this.fetchMoreItems(false);
+    }
+    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+    this.set({
+      items
+    });
+    const elItems = this.state.scroller.tags['gb-list-item'];
+    const elMeasurements = elItems[0].root.getBoundingClientRect();
+    console.log('length', items.length);
+    console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
+    this.state = {
+      ...this.state,
+      elItems,
+      firstEl: items[0],
+      lastEl: items[items.length - 1],
+      getPage: false,
+    };
+    console.log(this.state);
   }
 
   saveState = () => {
@@ -37,14 +82,13 @@ class InfiniteScroll {
 
   moreProds = (e) => {
     console.log('oldScroll', this.state.lastScroll, this.state.scroller.root.scrollTop);
-    this.updatePage();
+    // this.updatePage();
     const productsWithMetadata = this.flux.selectors.productsWithMetadata(this.flux.store.getState());
     // tslint:disable-next-line max-line-length
     // const products = Adapters.Search.extractData(productsWithMetadata).map(ProductTransformer.transformer(this.config.structure));
     console.log('IM CONSQUALOGGING', e, productsWithMetadata.map(this.productTransformer));
     this.set({
       items: productsWithMetadata.map(this.productTransformer),
-      // isVisible: this.state.isVisible === null ? false : true,
     });
     console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
   }
@@ -83,61 +127,6 @@ class InfiniteScroll {
     return rows * itemHeight;
   }
 
-  onMount() {
-    const scroller = this.tags['gb-list'];
-    const wrapper = scroller.refs.wrapper;
-    // scroller.root.addEventListener('scroll', this.scroll);
-    // const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
-    const page = this.flux.selectors.page(this.flux.store.getState());
-    // const width = scroller.root.getBoundingClientRect().width;
-    // const itemHeight = 340;
-    // const itemWidth = 220;
-    // const row = Math.floor(width / itemWidth);
-    // const rows = pageSize / row;
-    // const baseHeight = rows * itemHeight;
-    // const currentScroll = baseHeight * (page - 1);
-    const currentScroll = this.calculatePadding(scroller, page - 1);
-
-    this.state = {
-      ...this.state,
-      scroller,
-      wrapper,
-      lastScroll: currentScroll,
-      setScroll: currentScroll,
-    };
-  }
-
-  updatePage() {
-    const store = this.flux.store.getState();
-    // this.actions.receivePage(this.flux.selectors.recordCount(store), this.flux.selectors.page(store) + 1);
-    this.flux.saveState(Routes.SEARCH);
-  }
-
-  updateProducts = (products: Store.Product[]) => {
-    const page = this.flux.selectors.page(this.flux.store.getState());
-    if (page > 1) {
-      console.log('page greater than 1');
-      this.fetchMoreItems(false);
-    }
-    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
-    this.set({
-      items
-    });
-    const elItems = this.state.scroller.tags['gb-list-item'];
-    const elMeasurements = elItems[0].root.getBoundingClientRect();
-    console.log('length', items.length);
-    console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
-    this.state = {
-      ...this.state,
-      elItems,
-      nextPage: this.flux.store.getState().data.present.page.next,
-      firstEl: items[0],
-      lastEl: items[items.length - 1],
-      getPage: false,
-    };
-    console.log(this.state);
-  }
-
   calculatePageChange = () => {
     console.log('what do i have', this.state.firstEl, this.state.lastEl.index, this.state.items);
     const first = this.getItem(this.state.firstEl.index - 1);
@@ -173,6 +162,7 @@ class InfiniteScroll {
   }
 
   setPage = (count: number, page: number) => {
+    console.log('im setting hte page');
     const state = this.flux.store.getState();
     this.flux.store.dispatch(this.actions.receivePage(count, page));
   }
@@ -188,13 +178,6 @@ class InfiniteScroll {
     const { bottom: parentBottom } = parent.getBoundingClientRect();
     return bottom < (parentBottom + (height * .25));
   }
-
-  // elIsVisible = (element, parent) => {
-  //   console.log('wtf', element);
-  //   const { top, bottom, height } = element.getBoundingClientRect();
-  //   const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect();
-  //   return top > (parentTop - (height * .25)) && bottom < (parentBottom + (height * .25));
-  // }
 
   getItem = (recordIndex: number) => {
     console.log('getItem', this.getIndex(recordIndex), this.state.elItems, this.state.elItems[this.getIndex(recordIndex)]);
@@ -260,7 +243,6 @@ namespace InfiniteScroll {
   export interface State {
     items: any[];
     oneTime: boolean;
-    // isVisible: string;
     scroller?: List;
     wrapper?: HTMLUListElement;
     elItems?: ListItem[];
@@ -268,9 +250,7 @@ namespace InfiniteScroll {
       height: number;
       width: number;
     };
-    nextPage?: number;
     lastScroll?: number;
-    setScroll?: number;
     padding?: number;
     firstEl?: any;
     lastEl?: any;

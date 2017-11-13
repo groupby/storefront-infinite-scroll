@@ -22,7 +22,7 @@ class InfiniteScroll {
 
   init() {
     this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
-    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
+    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
     // TODO: update url service to reset state instead of save state
     // replacestate instead of pushstate
     this.flux.on(Events.PAGE_UPDATED, this.saveState);
@@ -31,23 +31,41 @@ class InfiniteScroll {
   onMount() {
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
-    // scroller.root.addEventListener('scroll', this.scroll);
-    // const pageSize = this.flux.selectors.pageSize(this.flux.store.getState());
     const page = this.flux.selectors.page(this.flux.store.getState());
-    // const width = scroller.root.getBoundingClientRect().width;
-    // const itemHeight = 340;
-    // const itemWidth = 220;
-    // const row = Math.floor(width / itemWidth);
-    // const rows = pageSize / row;
-    // const baseHeight = rows * itemHeight;
-    // const currentScroll = baseHeight * (page - 1);
-    const currentScroll = this.calculatePadding(scroller, page - 1);
+    const lastScroll = this.calculatePadding(scroller, page - 1);
 
     this.state = {
       ...this.state,
       scroller,
       wrapper,
-      lastScroll: currentScroll,
+      lastScroll,
+    };
+  }
+
+  onUpdated = () => {
+    const firstItem = this.state.items[0];
+
+    if (!firstItem) return;
+
+    const page = this.flux.selectors.page(this.flux.store.getState());
+    const padding = this.calculatePadding(this.state.scroller, firstItem.index);
+
+    this.state.wrapper.style.paddingTop = `${padding}px`;
+
+    if (this.state.oneTime) {
+      this.state.scroller.root.scrollTop = padding;
+      this.state = {
+        ...this.state,
+        oneTime: false,
+        lastScroll: padding,
+        getPage: false,
+      };
+      this.state.scroller.root.addEventListener('scroll', this.scroll);
+    }
+
+    this.state = {
+      ...this.state,
+      padding,
     };
   }
 
@@ -57,14 +75,11 @@ class InfiniteScroll {
       console.log('page greater than 1');
       this.fetchMoreItems(false);
     }
-    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
-    this.set({
-      items
-    });
+    const items = this.setProducts();
     const elItems = this.state.scroller.tags['gb-list-item'];
     const elMeasurements = elItems[0].root.getBoundingClientRect();
     console.log('length', items.length);
-    console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
+    // console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
     this.state = {
       ...this.state,
       elItems,
@@ -72,50 +87,44 @@ class InfiniteScroll {
       lastEl: items[items.length - 1],
       getPage: false,
     };
-    console.log(this.state);
   }
 
-  saveState = () => {
-    console.log('page updated, should save');
-    this.flux.saveState(Routes.SEARCH);
+  setProducts = () => {
+    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+    this.set({ items });
+    return items;
   }
 
-  moreProds = (e) => {
-    console.log('oldScroll', this.state.lastScroll, this.state.scroller.root.scrollTop);
-    // this.updatePage();
-    const productsWithMetadata = this.flux.selectors.productsWithMetadata(this.flux.store.getState());
-    // tslint:disable-next-line max-line-length
-    // const products = Adapters.Search.extractData(productsWithMetadata).map(ProductTransformer.transformer(this.config.structure));
-    console.log('IM CONSQUALOGGING', e, productsWithMetadata.map(this.productTransformer));
-    this.set({
-      items: productsWithMetadata.map(this.productTransformer),
-    });
-    console.log('this.state.scroller.root.scrollTop', this.state.scroller.root.scrollTop);
-  }
+  scroll = () => {
+    const { scroller, wrapper } = this.state;
+    const wrapperHeight = wrapper.getBoundingClientRect().height;
 
-  onUpdated = () => {
-    const firstItem = this.state.items[0];
-    if (firstItem) {
-      const page = this.flux.selectors.page(this.flux.store.getState());
-        console.log('first item', this.state.items[0].index);
-      const padding = this.calculatePadding(this.state.scroller, firstItem.index);
-      this.state.wrapper.style.paddingTop = `${padding}px`;
-      if (this.state.oneTime) {
-        this.state.scroller.root.scrollTop = padding;
-        this.state = {
-          ...this.state,
-          oneTime: false,
-          lastScroll: padding,
-          getPage: false,
-        };
-        this.state.scroller.root.addEventListener('scroll', this.scroll);
-      }
-      this.state = {
-        ...this.state,
-        padding,
-      };
-      console.log('padding and scroll', padding, scroll);
+    if (this.state.getPage) {
+      this.calculatePageChange();
     }
+    // console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
+    //   'wrapper height: ', wrapperHeight,
+    //   'scroller.root.scrollTop <= this.state.padding * 1.25', scroller.root.scrollTop <= this.state.padding * 1.25);
+    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
+      // tslint:disable-next-line max-line-length
+      if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
+        console.log('im fetchin more');
+        this.fetchMoreItems();
+      }
+      // tslint:disable-next-line max-line-length
+    } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
+      if (this.state.items[0].index !== 0) {
+        console.log('im fetchin less', this.state.lastScroll, scroller.root.scrollTop);
+        this.fetchMoreItems(false);
+      }
+    }
+
+    this.state = {
+      ...this.state,
+      lastScroll: scroller.root.scrollTop,
+      getPage: true,
+    };
+    // console.log('oldScroll, im here', this.state.lastScroll, scroller.root.scrollTop);
   }
 
   calculatePadding = (scroller: any, firstItemIndex: number) => {
@@ -128,7 +137,6 @@ class InfiniteScroll {
   }
 
   calculatePageChange = () => {
-    console.log('what do i have', this.state.firstEl, this.state.lastEl.index, this.state.items);
     const first = this.getItem(this.state.firstEl.index - 1);
     const last = this.getItem(this.state.lastEl.index + 1);
     const scroller = this.state.scroller.root;
@@ -136,14 +144,9 @@ class InfiniteScroll {
     const recordCount = Selectors.recordCount(state);
     const page = Selectors.page(state);
     const pageSize = Selectors.pageSize(state);
-    console.log('prev page', first, 'next page', last);
-    console.log('the current page is', Selectors.page(this.flux.store.getState()), page, pageSize);
-    // console.log('first el', this.getItem(this.state.firstEl.index).root.getBoundingClientRect());
-    // console.log('last el', this.getItem(this.state.lastEl.index).root.getBoundingClientRect());
-    // console.log('items', this.state.items);
-    // console.log('wrapper', this.state.scroller.root.getBoundingClientRect());
+
     if (first && this.topElBelowOffset(first.root, scroller)) {
-      console.log('switch page back', page, this.state.firstEl, this.getIndex(this.state.firstEl.index - pageSize));
+      console.log('switch page back');
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
@@ -161,12 +164,12 @@ class InfiniteScroll {
     }
   }
 
-  setPage = (count: number, page: number) => {
-    console.log('im setting hte page');
-    const state = this.flux.store.getState();
-    this.flux.store.dispatch(this.actions.receivePage(count, page));
+  getItem = (recordIndex: number) => {
+    console.log('getItem', this.getIndex(recordIndex), this.state.elItems, this.state.elItems[this.getIndex(recordIndex)]);
+    return this.state.elItems[this.getIndex(recordIndex)];
   }
 
+  // TODO: logic for changing page should happen when first item of next/prev page is at the top
   topElBelowOffset = (element, parent) => {
     const { top, height } = element.getBoundingClientRect();
     const { top: parentTop } = parent.getBoundingClientRect();
@@ -179,61 +182,22 @@ class InfiniteScroll {
     return bottom < (parentBottom + (height * .25));
   }
 
-  getItem = (recordIndex: number) => {
-    console.log('getItem', this.getIndex(recordIndex), this.state.elItems, this.state.elItems[this.getIndex(recordIndex)]);
-    return this.state.elItems[this.getIndex(recordIndex)];
-  }
-
   getIndex = (recordIndex: number) =>
     this.state.items.findIndex((item) => item.index === recordIndex)
 
-  scroll = (event) => {
-    const { elItems, scroller, wrapper } = this.state;
-    const scrollerHeight = scroller.root.getBoundingClientRect().height;
-    const scrollerBottom = scroller.root.getBoundingClientRect().bottom;
-    const wrapperBottom = wrapper.getBoundingClientRect().bottom;
-    const wrapperHeight = wrapper.getBoundingClientRect().height;
+  setPage = (count: number, page: number) => {
+    console.log('im setting hte page');
+    const state = this.flux.store.getState();
+    this.flux.store.dispatch(this.actions.receivePage(count, page));
+  }
 
-    if (this.state.getPage) {
-      this.calculatePageChange();
-    }
-
-    console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
-      'wrapper height: ', wrapperHeight,
-      'scroller.root.scrollTop <= this.state.padding * 1.25', scroller.root.scrollTop <= this.state.padding * 1.25);
-    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
-      // this.state = {
-      //   ...this.state,
-      //   lastEl,
-      //   lastScroll: scroller.root.scrollTop
-      // };
-
-      // tslint:disable-next-line max-line-length
-      if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
-        console.log('im fetchin more');
-        this.fetchMoreItems();
-        // scroller.root.removeEventListener('scroll', this.scroll);
-      }
-      // tslint:disable-next-line max-line-length
-    // TODO: need ot fix this logic
-  } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
-    // } else if (this.state.lastScroll > scroller.root.scrollTop) {
-      if (this.state.items[0].index !== 0) {
-        console.log('im fetchin less', this.state.lastScroll, scroller.root.scrollTop);
-        this.fetchMoreItems(false);
-        // scroller.root.removeEventListener('scroll', this.scroll);
-      }
-    }
-    this.state = {
-      ...this.state,
-      lastScroll: scroller.root.scrollTop,
-      getPage: true,
-    };
-    console.log('oldScroll, im here', this.state.lastScroll, scroller.root.scrollTop);
+  saveState = () => {
+    console.log('page updated, should save');
+    this.flux.saveState(Routes.SEARCH);
   }
 
   fetchMoreItems = (forward: boolean = true) => {
-    console.log(`im fetching ${ forward ? 'more' : 'less' }`, this.flux.selectors.pageSize(this.flux.store.getState()));
+    console.log(`im fetching ${forward ? 'more' : 'less'}`, this.flux.selectors.pageSize(this.flux.store.getState()));
     this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
   }
 }

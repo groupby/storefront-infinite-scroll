@@ -25,6 +25,8 @@ class InfiniteScroll {
     this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
     console.log(Events.MORE_PRODUCTS_ADDED);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.moreProds);
+    // TODO: update url service to reset state instead of save state
+    // replacestate instead of pushstate
     this.flux.on(Events.PAGE_UPDATED, this.saveState);
   }
 

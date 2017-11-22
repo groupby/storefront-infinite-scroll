@@ -1,4 +1,4 @@
-import { alias, configurable, tag, utils, Events, ProductTransformer, Selectors, Store, Tag } from '@storefront/core';
+import { alias, configurable, tag, Events, ProductTransformer, Selectors, Store, Tag } from '@storefront/core';
 import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List, ListItem } from '@storefront/structure';
 
@@ -32,13 +32,11 @@ class InfiniteScroll {
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
     const page = this.flux.selectors.page(this.flux.store.getState());
-    const lastScroll = this.calculatePadding(scroller, page - 1);
 
     this.state = {
       ...this.state,
       scroller,
       wrapper,
-      lastScroll,
     };
   }
 
@@ -71,15 +69,9 @@ class InfiniteScroll {
 
   updateProducts = (products: Store.Product[]) => {
     const page = this.flux.selectors.page(this.flux.store.getState());
-    if (page > 1) {
-      console.log('page greater than 1');
-      this.fetchMoreItems(false);
-    }
     const items = this.setProducts();
     const elItems = this.state.scroller.tags['gb-list-item'];
     const elMeasurements = elItems[0].root.getBoundingClientRect();
-    console.log('length', items.length);
-    // console.log(elItems[0].root.querySelector('img').complete, items, elMeasurements);
     this.state = {
       ...this.state,
       elItems,
@@ -102,9 +94,6 @@ class InfiniteScroll {
     if (this.state.getPage) {
       this.calculatePageChange();
     }
-    // console.log('lastScroll: ', this.state.lastScroll, 'scroller scrollTop: ', scroller.root.scrollTop,
-    //   'wrapper height: ', wrapperHeight,
-    //   'scroller.root.scrollTop <= this.state.padding * 1.25', scroller.root.scrollTop <= this.state.padding * 1.25);
     if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
       // tslint:disable-next-line max-line-length
       if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
@@ -124,7 +113,6 @@ class InfiniteScroll {
       lastScroll: scroller.root.scrollTop,
       getPage: true,
     };
-    // console.log('oldScroll, im here', this.state.lastScroll, scroller.root.scrollTop);
   }
 
   calculatePadding = (scroller: any, firstItemIndex: number) => {
@@ -165,18 +153,17 @@ class InfiniteScroll {
   }
 
   getItem = (recordIndex: number) => {
-    console.log('getItem', this.getIndex(recordIndex), this.state.elItems, this.state.elItems[this.getIndex(recordIndex)]);
     return this.state.elItems[this.getIndex(recordIndex)];
   }
 
   // TODO: logic for changing page should happen when first item of next/prev page is at the top
-  topElBelowOffset = (element, parent) => {
+  topElBelowOffset = (element: HTMLElement, parent: HTMLElement) => {
     const { top, height } = element.getBoundingClientRect();
     const { top: parentTop } = parent.getBoundingClientRect();
     return top > (parentTop - (height * .25));
   }
 
-  bottomElBelowOffset = (element, parent) => {
+  bottomElBelowOffset = (element: HTMLElement, parent: HTMLElement) => {
     const { bottom, height } = element.getBoundingClientRect();
     const { bottom: parentBottom } = parent.getBoundingClientRect();
     return bottom < (parentBottom + (height * .25));
@@ -186,18 +173,15 @@ class InfiniteScroll {
     this.state.items.findIndex((item) => item.index === recordIndex)
 
   setPage = (count: number, page: number) => {
-    console.log('im setting hte page');
     const state = this.flux.store.getState();
     this.flux.store.dispatch(this.actions.receivePage(count, page));
   }
 
   saveState = () => {
-    console.log('page updated, should save');
     this.flux.saveState(Routes.SEARCH);
   }
 
   fetchMoreItems = (forward: boolean = true) => {
-    console.log(`im fetching ${forward ? 'more' : 'less'}`, this.flux.selectors.pageSize(this.flux.store.getState()));
     this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
   }
 }

@@ -21,11 +21,10 @@ class InfiniteScroll {
     ({ ...ProductTransformer.transformer(this.config.structure)(data), meta, index })
 
   init() {
-    this.flux.once(Events.PRODUCTS_UPDATED, this.updateProducts);
+    console.log('init');
+    this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
-    // TODO: update url service to reset state instead of save state
-    // replacestate instead of pushstate
-    this.flux.on(Events.PAGE_UPDATED, this.saveState);
+    this.flux.on(Events.PAGE_UPDATED, this.replaceState);
   }
 
   onMount() {
@@ -78,6 +77,7 @@ class InfiniteScroll {
       firstEl: items[0],
       lastEl: items[items.length - 1],
       getPage: false,
+      oneTime: true,
     };
   }
 
@@ -174,11 +174,14 @@ class InfiniteScroll {
 
   setPage = (count: number, page: number) => {
     const state = this.flux.store.getState();
-    this.flux.store.dispatch(this.actions.receivePage(count, page));
+    this.actions.receivePage(count, page);
   }
 
-  saveState = () => {
-    this.flux.saveState(Routes.SEARCH);
+  replaceState = () => {
+    console.log('the current page is: ', Selectors.page(this.flux.store.getState()));
+    // if (Selectors.page(this.flux.store.getState()) !== 1) {
+      this.flux.replaceState(Routes.SEARCH);
+    // }
   }
 
   fetchMoreItems = (forward: boolean = true) => {

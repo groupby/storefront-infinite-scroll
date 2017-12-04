@@ -21,13 +21,15 @@ class InfiniteScroll {
     ({ ...ProductTransformer.transformer(this.config.structure)(data), meta, index })
 
   init() {
-    console.log('init');
+    // console.log('init');
     this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
     this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
     this.flux.on(Events.PAGE_UPDATED, this.replaceState);
+    this.flux.on(Events.SEARCH_CHANGED, () => this.state = { ...this.state, oneTime: true });
   }
 
   onMount() {
+    // console.log('im mount');
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
     const page = this.flux.selectors.page(this.flux.store.getState());
@@ -36,6 +38,7 @@ class InfiniteScroll {
       ...this.state,
       scroller,
       wrapper,
+      oneTime: true,
     };
   }
 
@@ -53,7 +56,7 @@ class InfiniteScroll {
       this.state.scroller.root.scrollTop = padding;
       this.state = {
         ...this.state,
-        oneTime: false,
+        // oneTime: false,
         lastScroll: padding,
         getPage: false,
       };
@@ -64,6 +67,7 @@ class InfiniteScroll {
       ...this.state,
       padding,
     };
+    // console.log('onUpdated', padding);
   }
 
   updateProducts = (products: Store.Product[]) => {
@@ -79,10 +83,23 @@ class InfiniteScroll {
       getPage: false,
       oneTime: true,
     };
+    // console.log('updateProducts', this.state.oneTime);
   }
 
-  setProducts = () => {
-    const items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+  setProducts = (prods?) => {
+    // TODO: put the prods at the end if they're forward, at the beginning if they're backward
+    let items;
+    if (prods) {
+      console.log(prods, this.state.items, prods[prods.length - 1].index, this.state.items[0].index);
+      if (prods[0].index > this.state.items[this.state.items.length - 1].index) {
+        items = this.state.items.concat(prods.map(this.productTransformer));
+      } else if (prods[prods.length - 1].index < this.state.items[0].index) {
+        items = this.state.items.unshift(prods.map(this.productTransformer));
+      }
+    } else {
+      items = this.flux.selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+    }
+    console.log(items);
     this.set({ items });
     return items;
   }
@@ -90,20 +107,23 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
+    const scrollerHeight = scroller.root.getBoundingClientRect().height;
+    const heightDiff = wrapperHeight - scrollerHeight;
 
     if (this.state.getPage) {
       this.calculatePageChange();
     }
-    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= wrapperHeight * .75) {
+
+    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= heightDiff * .75) {
       // tslint:disable-next-line max-line-length
       if (this.flux.selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
-        console.log('im fetchin more');
+        // console.log('im fetchin more');
         this.fetchMoreItems();
       }
       // tslint:disable-next-line max-line-length
     } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
       if (this.state.items[0].index !== 0) {
-        console.log('im fetchin less', this.state.lastScroll, scroller.root.scrollTop);
+        // console.log('im fetchin less', this.state.lastScroll, scroller.root.scrollTop);
         this.fetchMoreItems(false);
       }
     }
@@ -121,7 +141,8 @@ class InfiniteScroll {
     const itemWidth = 220;
     const row = Math.floor(width / itemWidth);
     const rows = (firstItemIndex - 1) / row;
-    return rows * itemHeight;
+    // console.log(rows * itemHeight);
+    return (rows * itemHeight) ;
   }
 
   calculatePageChange = () => {
@@ -134,7 +155,7 @@ class InfiniteScroll {
     const pageSize = Selectors.pageSize(state);
 
     if (first && this.topElBelowOffset(first.root, scroller)) {
-      console.log('switch page back');
+      // console.log('switch page back');
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
@@ -142,7 +163,7 @@ class InfiniteScroll {
       };
       this.setPage(recordCount, page - 1);
     } else if (last && this.bottomElBelowOffset(last.root, scroller)) {
-      console.log('switch page forward');
+      // console.log('switch page forward');
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
@@ -178,14 +199,24 @@ class InfiniteScroll {
   }
 
   replaceState = () => {
-    console.log('the current page is: ', Selectors.page(this.flux.store.getState()));
-    // if (Selectors.page(this.flux.store.getState()) !== 1) {
+    // console.log('the current page is: ', Selectors.page(this.flux.store.getState()));
+    // console.log('ONE TIME', this, this.state.oneTime);
+    if (!this.state.oneTime) {
       this.flux.replaceState(Routes.SEARCH);
-    // }
+    }
   }
 
   fetchMoreItems = (forward: boolean = true) => {
+    // console.log('im fetchin more');
+    this.state = {
+      ...this.state,
+      oneTime: false,
+    };
     this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
+    // this.actions.createComponentState(Tag.getMeta(this).name, `${this._riot_id}`, {
+    //   isFetchingForward: forward,
+    //   isFetchingBackward: !forward
+    // }, true);
   }
 }
 

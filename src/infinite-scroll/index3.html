@@ -1,7 +1,0 @@
-<ul ref="scroller" class="gb-list__wrapper gb-list__wrapper--grid">
-  <li class="gb-list__item" each="{ item, i in $infinite.items }">
-    <yield>
-      <gb-product ref="item" product="{ item }" class="{ tombstone: item.tombstone }" style="{ item.layout ? 'height:' + item.layout.height + '; width:' + item.layout.width : '' }"></gb-product>
-    </yield>
-  </li>
-</ul>

@@ -53,7 +53,7 @@ class InfiniteScroll {
     }
   }
 
-  updateProducts = (products: Store.Product[]) => {
+  updateProducts = () => {
     const items = this.setProducts();
 
     this.state = {
@@ -66,15 +66,15 @@ class InfiniteScroll {
     };
   }
 
-  setProducts = (prods?: Store.ProductWithMetadata[]) => {
-    // TODO: put the prods at the end if they're forward, at the beginning if they're backward
+  setProducts = (products?: Store.ProductWithMetadata[]) => {
+    // TODO: put the products at the end if they're forward, at the beginning if they're backward
     let items;
-    if (prods) {
-      if (prods[0].index > this.state.items[this.state.items.length - 1].index) {
-        items = [...this.state.items, ...prods.map(this.productTransformer)];
+    if (products) {
+      if (products[0].index > this.state.items[this.state.items.length - 1].index) {
+        items = [...this.state.items, ...products.map(this.productTransformer)];
         this.set({ items });
-      } else if (prods[prods.length - 1].index < this.state.items[0].index) {
-        items = [...prods.map(this.productTransformer), ...this.state.items];
+      } else if (products[products.length - 1].index < this.state.items[0].index) {
+        items = [...products.map(this.productTransformer), ...this.state.items];
         this.maintainScrollTop(items, this.state.scroller.root.scrollTop);
       }
     } else {
@@ -97,13 +97,14 @@ class InfiniteScroll {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     const scrollerHeight = scroller.root.getBoundingClientRect().height;
-    const heightDiff = wrapperHeight - scrollerHeight;
 
     if (this.state.getPage) {
       this.calculatePageChange();
     }
 
-    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= heightDiff * .75) {
+    // TODO: decide on breakpoints for fetching & move into constants
+    // tslint:disable-next-line max-line-length
+    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
       // tslint:disable-next-line max-line-length
       if (Selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
         this.fetchMoreItems();
@@ -137,7 +138,6 @@ class InfiniteScroll {
     const recordCount = Selectors.recordCount(state);
     const page = Selectors.page(state);
     const pageSize = Selectors.pageSize(state);
-
 
     if (first && this.topElBelowOffset(first, scroller)) {
       this.state = {
@@ -182,8 +182,6 @@ class InfiniteScroll {
 
   replaceState = () => {
     if (!this.state.oneTime) {
-      // this.state.scroller.root.style = 'background-color: blue';
-      // this.state.scroller.root.removeEventListener('scroll', this.scroll, { passive: true });
       this.flux.replaceState(Routes.SEARCH);
     }
   }
@@ -194,10 +192,6 @@ class InfiniteScroll {
       oneTime: false,
     };
     this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
-    // this.actions.createComponentState(Tag.getMeta(this).name, `${this._riot_id}`, {
-    //   isFetchingForward: forward,
-    //   isFetchingBackward: !forward
-    // }, true);
   }
 }
 

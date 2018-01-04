@@ -1,6 +1,6 @@
 import { alias, configurable, tag, Events, ProductTransformer, Selectors, Store, Tag } from '@storefront/core';
 import { Adapters, Routes } from '@storefront/flux-capacitor';
-import { List, ListItem } from '@storefront/structure';
+import { List } from '@storefront/structure';
 
 @configurable
 @alias('infinite')
@@ -58,7 +58,7 @@ class InfiniteScroll {
 
     this.state = {
       ...this.state,
-      elItems: this.state.scroller.tags['gb-list-item'],
+      elItems: this.state.wrapper.children,
       firstEl: items[0],
       lastEl: items[items.length - 1],
       getPage: false,
@@ -124,15 +124,12 @@ class InfiniteScroll {
 
   calculatePadding = (scroller: any, firstItemIndex: number) => {
     const width = scroller.root.getBoundingClientRect().width;
-    const itemHeight = 340;
-    const itemWidth = 220;
-    const row = Math.floor(width / itemWidth);
+    const row = Math.floor(width / this.props.itemWidth);
     const rows = (firstItemIndex - 1) / row;
-    return (rows * itemHeight);
+    return (rows * this.props.itemHeight);
   }
 
   calculatePageChange = () => {
-    console.log('calculatePageChange', this.state.elItems, this.state.items, this.state.firstEl, this.state.lastEl);
     const first = this.getItem(this.state.firstEl.index - 1);
     const last = this.getItem(this.state.lastEl.index + 1);
     const scroller = this.state.scroller.root;
@@ -141,38 +138,31 @@ class InfiniteScroll {
     const page = Selectors.page(state);
     const pageSize = Selectors.pageSize(state);
 
-    console.log('first', first, (first || {}).root);
-    console.log('last', last, (last || {}).root);
 
-    if (first && this.topElBelowOffset(first.root, scroller)) {
+    if (first && this.topElBelowOffset(first, scroller)) {
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
         lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
       };
-      console.log('changing page back');
       this.setPage(recordCount, page - 1);
-    } else if (last && this.bottomElAboveOffset(last.root, scroller)) {
+    } else if (last && this.bottomElAboveOffset(last, scroller)) {
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
         lastEl: this.state.items[this.getIndex(this.state.lastEl.index + pageSize)],
       };
-      console.log('changing page forward');
       this.setPage(recordCount, page + 1);
     }
   }
 
-  getItem = (recordIndex: number) => {
-    console.log('id', recordIndex, this.getIndex(recordIndex), this.state.elItems.length);
-    return this.state.elItems[this.getIndex(recordIndex)];
-  }
+  getItem = (recordIndex: number) =>
+    this.state.elItems[this.getIndex(recordIndex)]
 
   // TODO: logic for changing page should happen when first item of next/prev page is at the top
   topElBelowOffset = (element: HTMLElement, parent: HTMLElement) => {
     const { top, height } = element.getBoundingClientRect();
     const { top: parentTop } = parent.getBoundingClientRect();
-    console.log(element, top, parentTop);
     return top > (parentTop - (height * .25));
   }
 
@@ -211,14 +201,20 @@ class InfiniteScroll {
   }
 }
 
-interface InfiniteScroll extends Tag<any, InfiniteScroll.State> { }
+interface InfiniteScroll extends Tag<InfiniteScroll.Props, InfiniteScroll.State> { }
 namespace InfiniteScroll {
+  export interface Props extends Tag.Props {
+    itemWidth: number;
+    itemHeight: number;
+  }
+
   export interface State {
     items: any[];
     oneTime: boolean;
     scroller?: List;
     wrapper?: HTMLUListElement;
-    elItems?: ListItem[];
+    // set type to proper type rather than any
+    elItems?: any;
     layout?: {
       height: number;
       width: number;

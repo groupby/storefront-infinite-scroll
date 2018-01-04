@@ -141,6 +141,8 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   describe('updateProducts()', () => {
     it('should update state', () => {
 
+      // infiniteScroll.updateProducts();
+
     });
   })
 });

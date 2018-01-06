@@ -1,4 +1,5 @@
 import { Events, ProductTransformer, Selectors } from '@storefront/core';
+import { Routes } from '@storefront/flux-capacitor';
 import InfiniteScroll from '../../src/infinite-scroll';
 import suite from './_suite';
 
@@ -85,8 +86,8 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     it('should update state with scroller, wrapper, and oneTime', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
-      const set = infiniteScroll.set = spy();
       const state = infiniteScroll.state = <any>{ a: 'b' };
+      set = infiniteScroll.set = spy();
       infiniteScroll.tags = {
         'gb-list': scroller
       };
@@ -99,8 +100,8 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
   describe('onUpdated()', () => {
     it('should not change state if there are no items', () => {
-      const set = infiniteScroll.set = spy();
       const state = infiniteScroll.state = <any>{ a: 'b', items: [] };
+      set = infiniteScroll.set = spy();
 
       infiniteScroll.onUpdated();
 
@@ -249,24 +250,306 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       expect(calculatePageChange).to.be.calledOnce;
     });
 
-    it.only('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
+    it('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
-      const calculatePageChange = infiniteScroll.calculatePageChange = spy();
       const recordCount = stub(Selectors, 'recordCount').returns(100);
       const fetchMoreItems = infiniteScroll.fetchMoreItems = spy();
       const getState = spy();
-      infiniteScroll.flux = <any>{ store: { getState } };
-      infiniteScroll.state = <any>{
+      const scrollTop = 100;
+      const state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
-        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop: 100 } },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop } },
         lastScroll: 10,
         items: [{ index: 50 }],
       };
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = state;
 
       infiniteScroll.scroll();
 
       expect(fetchMoreItems).to.be.calledOnce;
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
+
+    it('should call fetchMoreItems with false when hit breakpoint to fetch backward', () => {
+      const getWrapperHeight = () => ({ height: 0 });
+      const getScrollerHeight = () => ({ height: 0 });
+      const fetchMoreItems = infiniteScroll.fetchMoreItems = spy();
+      const scrollTop = 10;
+      const state = <any>{
+        wrapper: { getBoundingClientRect: getWrapperHeight },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop } },
+        lastScroll: 100,
+        items: [{ index: 50 }],
+        padding: 100,
+      };
+      infiniteScroll.state = state;
+
+      infiniteScroll.scroll();
+
+      expect(fetchMoreItems).to.be.calledWithExactly(false);
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
+  });
+
+  describe('calculatePadding()', () => {
+    it('should calculate padding', () => {
+      const scroller = { root: { getBoundingClientRect: () => ({ width: 100 }) } };
+      const firstItemIndex = 2;
+      infiniteScroll.props = <any>{
+        itemWidth: 50,
+        itemHeight: 30,
+      };
+
+      const padding = infiniteScroll.calculatePadding(scroller, firstItemIndex);
+
+      expect(padding).to.eq(15);
+    });
+  });
+
+  describe('calculatePageChange()', () => {
+    it('should call setPage when first exists and it is below the offset', () => {
+      const getItem = infiniteScroll.getItem = spy(() => 30);
+      const root = { a: 'b' };
+      const getState = spy();
+      const recordCount = 50;
+      const page = 5;
+      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => true);
+      const getIndex = infiniteScroll.getIndex = spy((val) => {
+        return val === 21 ? 0 : 4;
+      });
+      const setPage = infiniteScroll.setPage = spy();
+      const state = <any>{
+        scroller: { root },
+        firstEl: { index: 31 },
+        lastEl: { index: 60 },
+        items: [1, 2, 3, 4, 5],
+      };
+      stub(Selectors, 'page').returns(5);
+      stub(Selectors, 'recordCount').returns(recordCount);
+      infiniteScroll.state = state;
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.calculatePageChange();
+
+      expect(topElBelowOffset).to.be.calledWithExactly(30, root);
+      expect(infiniteScroll.state).to.eql({
+        ...state,
+        firstEl: 1,
+        lastEl: 5,
+      });
+      expect(setPage).to.be.calledWithExactly(recordCount, page - 1);
+    });
+
+    it('should call setPage when last exists and it is above the offset', () => {
+      const getItem = infiniteScroll.getItem = spy(() => 30);
+      const root = { a: 'b' };
+      const getState = spy();
+      const recordCount = 50;
+      const page = 5;
+      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => false);
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset = spy(() => true);
+      const getIndex = infiniteScroll.getIndex = spy((val) => {
+        return val === 41 ? 4 : 0;
+      });
+      const setPage = infiniteScroll.setPage = spy();
+      const state = <any>{
+        scroller: { root },
+        firstEl: { index: 31 },
+        lastEl: { index: 60 },
+        items: [1, 2, 3, 4, 5],
+      };
+      stub(Selectors, 'page').returns(5);
+      stub(Selectors, 'recordCount').returns(recordCount);
+      infiniteScroll.state = state;
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.calculatePageChange();
+
+      expect(topElBelowOffset).to.be.calledWithExactly(30, root);
+      expect(infiniteScroll.state).to.eql({
+        ...state,
+        firstEl: 5,
+        lastEl: 1,
+      });
+      expect(setPage).to.be.calledWithExactly(recordCount, page + 1);
+    });
+
+    it('should not call setPage if no first or last exists', () => {
+      const getItem = infiniteScroll.getItem = spy();
+      const root = { a: 'b' };
+      const getState = spy();
+      const recordCount = 50;
+      const page = 5;
+      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const setPage = infiniteScroll.setPage = spy();
+      const state = <any>{
+        scroller: { root },
+        firstEl: { index: 31 },
+        lastEl: { index: 60 },
+      };
+      stub(Selectors, 'page').returns(5);
+      stub(Selectors, 'recordCount').returns(recordCount);
+      infiniteScroll.state = state;
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.calculatePageChange();
+
+      expect(setPage).to.not.be.called;
+    });
+
+    it('should not call setPage if topElBelowOffset and bottomElAboveOffset are both false', () => {
+      const getItem = infiniteScroll.getItem = spy(() => 30);
+      const root = { a: 'b' };
+      const getState = spy();
+      const recordCount = 50;
+      const page = 5;
+      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => false);
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset = spy(() => false);
+      const setPage = infiniteScroll.setPage = spy();
+      const state = <any>{
+        scroller: { root },
+        firstEl: { index: 31 },
+        lastEl: { index: 60 },
+      };
+      stub(Selectors, 'page').returns(5);
+      stub(Selectors, 'recordCount').returns(recordCount);
+      infiniteScroll.state = state;
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.calculatePageChange();
+
+      expect(setPage).to.not.be.called;
+    });
+  });
+
+  describe('getItem()', () => {
+    it('should return the element based on the recordIndex', () => {
+      const recordIndex = 3;
+      const getIndex = infiniteScroll.getIndex = spy(() => 4);
+      infiniteScroll.state = <any>{ elItems: [2, 3, 4, 5, 6, 7] };
+
+      const item = infiniteScroll.getItem(recordIndex);
+
+      expect(getIndex).to.be.calledWithExactly(recordIndex);
+      expect(item).to.eq(6);
+    });
+  });
+
+  describe('topElBelowOffset()', () => {
+    it('should return true if element\'s top is greater than offset', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: 1000, height: 20 }) };
+      const parent = <any>{ getBoundingClientRect: () => ({ top: 200 }) };
+
+      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, parent);
+
+      expect(topElBelowOffset).to.be.true;
+    });
+
+    it('should return false if element\'s top is less than offset', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: 100, height: 20 }) };
+      const parent = <any>{ getBoundingClientRect: () => ({ top: 200 }) };
+
+      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, parent);
+
+      expect(topElBelowOffset).to.be.false;
+    });
+  });
+
+  describe('bottomElAboveOffset()', () => {
+    it('should return true if element\'s bottom is less than offset', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ bottom: 100, height: 20 }) };
+      const parent = <any>{ getBoundingClientRect: () => ({ bottom: 200 }) };
+
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, parent);
+
+      expect(bottomElAboveOffset).to.be.true;
+    });
+
+    it('should return false if element\'s bottom is greater than offset', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ bottom: 1000, height: 20 }) };
+      const parent = <any>{ getBoundingClientRect: () => ({ bottom: 200 }) };
+
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, parent);
+
+      expect(bottomElAboveOffset).to.be.false;
+    });
+  });
+
+  describe('getIndex()', () => {
+    it('should return the index for the item that matches index', () => {
+      infiniteScroll.state = <any>{ items: [{ index: 4 }, { index: 1 }] };
+
+      const index = infiniteScroll.getIndex(4);
+
+      expect(index).to.eq(0);
+    });
+  });
+
+  describe('setPage()', () => {
+    it('should call receivePage() with page info', () => {
+      const count = 30;
+      const page = 3;
+      const receivePage = spy();
+      infiniteScroll.actions = <any>{ receivePage };
+
+      infiniteScroll.setPage(count, page);
+
+      expect(receivePage).to.be.calledWithExactly(count, page);
+    });
+  });
+
+  describe('replaceState()', () => {
+    it('should call replaceState with search route if oneTime is false', () => {
+      const replaceState = spy();
+      infiniteScroll.state = <any>{ oneTime: false };
+      infiniteScroll.flux = <any>{ replaceState };
+
+      infiniteScroll.replaceState();
+
+      expect(replaceState).to.be.calledWithExactly(Routes.SEARCH);
+    });
+
+    it('should not call replaceState if oneTime is true', () => {
+      const replaceState = spy();
+      infiniteScroll.state = <any>{ oneTime: true };
+      infiniteScroll.flux = <any>{ replaceState };
+
+      infiniteScroll.replaceState();
+
+      expect(replaceState).to.not.be.called;
+    });
+  });
+
+  describe('fetchMoreItems()', () => {
+    it('should set state and fetch forward', () => {
+      const page = 2;
+      const fetchMoreProducts = spy();
+      infiniteScroll.actions = <any>{ fetchMoreProducts };
+      infiniteScroll.flux = <any>{ store: { getState: () => null } };
+      infiniteScroll.state = <any>{ oneTime: true };
+      stub(Selectors, 'pageSize').returns(page);
+
+      infiniteScroll.fetchMoreItems();
+
+      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, oneTime: false });
+      expect(fetchMoreProducts).to.be.calledWithExactly(page, true);
+    });
+
+    it('should set state and fetch backward', () => {
+      const page = 3;
+      const fetchMoreProducts = spy();
+      infiniteScroll.actions = <any>{ fetchMoreProducts };
+      infiniteScroll.flux = <any>{ store: { getState: () => null } };
+      stub(Selectors, 'pageSize').returns(page);
+
+      infiniteScroll.fetchMoreItems(false);
+
+      expect(fetchMoreProducts).to.be.calledWithExactly(page, false);
     });
   });
 });

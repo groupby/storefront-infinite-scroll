@@ -175,10 +175,8 @@ class InfiniteScroll {
   getIndex = (recordIndex: number) =>
     this.state.items.findIndex((item) => item.index === recordIndex)
 
-  setPage = (count: number, page: number) => {
-    const state = this.flux.store.getState();
-    this.actions.receivePage(count, page);
-  }
+  setPage = (count: number, page: number) =>
+    this.actions.receivePage(count, page)
 
   replaceState = () => {
     if (!this.state.oneTime) {

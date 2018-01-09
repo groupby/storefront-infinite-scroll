@@ -1,6 +1,6 @@
 gb-infinite-scroll > gb-list {
   display: block;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   height: inherit;
 }
 
@@ -9,6 +9,8 @@ gb-infinite-scroll > gb-list li {
   min-width: 220px;
 }
 
-.infinite-scroll {
-  height: 500px;
+gb-infinite-scroll {
+  display: block;
+  height: 800px;
+  overflow-y: scroll;
 }

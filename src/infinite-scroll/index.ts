@@ -29,9 +29,10 @@ class InfiniteScroll {
   }
 
   onMount() {
-    const scroller = this.tags['gb-list'];
-    const wrapper = scroller.refs.wrapper;
+    const scroller1 = this.tags['gb-list'];
+    const wrapper = scroller1.refs.wrapper;
     const loadMore = this.props.loadMore || this.state.loadMore;
+    const scroller = this.root;
 
     this.state = { ...this.state, scroller, wrapper, oneTime: true, loadMore };
   }
@@ -42,13 +43,13 @@ class InfiniteScroll {
     if (firstItem) {
       const padding = this.calculatePadding(this.state.scroller, firstItem.index);
       let state: Pick<InfiniteScroll.State, 'padding' | 'lastScroll' | 'getPage'> = { padding };
-      //
-      // this.state.wrapper.style.paddingTop = `${padding}px`;
+
+      this.state.wrapper.style.paddingTop = `${padding}px`;
 
       if (this.state.oneTime) {
-        // this.state.scroller.root.scrollTop = padding;
+        this.state.scroller.scrollTop = padding;
         state = { ...state, lastScroll: padding, getPage: false };
-        this.state.scroller.root.addEventListener('scroll', this.scroll);
+        this.state.scroller.addEventListener('scroll', this.scroll);
       }
 
       this.state = { ...this.state, ...state };
@@ -77,7 +78,7 @@ class InfiniteScroll {
         this.set({ items });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         items = [...products.map(this.productTransformer), ...this.state.items];
-        this.maintainScrollTop(items, this.state.scroller.root.scrollTop);
+        this.maintainScrollTop(items, this.state.scroller.scrollTop);
       }
     } else {
       items = Selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
@@ -88,7 +89,7 @@ class InfiniteScroll {
 
   maintainScrollTop = (items: Store.ProductWithMetadata[], scrollTop: number) => {
     this.set({ items });
-    this.state.scroller.root.scrollTop = scrollTop;
+    this.state.scroller.scrollTop = scrollTop;
   }
 
   setFlag = () => {
@@ -98,7 +99,7 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    const scrollerHeight = scroller.root.getBoundingClientRect().height;
+    const scrollerHeight = scroller.getBoundingClientRect().height;
 
     if (this.state.getPage) {
       this.calculatePageChange();
@@ -107,13 +108,13 @@ class InfiniteScroll {
     // TODO: decide on breakpoints for fetching & move into constants
     // tslint:disable-next-line max-line-length
     if (!this.state.loadMore) {
-      if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
+      if (this.state.lastScroll < scroller.scrollTop && scroller.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
         // tslint:disable-next-line max-line-length
         if (Selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
           this.fetchMoreItems();
         }
         // tslint:disable-next-line max-line-length
-      } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
+      } else if (this.state.lastScroll > scroller.scrollTop && scroller.scrollTop <= this.state.padding * 1.33) {
         if (this.state.items[0].index !== 0) {
           this.fetchMoreItems(false);
         }
@@ -122,13 +123,13 @@ class InfiniteScroll {
 
     this.state = {
       ...this.state,
-      lastScroll: scroller.root.scrollTop,
+      lastScroll: scroller.scrollTop,
       getPage: true,
     };
   }
 
   calculatePadding = (scroller: any, firstItemIndex: number) => {
-    const width = scroller.root.getBoundingClientRect().width;
+    const width = scroller.getBoundingClientRect().width;
     const row = Math.floor(width / this.props.itemWidth);
     const rows = (firstItemIndex - 1) / row;
     return (rows * this.props.itemHeight);
@@ -137,7 +138,7 @@ class InfiniteScroll {
   calculatePageChange = () => {
     const first = this.getItem(this.state.firstEl.index - 1);
     const last = this.getItem(this.state.lastEl.index + 1);
-    const scroller = this.state.scroller.root;
+    const scroller = this.state.scroller;
     const state = this.flux.store.getState();
     const recordCount = Selectors.recordCount(state);
     const page = Selectors.page(state);

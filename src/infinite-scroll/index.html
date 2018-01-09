@@ -1,8 +1,12 @@
-<gb-button class="load-prev" if="{ $infinite.loadMore }" on-click="{ this.clickFewer }">Load Previous</gb-button>
-<gb-list class="infinite-scroll" items="{ $infinite.items }" layout="grid">
-  <yield>
-    <!-- <gb-product ref="item" product="{ $item }" class="{ tombstone: $item.tombstone }" style="{ $item.layout ? 'height:' + $item.layout.height + 'px; width:' + $item.layout.width + 'px; display: block;': '' }"></gb-product> -->
-    <gb-product ref="item" product="{ $item }" class="{ tombstone: $item.tombstone }" style="{ $item.layout ? 'height:' + '358' + 'px; width:' + 216.25 + 'px; display: block;': '' }"></gb-product>
-  </yield>
-</gb-list>
-<gb-button class="load-more" if="{ $infinite.loadMore }" on-click="{ this.click }">Load More</gb-button>
+<div ref="scroller">
+  <gb-button class="load-prev" if="{ $infinite.loadMore }" on-click="{ this.clickFewer }">Load Previous</gb-button>
+  <gb-list class="infinite-scroll" items="{ $infinite.items }" layout="grid">
+    <yield>
+      <!-- <gb-product ref="item" product="{ $item }" class="{ tombstone: $item.tombstone }" style="{ $item.layout ? 'height:' + $item.layout.height + 'px; width:' + $item.layout.width + 'px; display: block;': '' }"></gb-product> -->
+      <gb-product ref="item" product="{ $item }" class="{ tombstone: $item.tombstone }" style="{ $item.layout ? 'height:' + '358' + 'px; width:' + 216.25 + 'px; display: block;': '' }"></gb-product>
+    </yield>
+  </gb-list>
+  <!-- <span if="{ $infinite.isFetchingForward }">Im fetching stuff</span> -->
+  <span>Im fetching stuff</span>
+  <gb-button class="load-more" if="{ $infinite.loadMore }" on-click="{ this.click }">Load More</gb-button>
+</div>

@@ -15,6 +15,7 @@ class InfiniteScroll {
     items: [],
     lastScroll: 0,
     oneTime: true,
+    loadMore: false
   };
 
   productTransformer = ({ data, meta, index }: Store.ProductWithMetadata) =>
@@ -30,8 +31,9 @@ class InfiniteScroll {
   onMount() {
     const scroller = this.tags['gb-list'];
     const wrapper = scroller.refs.wrapper;
+    const loadMore = this.props.loadMore || this.state.loadMore;
 
-    this.state = { ...this.state, scroller, wrapper, oneTime: true };
+    this.state = { ...this.state, scroller, wrapper, oneTime: true, loadMore };
   }
 
   onUpdated = () => {
@@ -40,11 +42,11 @@ class InfiniteScroll {
     if (firstItem) {
       const padding = this.calculatePadding(this.state.scroller, firstItem.index);
       let state: Pick<InfiniteScroll.State, 'padding' | 'lastScroll' | 'getPage'> = { padding };
-
-      this.state.wrapper.style.paddingTop = `${padding}px`;
+      //
+      // this.state.wrapper.style.paddingTop = `${padding}px`;
 
       if (this.state.oneTime) {
-        this.state.scroller.root.scrollTop = padding;
+        // this.state.scroller.root.scrollTop = padding;
         state = { ...state, lastScroll: padding, getPage: false };
         this.state.scroller.root.addEventListener('scroll', this.scroll);
       }
@@ -104,15 +106,17 @@ class InfiniteScroll {
 
     // TODO: decide on breakpoints for fetching & move into constants
     // tslint:disable-next-line max-line-length
-    if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
-      // tslint:disable-next-line max-line-length
-      if (Selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
-        this.fetchMoreItems();
-      }
-      // tslint:disable-next-line max-line-length
-    } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
-      if (this.state.items[0].index !== 0) {
-        this.fetchMoreItems(false);
+    if (!this.state.loadMore) {
+      if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
+        // tslint:disable-next-line max-line-length
+        if (Selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
+          this.fetchMoreItems();
+        }
+        // tslint:disable-next-line max-line-length
+      } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
+        if (this.state.items[0].index !== 0) {
+          this.fetchMoreItems(false);
+        }
       }
     }
 
@@ -138,6 +142,8 @@ class InfiniteScroll {
     const recordCount = Selectors.recordCount(state);
     const page = Selectors.page(state);
     const pageSize = Selectors.pageSize(state);
+
+    console.log('Im tryina chnage page');
 
     if (first && this.topElBelowOffset(first, scroller)) {
       this.state = {
@@ -191,11 +197,22 @@ class InfiniteScroll {
     };
     this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
   }
+
+  click = () => {
+    console.log('hey');
+    this.fetchMoreItems();
+  }
+
+  clickFewer = () => {
+    console.log('oy');
+    this.fetchMoreItems(false);
+  }
 }
 
 interface InfiniteScroll extends Tag<InfiniteScroll.Props, InfiniteScroll.State> { }
 namespace InfiniteScroll {
   export interface Props extends Tag.Props {
+    loadMore: boolean;
     itemWidth: number;
     itemHeight: number;
   }
@@ -203,6 +220,7 @@ namespace InfiniteScroll {
   export interface State {
     items: any[];
     oneTime: boolean;
+    loadMore: boolean;
     scroller?: List;
     wrapper?: HTMLUListElement;
     // set type to proper type rather than any

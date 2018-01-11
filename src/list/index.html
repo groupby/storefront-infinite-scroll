@@ -1,0 +1,14 @@
+<ul ref="wrapper" class="gb-list__wrapper { isGrid() ? 'gb-list__wrapper--grid' : 'gb-list__wrapper--column' }">
+  <li data-is="gb-list-item" if="{ $infinite.loadMore }">
+    <gb-button class="load-prev" on-click="{ this.clickFewer }">Load Previous</gb-button>
+  </li>
+  <li data-is="gb-list-item" class="gb-list__item" each="{ item, i in $list.items }">
+    <yield/>
+  </li>
+  <li data-is="gb-list-item" if="{ $infinite.isFetchingForward }">
+    <span>Im fetching stuff</span>
+  </li>
+  <li data-is="gb-list-item" if="{ $infinite.loadMore }">
+    <gb-button class="load-more" on-click="{ this.click }">Load More</gb-button>
+  </li>
+</ul>

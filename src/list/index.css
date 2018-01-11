@@ -1,0 +1,12 @@
+/* Flex Grid */
+
+gb-infinite-list.gb-ui .gb-list__wrapper--grid,
+[data-is="gb-list"].gb-ui .gb-list__wrapper--grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.gb-list__wrapper--grid .gb-list__item.gb-ui {
+  flex: 1;
+}

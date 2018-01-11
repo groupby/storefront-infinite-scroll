@@ -8,7 +8,7 @@ import { List } from '@storefront/structure';
 class InfiniteScroll {
 
   tags: {
-    'gb-list': List;
+    'gb-infinite-list': List;
   };
 
   state: InfiniteScroll.State = {
@@ -28,7 +28,8 @@ class InfiniteScroll {
   }
 
   onMount() {
-    const scroller = this.tags['gb-list'];
+    console.log('this', this);
+    const scroller = this.tags['gb-infinite-list'];
     const wrapper = scroller.refs.wrapper;
 
     this.state = { ...this.state, scroller, wrapper, oneTime: true };

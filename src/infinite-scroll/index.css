@@ -1,14 +1,10 @@
-gb-infinite-scroll > gb-list {
+gb-infinite-scroll > gb-infinite-list {
   display: block;
   overflow-y: scroll;
   height: 400px;
 }
 
-gb-infinite-scroll > gb-list li {
+gb-infinite-scroll > gb-infinite-list li {
   height: 340px;
   min-width: 220px;
 }
-
-/*gb-infinite-scroll .gb-list__wrapper {
-  align-content: flex-end;
-}*/

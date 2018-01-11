@@ -3,8 +3,3 @@ gb-infinite-scroll > gb-infinite-list {
   overflow-y: scroll;
   height: 400px;
 }
-
-gb-infinite-scroll > gb-infinite-list li {
-  height: 340px;
-  min-width: 220px;
-}

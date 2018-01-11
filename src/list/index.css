@@ -10,3 +10,11 @@ gb-infinite-list.gb-ui .gb-list__wrapper--grid,
 .gb-list__wrapper--grid .gb-list__item.gb-ui {
   flex: 1;
 }
+
+gb-infinite-list.gb-ui .load {
+  flex-basis: 100%;
+}
+
+gb-infinite-list .gb-list__item {
+  /* min-width: 241.672px; */
+}

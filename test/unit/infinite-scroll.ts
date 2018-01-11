@@ -114,7 +114,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const scroller = { root: { scrollTop: 0 } };
       const state = infiniteScroll.state = <any>{ a: 'b', items: [1, 2, 3, 4], wrapper, scroller, oneTime };
       const padding = 200;
-      const calculatePadding = infiniteScroll.calculatePadding = spy(() => padding);
+      const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
 
       infiniteScroll.onUpdated();
 
@@ -130,7 +130,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const scroller = { root: { scrollTop: 0, addEventListener } };
       const state = infiniteScroll.state = <any>{ a: 'b', items: [1, 2, 3, 4], wrapper, scroller, oneTime };
       const padding = 200;
-      const calculatePadding = infiniteScroll.calculatePadding = spy(() => padding);
+      const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
 
       infiniteScroll.onUpdated();
 
@@ -302,7 +302,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         itemHeight: 30,
       };
 
-      const padding = infiniteScroll.calculatePadding(scroller, firstItemIndex);
+      const padding = infiniteScroll.calculateOffset(scroller, firstItemIndex);
 
       expect(padding).to.eq(15);
     });

@@ -38,10 +38,6 @@ class InfiniteScroll {
     this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
   }
 
-  setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) => {
-    this.set({ isFetchingForward, isFetchingBackward });
-  }
-
   onMount() {
     const scroller = this.tags['gb-infinite-list'];
     const wrapper = scroller.refs.wrapper;
@@ -147,6 +143,10 @@ class InfiniteScroll {
 
   setFlag = () => {
     this.set({ oneTime: true });
+  }
+
+  setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) => {
+    this.set({ isFetchingForward, isFetchingBackward });
   }
 
   scroll = () => {

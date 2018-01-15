@@ -20,7 +20,33 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   describe('constructor()', () => {
     describe('state', () => {
       it('should have initial value', () => {
-        expect(infiniteScroll.state).to.eql({ items: [], lastScroll: 0, oneTime: true });
+        expect(infiniteScroll.state.items).to.eql([]);
+        expect(infiniteScroll.state.lastScroll).to.eq(0);
+        expect(infiniteScroll.state.oneTime).to.be.true;
+        expect(infiniteScroll.state.loadMore).to.be.false;
+        expect(infiniteScroll.state.isFetchingForward).to.be.false;
+        expect(infiniteScroll.state.isFetchingBackward).to.be.false;
+        expect(infiniteScroll.state.setScroll).to.be.false;
+      });
+
+      describe('clickMore', () => {
+        it('should call fetchMoreItems', () => {
+          const fetchMoreItems = infiniteScroll.fetchMoreItems = spy();
+
+          infiniteScroll.state.clickMore();
+
+          expect(fetchMoreItems).to.be.calledOnce.calledWithExactly();
+        });
+      });
+
+      describe('clickPrev', () => {
+        it('should call fetchMoreItems with false', () => {
+          const fetchMoreItems = infiniteScroll.fetchMoreItems = spy();
+
+          infiniteScroll.state.clickPrev();
+
+          expect(fetchMoreItems).to.be.calledOnce.calledWithExactly(false);
+        });
       });
     });
 
@@ -86,15 +112,29 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     it('should update state with scroller, wrapper, and oneTime', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
-      const state = infiniteScroll.state = <any>{ a: 'b' };
-      set = infiniteScroll.set = spy();
+      const state = infiniteScroll.state = <any>{ a: 'b', loadMore: false };
+      infiniteScroll.props = <any>{};
       infiniteScroll.tags = {
         'gb-infinite-list': scroller
       };
 
       infiniteScroll.onMount();
 
-      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true });
+      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: false });
+    });
+
+    it('should set loadMore from props', () => {
+      const wrapper = { a: 'b' };
+      const scroller = { refs: { wrapper } };
+      const state = infiniteScroll.state = <any>{ a: 'b' };
+      infiniteScroll.tags = {
+        'gb-infinite-list': scroller
+      };
+      infiniteScroll.props = <any>{ loadMore: true };
+
+      infiniteScroll.onMount();
+
+      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: true });
     });
   });
 

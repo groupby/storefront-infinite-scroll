@@ -89,7 +89,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const state = infiniteScroll.state = <any>{ a: 'b' };
       set = infiniteScroll.set = spy();
       infiniteScroll.tags = {
-        'gb-list': scroller
+        'gb-infinite-list': scroller
       };
 
       infiniteScroll.onMount();

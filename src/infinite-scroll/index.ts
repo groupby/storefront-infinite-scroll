@@ -20,11 +20,9 @@ class InfiniteScroll {
     isFetchingBackward: false,
     setScroll: false,
     clickMore: () => {
-      console.log('im loading more');
       this.fetchMoreItems();
     },
     clickPrev: () => {
-      console.log('im loading prev');
       this.fetchMoreItems(false);
     }
   };
@@ -45,7 +43,6 @@ class InfiniteScroll {
   }
 
   onMount() {
-    console.log('this', this);
     const scroller = this.tags['gb-infinite-list'];
     const wrapper = scroller.refs.wrapper;
     const loadMore = this.props.loadMore || this.state.loadMore;
@@ -61,18 +58,19 @@ class InfiniteScroll {
       if (!this.state.loadMore) {
         const padding = this.calculateOffset(firstItem.index - 1);
 
-        this.state.wrapper.style.paddingTop = `100px`;
+        this.state.items[0].index !== 1
+          ? this.state.wrapper.style.paddingTop = `20px`
+          : this.state.wrapper.style.paddingTop = `0px`;
 
         state = { ...state, padding };
 
         if (this.state.oneTime) {
-          this.state.scroller.root.scrollTop = 100;
+          if (this.state.items[0].index !== 1) this.state.scroller.root.scrollTop = 20;
           this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
       } else if (this.state.oneTime) {
         this.state.scroller.root.addEventListener('scroll', this.scroll);
       }
-      console.log('hey', firstItem.index !== 1, Selectors.recordCount(this.flux.store.getState()));
 
       this.state = { ...this.state, ...state };
     }
@@ -81,18 +79,14 @@ class InfiniteScroll {
       const imgs = <any>this.state.wrapper.querySelectorAll('img');
       let count = 0;
 
-      console.log('parent updated');
-      console.log('this.st', imgs);
       for (let i = 0; i < 24; i++) {
-        console.log('hey');
         imgs[i].onload = () => {
           count++;
           if (count === 24) {
-            console.log('its ready', this.state.rememberScroll);
             this.maintainScrollTop(this.state.rememberScroll);
             this.state.scroller.root.addEventListener('scroll', this.scroll);
           }
-        }
+        };
       }
 
       this.state = { ...this.state, setScroll: false };
@@ -125,7 +119,7 @@ class InfiniteScroll {
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         items = [...products.map(this.productTransformer), ...this.state.items];
         const rememberScroll = this.calculateOffset(24) + this.state.scroller.root.scrollTop;
-        console.log('fetched backward', this.calculateOffset(24), this.state.scroller.root.scrollTop);
+
         this.state = <any>{
           ...this.state,
           items,
@@ -148,7 +142,6 @@ class InfiniteScroll {
   }
 
   maintainScrollTop = (scrollTop: number) => {
-    console.log('maintinaing', scrollTop);
     this.state.scroller.root.scrollTop = scrollTop;
   }
 
@@ -175,8 +168,7 @@ class InfiniteScroll {
         }
         // tslint:disable-next-line max-line-length
       } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
-        if (this.state.items[0].index !== 0) {
-          console.log('fetching');
+        if (this.state.items[0].index !== 1) {
           this.fetchMoreItems(false);
         }
       }
@@ -190,10 +182,14 @@ class InfiniteScroll {
   }
 
   calculateOffset = (totalItems: number) => {
+    const listItems = this.state.scroller.tags['gb-list-item'] || [];
+    const itemDimensions = listItems[0].root.getBoundingClientRect();
+    console.log('im calculating stuff');
+    console.log(itemDimensions);
     const width = this.state.scroller.root.getBoundingClientRect().width;
-    const row = Math.floor(width / this.props.itemWidth);
+    const row = Math.floor(width / itemDimensions.width);
     const rows = totalItems / row;
-    return (rows * this.props.itemHeight);
+    return (rows * itemDimensions.height);
   }
 
   calculatePageChange = () => {
@@ -263,8 +259,6 @@ interface InfiniteScroll extends Tag<InfiniteScroll.Props, InfiniteScroll.State>
 namespace InfiniteScroll {
   export interface Props extends Tag.Props {
     loadMore: boolean;
-    itemWidth: number;
-    itemHeight: number;
   }
 
   export interface State {
@@ -283,10 +277,6 @@ namespace InfiniteScroll {
     wrapper?: HTMLUListElement;
     // set type to proper type rather than any
     elItems?: any;
-    layout?: {
-      height: number;
-      width: number;
-    };
     lastScroll?: number;
     padding?: number;
     firstEl?: any;

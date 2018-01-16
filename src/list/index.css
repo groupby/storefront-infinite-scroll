@@ -16,4 +16,5 @@ gb-infinite-list.gb-ui .load {
 }
 
 gb-infinite-list .gb-list__item {
+  min-width: 250px;
 }

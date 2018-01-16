@@ -115,8 +115,8 @@ class InfiniteScroll {
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         console.log('got more prods backward');
-        const page = Selectors.page(this.flux.store.getState());
-        const rememberScroll = this.calculateOffset(page) + this.state.scroller.root.scrollTop;
+        const pageSize = Selectors.pageSize(this.flux.store.getState());
+        const rememberScroll = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
         this.state = <any>{
           ...this.state,
@@ -138,7 +138,9 @@ class InfiniteScroll {
   }
 
   maintainScrollTop = (scrollTop: number) => {
+    console.log('maintinain', scrollTop, this.state.scroller.root.scrollTop);
     this.state.scroller.root.scrollTop = scrollTop;
+    console.log('maintinain', scrollTop, this.state.scroller.root.scrollTop);
   }
 
   setFlag = () => {
@@ -183,14 +185,16 @@ class InfiniteScroll {
   }
 
   calculateOffset = (totalItems: number) => {
-    const listItems = this.state.scroller.tags['gb-list-item'] || [];
-    const itemDimensions = listItems[0].root.getBoundingClientRect();
-    console.log('im calculating stuff');
-    console.log(itemDimensions);
-    const width = this.state.scroller.root.getBoundingClientRect().width;
-    const row = Math.floor(width / itemDimensions.width);
-    const rows = totalItems / row;
-    return (rows * itemDimensions.height);
+    const listItems = this.state.scroller.tags['gb-list-item'];
+    if (listItems.length > 0) {
+      const itemDimensions = listItems[0].root.getBoundingClientRect();
+      console.log('im calculating stuff');
+      console.log(itemDimensions);
+      const width = this.state.scroller.root.getBoundingClientRect().width;
+      const row = Math.floor(width / itemDimensions.width);
+      const rows = totalItems / row;
+      return (rows * itemDimensions.height);
+    }
   }
 
   calculatePageChange = () => {

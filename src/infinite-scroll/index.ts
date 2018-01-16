@@ -1,4 +1,14 @@
-import { alias, configurable, tag, Events, ProductTransformer, Selectors, Store, Tag } from '@storefront/core';
+import {
+  alias,
+  configurable,
+  tag,
+  Events,
+  ProductTransformer,
+  Selectors,
+  Store,
+  StoreSections,
+  Tag
+} from '@storefront/core';
 import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
@@ -7,11 +17,29 @@ import { List } from '@storefront/structure';
 @tag('gb-infinite-scroll', require('./index.html'), require('./index.css'))
 class InfiniteScroll {
 
+  searchMethods: any = {
+    pageSize: Selectors.pageSize,
+    productsWithMetadata: Selectors.productsWithMetadata,
+    recordCount: Selectors.recordCount,
+    currentPage: Selectors.page,
+    // receivePage: this.actions.receivePage,
+    // fetchMore: this.actions.fetchMoreProducts,
+  };
+
+  pastPurchaseMethods: any = {
+    pageSize: Selectors.pastPurchasePageSize,
+    productsWithMetadata: Selectors.pastPurchaseProductsWithMetadata,
+    recordCount: Selectors.pastPurchaseAllRecordCount,
+    currentPage: Selectors.pastPurchasePage,
+    // receivePage: this.actions.receivePastPurchasePage,
+    // fetchMore: this.actions.fetchMorePastPurchaseProducts,
+  };
+
   tags: {
     'gb-infinite-list': List;
   };
 
-  state: InfiniteScroll.State = {
+  state: any = {
     items: [],
     lastScroll: 0,
     oneTime: true,
@@ -19,23 +47,32 @@ class InfiniteScroll {
     isFetchingForward: false,
     isFetchingBackward: false,
     setScroll: false,
-    clickMore: () => {
-      this.fetchMoreItems();
-    },
-    clickPrev: () => {
-      this.fetchMoreItems(false);
-    }
+    clickMore: () => this.fetchMoreItems(),
+    clickPrev: () => this.fetchMoreItems(false)
   };
 
   productTransformer = ({ data, meta, index }: Store.ProductWithMetadata) =>
     ({ ...ProductTransformer.transformer(this.config.structure)(data), meta, index })
 
   init() {
-    this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
-    this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
-    this.flux.on(Events.PAGE_UPDATED, this.replaceState);
-    this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
-    this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+    switch (this.props.storeSection) {
+      case StoreSections.PAST_PURCHASES:
+        this.state = { ...this.state, ...this.pastPurchaseMethods };
+        this.flux.on(Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
+        // this.flux.on(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
+        this.flux.on(Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);
+        // this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
+        // this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+        break;
+      case StoreSections.SEARCH:
+      default:
+        this.state = { ...this.state, ...this.searchMethods };
+        this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
+        this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
+        this.flux.on(Events.PAGE_UPDATED, this.replaceState);
+        this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
+        this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+    }
   }
 
   onMount() {
@@ -73,7 +110,7 @@ class InfiniteScroll {
 
     if (this.state.setScroll) {
       const imgs = <any>this.state.wrapper.querySelectorAll('img') || [];
-      const pageSize = Selectors.pageSize(this.flux.store.getState());
+      const pageSize = this.state.pageSize(this.flux.store.getState());
       let count = 0;
 
       for (let i = 0; i < pageSize; i++) {
@@ -91,6 +128,7 @@ class InfiniteScroll {
   }
 
   updateProducts = () => {
+    console.log('updatin my products');
     const items = this.setProducts();
 
     this.state = {
@@ -115,7 +153,7 @@ class InfiniteScroll {
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         console.log('got more prods backward');
-        const pageSize = Selectors.pageSize(this.flux.store.getState());
+        const pageSize = this.state.pageSize(this.flux.store.getState());
         const rememberScroll = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
         this.state = <any>{
@@ -128,7 +166,7 @@ class InfiniteScroll {
         this.state.scroller.root.removeEventListener('scroll', this.scroll);
       }
     } else {
-      items = Selectors.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+      items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
       this.set(<any>{
         items,
         prevExists: items[0].index !== 1
@@ -138,9 +176,7 @@ class InfiniteScroll {
   }
 
   maintainScrollTop = (scrollTop: number) => {
-    console.log('maintinain', scrollTop, this.state.scroller.root.scrollTop);
     this.state.scroller.root.scrollTop = scrollTop;
-    console.log('maintinain', scrollTop, this.state.scroller.root.scrollTop);
   }
 
   setFlag = () => {
@@ -155,7 +191,6 @@ class InfiniteScroll {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     const scrollerHeight = scroller.root.getBoundingClientRect().height;
-    console.log('scrollin,');
 
     if (this.state.getPage) {
       this.calculatePageChange();
@@ -166,7 +201,7 @@ class InfiniteScroll {
     if (!this.state.loadMore && this.state.scroller !== this.state.rememberScroll) {
       if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
         // tslint:disable-next-line max-line-length
-        if (Selectors.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
+        if (this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
           this.fetchMoreItems();
         }
         // tslint:disable-next-line max-line-length
@@ -188,8 +223,6 @@ class InfiniteScroll {
     const listItems = this.state.scroller.tags['gb-list-item'];
     if (listItems.length > 0) {
       const itemDimensions = listItems[0].root.getBoundingClientRect();
-      console.log('im calculating stuff');
-      console.log(itemDimensions);
       const width = this.state.scroller.root.getBoundingClientRect().width;
       const row = Math.floor(width / itemDimensions.width);
       const rows = totalItems / row;
@@ -198,14 +231,13 @@ class InfiniteScroll {
   }
 
   calculatePageChange = () => {
-    console.log('calcing page change');
     const first = this.getItem(this.state.firstEl.index - 1);
     const last = this.getItem(this.state.lastEl.index + 1);
     const scroller = this.state.scroller.root;
     const state = this.flux.store.getState();
-    const recordCount = Selectors.recordCount(state);
-    const page = Selectors.page(state);
-    const pageSize = Selectors.pageSize(state);
+    const recordCount = this.state.recordCount(state);
+    const page = this.state.currentPage(state);
+    const pageSize = this.state.pageSize(state);
 
     if (first && this.topElBelowOffset(first, scroller)) {
       this.state = {
@@ -257,7 +289,7 @@ class InfiniteScroll {
       ...this.state,
       oneTime: false,
     };
-    this.actions.fetchMoreProducts(Selectors.pageSize(this.flux.store.getState()), forward);
+    this.actions.fetchMoreProducts(this.state.pageSize(this.flux.store.getState()), forward);
   }
 }
 
@@ -267,13 +299,23 @@ namespace InfiniteScroll {
     loadMore: boolean;
   }
 
-  export interface State {
+  export interface Methods {
+    pageSize(state: Store.State): number;
+    productsWithMetadata(state: Store.State): any[];
+    recordCount(state: Store.State): number;
+    currentPage(state: Store.State): number;
+    setPage(): void;
+    fetchMore(): void;
+  }
+
+  export interface State extends Methods {
     items: any[];
     oneTime: boolean;
     loadMore: boolean;
     isFetchingForward: boolean;
     isFetchingBackward: boolean;
     setScroll: boolean;
+    lastScroll: number;
     clickMore: () => void;
     clickPrev: () => void;
     prevExists?: boolean;
@@ -283,7 +325,6 @@ namespace InfiniteScroll {
     wrapper?: HTMLUListElement;
     // set type to proper type rather than any
     elItems?: any;
-    lastScroll?: number;
     padding?: number;
     firstEl?: any;
     lastEl?: any;

@@ -23,7 +23,7 @@ class InfiniteScroll {
     recordCount: Selectors.recordCount,
     currentPage: Selectors.page,
     // receivePage: this.actions.receivePage,
-    // fetchMore: this.actions.fetchMoreProducts,
+    fetchMore: this.flux.actions.fetchMoreProducts,
   };
 
   pastPurchaseMethods: any = {
@@ -32,7 +32,7 @@ class InfiniteScroll {
     recordCount: Selectors.pastPurchaseAllRecordCount,
     currentPage: Selectors.pastPurchasePage,
     // receivePage: this.actions.receivePastPurchasePage,
-    // fetchMore: this.actions.fetchMorePastPurchaseProducts,
+    fetchMore: this.flux.actions.fetchMorePastPurchaseProducts,
   };
 
   tags: {
@@ -59,7 +59,7 @@ class InfiniteScroll {
       case StoreSections.PAST_PURCHASES:
         this.state = { ...this.state, ...this.pastPurchaseMethods };
         this.flux.on(Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
-        // this.flux.on(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
+        this.flux.on(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
         this.flux.on(Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);
         // this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
         // this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
@@ -84,6 +84,7 @@ class InfiniteScroll {
   }
 
   onUpdated = () => {
+    console.log('im updated', this.state.setScroll);
     const firstItem = this.state.items[0];
     let state = <any>{ getPage: false };
 
@@ -148,34 +149,41 @@ class InfiniteScroll {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {
         console.log('got more prods forward');
         items = [...this.state.items, ...products.map(this.productTransformer)];
-        this.set(<any>{ items,
+        this.set(<any>{
+          items,
           prevExists: items[0].index !== 1,
+          moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
-        console.log('got more prods backward');
+        console.log('got more prods backward', this.state.setScroll);
         const pageSize = this.state.pageSize(this.flux.store.getState());
         const rememberScroll = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
-        this.state = <any>{
+        this.set(<any>{
           ...this.state,
           items,
           setScroll: true,
           rememberScroll,
           prevExists: items[0].index !== 1,
-        };
+          moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
+        });
+        console.log('whats setscroll', this.state.setScroll);
         this.state.scroller.root.removeEventListener('scroll', this.scroll);
       }
     } else {
+      console.log('record count: ', this.state.recordCount)
       items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
       this.set(<any>{
         items,
-        prevExists: items[0].index !== 1
+        prevExists: items[0].index !== 1,
+        moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
       });
     }
     return items;
   }
 
   maintainScrollTop = (scrollTop: number) => {
+    console.log('maintaining');
     this.state.scroller.root.scrollTop = scrollTop;
   }
 
@@ -250,7 +258,7 @@ class InfiniteScroll {
       this.state = {
         ...this.state,
         firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
-        lastEl: this.state.items[this.getIndex(this.state.lastEl.index + pageSize)],
+        lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
       };
       this.setPage(recordCount, page + 1);
     }
@@ -289,7 +297,7 @@ class InfiniteScroll {
       ...this.state,
       oneTime: false,
     };
-    this.actions.fetchMoreProducts(this.state.pageSize(this.flux.store.getState()), forward);
+    this.flux.store.dispatch(this.state.fetchMore(this.state.pageSize(this.flux.store.getState()), forward));
   }
 }
 

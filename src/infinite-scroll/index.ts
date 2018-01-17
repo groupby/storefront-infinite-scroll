@@ -22,8 +22,9 @@ class InfiniteScroll {
     productsWithMetadata: Selectors.productsWithMetadata,
     recordCount: Selectors.recordCount,
     currentPage: Selectors.page,
-    // receivePage: this.actions.receivePage,
+    receivePage: this.flux.actions.receivePage,
     fetchMore: this.flux.actions.fetchMoreProducts,
+    route: Routes.SEARCH,
   };
 
   pastPurchaseMethods: any = {
@@ -31,8 +32,9 @@ class InfiniteScroll {
     productsWithMetadata: Selectors.pastPurchaseProductsWithMetadata,
     recordCount: Selectors.pastPurchaseAllRecordCount,
     currentPage: Selectors.pastPurchasePage,
-    // receivePage: this.actions.receivePastPurchasePage,
+    receivePage: this.flux.actions.receivePastPurchasePage,
     fetchMore: this.flux.actions.fetchMorePastPurchaseProducts,
+    route: Routes.PAST_PURCHASE,
   };
 
   tags: {
@@ -284,11 +286,11 @@ class InfiniteScroll {
     this.state.items.findIndex((item) => item.index === recordIndex)
 
   setPage = (count: number, page: number) =>
-    this.actions.receivePage(count, page)
+    this.flux.store.dispatch(this.state.receivePage(count, page))
 
   replaceState = () => {
     if (!this.state.oneTime) {
-      this.flux.replaceState(Routes.SEARCH);
+      this.flux.replaceState(this.state.route);
     }
   }
 

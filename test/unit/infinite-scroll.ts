@@ -71,40 +71,39 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('init()', () => {
-    it('should listen for PRODUCTS_UPDATED', () => {
-      const on = spy();
-      infiniteScroll.flux = <any>{ on };
+    describe('PAST_PURCHASES', () => {
+      it('should  listen for correct events and set state', () => {
+        const on = spy();
+        const initialState = infiniteScroll.state;
+        infiniteScroll.props = <any>{ storeSection: 'pastPurchases'};
+        infiniteScroll.flux = <any>{ on };
 
-      infiniteScroll.init();
+        infiniteScroll.init();
 
-      expect(on).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
+        expect(on).to.be.calledWithExactly(Events.PAST_PURCHASE_PRODUCTS_UPDATED, infiniteScroll.updateProducts);
+        expect(on).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
+        expect(on).to.be.calledWithExactly(Events.PAST_PURCHASE_PAGE_UPDATED, infiniteScroll.replaceState);
+        expect(on).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
+        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.pastPurchaseMethods});
+      });
     });
 
-    it('should listen for MORE_PRODUCTS_ADDED', () => {
-      const on = spy();
-      infiniteScroll.flux = <any>{ on };
+    describe('SEARCH', () => {
+      it('should  listen for correct events and set state', () => {
+        const on = spy();
+        const initialState = infiniteScroll.state;
+        infiniteScroll.props = <any>{ storeSection: 'search'};
+        infiniteScroll.flux = <any>{ on };
 
-      infiniteScroll.init();
+        infiniteScroll.init();
 
-      expect(on).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
-    });
-
-    it('should listen for PAGE_UPDATED', () => {
-      const on = spy();
-      infiniteScroll.flux = <any>{ on };
-
-      infiniteScroll.init();
-
-      expect(on).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
-    });
-
-    it('should listen for SEARCH_CHANGED', () => {
-      const on = spy();
-      infiniteScroll.flux = <any>{ on };
-
-      infiniteScroll.init();
-
-      expect(on).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFlag);
+        expect(on).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
+        expect(on).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
+        expect(on).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
+        expect(on).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFlag);
+        expect(on).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
+        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.searchMethods});
+      });
     });
   });
 
@@ -259,7 +258,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const scrollTop = 3450;
       infiniteScroll.state = <any>{ scroller: { root: { scrollTop: 9 } } };
 
-      infiniteScroll.maintainScrollTop(items, scrollTop);
+      infiniteScroll.maintainScrollTop(scrollTop);
 
       expect(set).to.be.calledWithExactly({ items });
       expect(infiniteScroll.state.scroller.root.scrollTop).to.eq(scrollTop);
@@ -342,7 +341,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         itemHeight: 30,
       };
 
-      const padding = infiniteScroll.calculateOffset(scroller, firstItemIndex);
+      const padding = infiniteScroll.calculateOffset(firstItemIndex);
 
       expect(padding).to.eq(15);
     });

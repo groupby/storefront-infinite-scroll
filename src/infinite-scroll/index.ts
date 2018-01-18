@@ -12,6 +12,8 @@ import {
 import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
+const PADDING = 20;
+
 @configurable
 @alias('infinite')
 @tag('gb-infinite-scroll', require('./index.html'), require('./index.css'))
@@ -22,8 +24,8 @@ class InfiniteScroll {
     productsWithMetadata: Selectors.productsWithMetadata,
     recordCount: Selectors.recordCount,
     currentPage: Selectors.page,
-    receivePage: this.flux.actions.receivePage,
-    fetchMore: this.flux.actions.fetchMoreProducts,
+    receivePage: (count, page) => this.flux.actions.receivePage(count, page),
+    fetchMore: (state, forward) => this.flux.actions.fetchMoreProducts(state, forward),
     route: Routes.SEARCH,
   };
 
@@ -32,8 +34,8 @@ class InfiniteScroll {
     productsWithMetadata: Selectors.pastPurchaseProductsWithMetadata,
     recordCount: Selectors.pastPurchaseAllRecordCount,
     currentPage: Selectors.pastPurchasePage,
-    receivePage: this.flux.actions.receivePastPurchasePage,
-    fetchMore: this.flux.actions.fetchMorePastPurchaseProducts,
+    receivePage: (count, page) => this.flux.actions.receivePastPurchasePage(count, page),
+    fetchMore: (state, forward) => this.flux.actions.fetchMorePastPurchaseProducts(state, forward),
     route: Routes.PAST_PURCHASE,
   };
 
@@ -64,7 +66,7 @@ class InfiniteScroll {
         this.flux.on(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
         this.flux.on(Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);
         // this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
-        // this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+        this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case StoreSections.SEARCH:
       default:
@@ -86,7 +88,6 @@ class InfiniteScroll {
   }
 
   onUpdated = () => {
-    console.log('im updated', this.state.setScroll);
     const firstItem = this.state.items[0];
     let state = <any>{ getPage: false };
 
@@ -95,13 +96,13 @@ class InfiniteScroll {
         const padding = this.calculateOffset(firstItem.index - 1);
 
         this.state.prevExists
-          ? this.state.wrapper.style.paddingTop = `20px`
+          ? this.state.wrapper.style.paddingTop = `${PADDING}px`
           : this.state.wrapper.style.paddingTop = `0px`;
 
         state = { ...state, padding };
 
         if (this.state.oneTime) {
-          if (this.state.prevExists) this.state.scroller.root.scrollTop = 20;
+          if (this.state.prevExists) this.state.scroller.root.scrollTop = PADDING;
           this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
       } else if (this.state.oneTime) {
@@ -116,14 +117,26 @@ class InfiniteScroll {
       const pageSize = this.state.pageSize(this.flux.store.getState());
       let count = 0;
 
-      for (let i = 0; i < pageSize; i++) {
-        imgs[i].onload = () => {
-          count++;
-          if (count === pageSize) {
+      const imgsLoaded = (total, size, totalImages) =>
+        count === size || count === imgs.length;
+
+      if (imgs.length > 0) {
+        for (let i = 0; i < pageSize; i++) {
+          imgs[i].onload = () => {
+            count++;
+            if (imgsLoaded(count, pageSize, imgs.length)) {
+              this.maintainScrollTop(this.state.rememberScroll);
+              this.state.scroller.root.addEventListener('scroll', this.scroll);
+            }
+          };
+        }
+        // Need to still add scrollTop & scroll listener if imgs don't load
+        setTimeout(() => {
+          if (!imgsLoaded(count, pageSize, imgs.length)) {
             this.maintainScrollTop(this.state.rememberScroll);
             this.state.scroller.root.addEventListener('scroll', this.scroll);
           }
-        };
+        }, 500);
       }
 
       this.state = { ...this.state, setScroll: false };
@@ -131,7 +144,6 @@ class InfiniteScroll {
   }
 
   updateProducts = () => {
-    console.log('updatin my products');
     const items = this.setProducts();
 
     this.state = {
@@ -149,7 +161,6 @@ class InfiniteScroll {
     let items;
     if (products) {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {
-        console.log('got more prods forward');
         items = [...this.state.items, ...products.map(this.productTransformer)];
         this.set(<any>{
           items,
@@ -157,7 +168,6 @@ class InfiniteScroll {
           moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
-        console.log('got more prods backward', this.state.setScroll);
         const pageSize = this.state.pageSize(this.flux.store.getState());
         const rememberScroll = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
@@ -169,23 +179,25 @@ class InfiniteScroll {
           prevExists: items[0].index !== 1,
           moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
-        console.log('whats setscroll', this.state.setScroll);
         this.state.scroller.root.removeEventListener('scroll', this.scroll);
       }
     } else {
-      console.log('record count: ', this.state.recordCount)
       items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
       this.set(<any>{
         items,
-        prevExists: items[0].index !== 1,
-        moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
+        setScroll: true,
+        rememberScroll: !this.state.loadMore ? PADDING : 0,
+        prevExists: items.length > 0 ? items[0].index !== 1 : false,
+        // tslint:disable-next-line max-line-length
+        moreExists: items.length > 0 ? this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index : false,
       });
+      this.state.scroller.root.removeEventListener('scroll', this.scroll);
     }
     return items;
   }
 
   maintainScrollTop = (scrollTop: number) => {
-    console.log('maintaining');
+    console.log('setting scrolLtop', scrollTop);
     this.state.scroller.root.scrollTop = scrollTop;
   }
 

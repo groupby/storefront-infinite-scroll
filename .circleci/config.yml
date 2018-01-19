@@ -1,6 +1,6 @@
 defaults:
   node_cache: &node_cache
-    key: node_cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+    key: node_cache-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}
   build_cache: &build_cache
     key: build_cache-{{ .Branch }}-{{ epoch }}
 

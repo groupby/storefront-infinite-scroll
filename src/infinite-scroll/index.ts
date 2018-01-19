@@ -12,7 +12,7 @@ import {
 import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
-const PADDING = 20;
+export const PADDING = 20;
 
 @configurable
 @alias('infinite')
@@ -112,35 +112,37 @@ class InfiniteScroll {
       this.state = { ...this.state, ...state };
     }
 
-    if (this.state.setScroll) {
-      const imgs = <any>this.state.wrapper.querySelectorAll('img') || [];
-      const pageSize = this.state.pageSize(this.flux.store.getState());
-      let count = 0;
+    if (this.state.setScroll) this.setScroll();
+  }
 
-      const imgsLoaded = (total, size, totalImages) =>
-        count === size || count === imgs.length;
+  setScroll = () => {
+    const imgs = <any>this.state.wrapper.querySelectorAll('img') || [];
+    const pageSize = this.state.pageSize(this.flux.store.getState());
+    let count = 0;
 
-      if (imgs.length > 0) {
-        for (let i = 0; i < pageSize; i++) {
-          imgs[i].onload = () => {
-            count++;
-            if (imgsLoaded(count, pageSize, imgs.length)) {
-              this.maintainScrollTop(this.state.rememberScroll);
-              this.state.scroller.root.addEventListener('scroll', this.scroll);
-            }
-          };
-        }
-        // Need to still add scrollTop & scroll listener if imgs don't load
-        setTimeout(() => {
-          if (!imgsLoaded(count, pageSize, imgs.length)) {
+    const imgsLoaded = (total, size, totalImages) =>
+      count === size || count === imgs.length;
+
+    if (imgs.length > 0) {
+      for (let i = 0; i < pageSize; i++) {
+        imgs[i].onload = () => {
+          count++;
+          if (imgsLoaded(count, pageSize, imgs.length)) {
             this.maintainScrollTop(this.state.rememberScroll);
             this.state.scroller.root.addEventListener('scroll', this.scroll);
           }
-        }, 500);
+        };
       }
-
-      this.state = { ...this.state, setScroll: false };
+      // need to still add scrollTop & scroll listener if imgs don't load
+      setTimeout(() => {
+        if (!imgsLoaded(count, pageSize, imgs.length)) {
+          this.maintainScrollTop(this.state.rememberScroll);
+          this.state.scroller.root.addEventListener('scroll', this.scroll);
+        }
+      }, 500);
     }
+
+    this.state = { ...this.state, setScroll: false };
   }
 
   updateProducts = () => {
@@ -196,18 +198,14 @@ class InfiniteScroll {
     return items;
   }
 
-  maintainScrollTop = (scrollTop: number) => {
-    console.log('setting scrolLtop', scrollTop);
-    this.state.scroller.root.scrollTop = scrollTop;
-  }
+  maintainScrollTop = (scrollTop: number) =>
+    this.state.scroller.root.scrollTop = scrollTop
 
-  setFlag = () => {
-    this.set({ oneTime: true });
-  }
+  setFlag = () =>
+    this.set({ oneTime: true })
 
-  setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) => {
-    this.set({ isFetchingForward, isFetchingBackward });
-  }
+  setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) =>
+    this.set({ isFetchingForward, isFetchingBackward })
 
   scroll = () => {
     const { scroller, wrapper } = this.state;
@@ -301,9 +299,7 @@ class InfiniteScroll {
     this.flux.store.dispatch(this.state.receivePage(count, page))
 
   replaceState = () => {
-    if (!this.state.oneTime) {
-      this.flux.replaceState(this.state.route);
-    }
+    if (!this.state.oneTime) this.flux.replaceState(this.state.route);
   }
 
   fetchMoreItems = (forward: boolean = true) => {

@@ -1,6 +1,6 @@
 import { Events, ProductTransformer, Selectors } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
-import InfiniteScroll from '../../src/infinite-scroll';
+import InfiniteScroll, { PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
 
 const STRUCTURE = { a: 'b' };
@@ -75,7 +75,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       it('should  listen for correct events and set state', () => {
         const on = spy();
         const initialState = infiniteScroll.state;
-        infiniteScroll.props = <any>{ storeSection: 'pastPurchases'};
+        infiniteScroll.props = <any>{ storeSection: 'pastPurchases' };
         infiniteScroll.flux = <any>{ on };
 
         infiniteScroll.init();
@@ -84,7 +84,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         expect(on).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
         expect(on).to.be.calledWithExactly(Events.PAST_PURCHASE_PAGE_UPDATED, infiniteScroll.replaceState);
         expect(on).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
-        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.pastPurchaseMethods});
+        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.pastPurchaseMethods });
       });
     });
 
@@ -92,7 +92,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       it('should  listen for correct events and set state', () => {
         const on = spy();
         const initialState = infiniteScroll.state;
-        infiniteScroll.props = <any>{ storeSection: 'search'};
+        infiniteScroll.props = <any>{ storeSection: 'search' };
         infiniteScroll.flux = <any>{ on };
 
         infiniteScroll.init();
@@ -102,7 +102,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         expect(on).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
         expect(on).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFlag);
         expect(on).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
-        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.searchMethods});
+        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.searchMethods });
       });
     });
   });
@@ -138,6 +138,25 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('onUpdated()', () => {
+    let initialState;
+    let wrapper;
+    let scroller;
+    let addEventListener;
+
+    beforeEach(() => {
+      addEventListener = spy();
+      wrapper = { style: { paddingTop: 0 } };
+      scroller = { root: { scrollTop: 0, addEventListener } };
+      initialState = {
+        items: [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }],
+        prevExists: true,
+        wrapper,
+        oneTime: true,
+        scroller,
+        setScroll: false,
+      };
+    });
+
     it('should not change state if there are no items', () => {
       const state = infiniteScroll.state = <any>{ a: 'b', items: [] };
       set = infiniteScroll.set = spy();
@@ -147,36 +166,84 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       expect(infiniteScroll.state).to.eq(state);
     });
 
-    it('should only set padding on state when oneTime is false', () => {
-      const oneTime = false;
-      const wrapper = { style: { paddingTop: 0 } };
-      const scroller = { root: { scrollTop: 0 } };
-      const state = infiniteScroll.state = <any>{ a: 'b', items: [1, 2, 3, 4], wrapper, scroller, oneTime };
+    it('should only set padding on state when loadMore is false', () => {
+      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', oneTime: true };
       const padding = 200;
       const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
+      const setScroll = infiniteScroll.setScroll = spy();
 
       infiniteScroll.onUpdated();
 
-      expect(infiniteScroll.state).to.eql({ ...state, padding });
-      expect(scroller.root.scrollTop).to.eq(0);
-      expect(wrapper.style.paddingTop).to.eq(`${padding}px`);
+      expect(infiniteScroll.state).to.eql({ ...state, padding, getPage: false });
+      expect(calculatePadding).to.be.calledWithExactly(0);
+      expect(wrapper.style.paddingTop).to.eq(`${PADDING}px`);
+      expect(scroller.root.scrollTop).to.eq(PADDING);
+      expect(scroller.root.addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
     });
 
-    it('should set padding, lastScroll, and getPage when oneTime is true', () => {
-      const oneTime = true;
-      const wrapper = { style: { paddingTop: 0 } };
-      const addEventListener = spy();
-      const scroller = { root: { scrollTop: 0, addEventListener } };
-      const state = infiniteScroll.state = <any>{ a: 'b', items: [1, 2, 3, 4], wrapper, scroller, oneTime };
-      const padding = 200;
-      const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
+    it('should still set eventListener if loadMore is true and oneTime is true', () => {
+      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', loadMore: true, oneTime: true };
+      const setScroll = infiniteScroll.setScroll = spy();
 
       infiniteScroll.onUpdated();
 
-      expect(infiniteScroll.state).to.eql({ ...state, padding, lastScroll: padding, getPage: false });
-      expect(scroller.root.scrollTop).to.eq(padding);
-      expect(wrapper.style.paddingTop).to.eq(`${padding}px`);
+      expect(infiniteScroll.state).to.eql({ ...state, getPage: false });
       expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
+    });
+  });
+
+  describe('setScroll()', () => {
+    it('should call maintainScrollTop and add eventListener when all imgs are loaded', () => {
+      const onload = spy();
+      const imgs = [{ onload }, { onload }, { onload }];
+      const querySelectorAll = spy(() => imgs);
+      const pageSize = spy(() => 3);
+      const getState = spy();
+      const rememberScroll = 15;
+      const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
+      const addEventListener = spy();
+      infiniteScroll.state = <any>{
+        wrapper: { querySelectorAll },
+        pageSize,
+        rememberScroll,
+        scroller: { root: { addEventListener } },
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.setScroll();
+      imgs[0].onload();
+      imgs[1].onload();
+      imgs[2].onload();
+
+      expect(maintainScrollTop).to.be.calledWithExactly(rememberScroll);
+      expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
+      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, setScroll: false });
+    });
+
+    it('should call maintainScrollTop and add eventListener after 500 ms if imgs dont load', (done) => {
+      const onload = spy();
+      const imgs = [{ onload }, { onload }, { onload }];
+      const querySelectorAll = spy(() => imgs);
+      const pageSize = spy(() => 3);
+      const getState = spy();
+      const rememberScroll = 15;
+      const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
+      const addEventListener = spy();
+      infiniteScroll.state = <any>{
+        wrapper: { querySelectorAll },
+        pageSize,
+        rememberScroll,
+        scroller: { root: { addEventListener } },
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.setScroll();
+
+      setTimeout(function() {
+        expect(maintainScrollTop).to.be.calledWithExactly(rememberScroll);
+        expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
+        done();
+      }, 501);
     });
   });
 
@@ -204,63 +271,99 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
   describe('setProducts()', () => {
     let productTransformer;
+    let getState;
+    let recordCount;
 
     beforeEach(() => {
+      getState = () => null;
+      recordCount = spy(() => 20);
       productTransformer = infiniteScroll.productTransformer = spy((item) => item);
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = <any>{ ...infiniteScroll.state, recordCount };
     });
 
     it('should add more products to the end of items when fetched forward', () => {
-      const products = <any>[{ index: 3 }, { index: 4 }, { index: 5 }];
-      const items = [{ index: 0 }, { index: 1 }, { index: 2 }];
-      infiniteScroll.state = <any>{ items };
+      const products = <any>[{ index: 4 }, { index: 5 }, { index: 6 }];
+      const items = [{ index: 1 }, { index: 2 }, { index: 3 }];
+      infiniteScroll.state = <any>{ ...infiniteScroll.state, items };
 
       const result = infiniteScroll.setProducts(products);
 
       expect(productTransformer).to.be.calledThrice;
-      expect(set).to.be.calledWithExactly({ items: result });
+      expect(set).to.be.calledWithExactly({
+        items: result,
+        prevExists: false,
+        moreExists: true,
+      });
       expect(result).to.eql([...items, ...products]);
+      expect(recordCount).to.be.called;
     });
 
     it('should add more products to the beginning of items when fetched backward', () => {
-      const products = <any>[{ index: 0 }, { index: 1 }, { index: 2 }];
-      const items = [{ index: 3 }, { index: 4 }, { index: 5 }];
+      const products = <any>[{ index: 1 }, { index: 2 }, { index: 3 }];
+      const items = [{ index: 4 }, { index: 5 }, { index: 6 }];
       const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
       const scrollTop = 3400;
-      infiniteScroll.state = <any>{ items, scroller: { root: { scrollTop } } };
+      const pageSize = spy(() => 10);
+      const removeEventListener = spy();
+      const calculateOffset = infiniteScroll.calculateOffset = spy(() => 12);
+      const state = infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        items,
+        scroller: { root: { scrollTop, removeEventListener } },
+        pageSize
+      };
 
       const result = infiniteScroll.setProducts(products);
 
       expect(productTransformer).to.be.calledThrice;
-      expect(maintainScrollTop).to.be.calledWithExactly(result, scrollTop);
+      expect(pageSize).to.be.calledWithExactly(getState());
+      expect(calculateOffset).to.be.calledWithExactly(pageSize());
+      expect(set).to.be.calledWith({
+        ...state,
+        items: result,
+        setScroll: true,
+        rememberScroll: 3412,
+        prevExists: false,
+        moreExists: true,
+      });
       expect(result).to.eql([...products, ...items]);
+      expect(removeEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
     });
 
     it('should get and set items if did not receive products from an add more event', () => {
       const products = <any>[{ index: 0 }, { index: 1 }, { index: 2 }];
-      const state = { a: 'b' };
-      const getState = spy(() => state);
-      const productsWithMetadata = stub(Selectors, 'productsWithMetadata').returns(products);
+      const productsWithMetadata = spy(() => products);
+      const removeEventListener = spy();
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        productsWithMetadata,
+        scroller: { root: { removeEventListener } }
+      };
       infiniteScroll.flux = <any>{ store: { getState } };
 
       const result = infiniteScroll.setProducts();
 
-      expect(productsWithMetadata).to.be.calledWithExactly(state);
-      expect(getState).to.be.calledOnce;
+      expect(productsWithMetadata).to.be.calledWithExactly(getState());
       expect(productTransformer).to.be.calledThrice;
-      expect(set).to.be.calledWithExactly({ items: result });
+      expect(set).to.be.calledWithExactly({
+        items: result,
+        setScroll: true,
+        rememberScroll: PADDING,
+        prevExists: true,
+        moreExists: true,
+      });
       expect(result).to.eql(products);
     });
   });
 
   describe('maintainScrollTop()', () => {
-    it('should set items and scrollTop of scroller', () => {
-      const items = <any>[{ index: 0 }, { index: 1 }, { index: 2 }];
+    it('should set scrollTop of scroller', () => {
       const scrollTop = 3450;
       infiniteScroll.state = <any>{ scroller: { root: { scrollTop: 9 } } };
 
       infiniteScroll.maintainScrollTop(scrollTop);
 
-      expect(set).to.be.calledWithExactly({ items });
       expect(infiniteScroll.state.scroller.root.scrollTop).to.eq(scrollTop);
     });
   });
@@ -270,6 +373,15 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.setFlag();
 
       expect(set).to.be.calledWithExactly({ oneTime: true });
+    });
+  });
+
+  describe('setFetchFlags()', () => {
+    it('should set oneTime to true', () => {
+      const fetchState = { isFetchingForward: true, isFetchingBackward: false };
+      infiniteScroll.setFetchFlags(fetchState);
+
+      expect(set).to.be.calledWithExactly(fetchState);
     });
   });
 
@@ -292,7 +404,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     it('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
-      const recordCount = stub(Selectors, 'recordCount').returns(100);
+      const recordCount = spy(() => 100);
       const fetchMoreItems = infiniteScroll.fetchMoreItems = spy();
       const getState = spy();
       const scrollTop = 100;
@@ -301,6 +413,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop } },
         lastScroll: 10,
         items: [{ index: 50 }],
+        recordCount,
       };
       infiniteScroll.flux = <any>{ store: { getState } };
       infiniteScroll.state = state;
@@ -322,6 +435,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         lastScroll: 100,
         items: [{ index: 50 }],
         padding: 100,
+        prevExists: true,
       };
       infiniteScroll.state = state;
 
@@ -332,16 +446,20 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
   });
 
-  describe('calculatePadding()', () => {
-    it('should calculate padding', () => {
-      const scroller = { root: { getBoundingClientRect: () => ({ width: 100 }) } };
-      const firstItemIndex = 2;
-      infiniteScroll.props = <any>{
-        itemWidth: 50,
-        itemHeight: 30,
+  describe('calculateOffset()', () => {
+    it('should calculate offset', () => {
+      const scroller = {
+        root: { getBoundingClientRect: () => ({ width: 200 }) },
+        tags: {
+          'gb-list-item': [{ root: { getBoundingClientRect: () => ({ width: 100, height: 3 }) } }]
+        }
+      };
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        scroller,
       };
 
-      const padding = infiniteScroll.calculateOffset(firstItemIndex);
+      const padding = infiniteScroll.calculateOffset(10);
 
       expect(padding).to.eq(15);
     });
@@ -352,22 +470,24 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const getItem = infiniteScroll.getItem = spy(() => 30);
       const root = { a: 'b' };
       const getState = spy();
-      const recordCount = 50;
-      const page = 5;
-      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const recordCount = spy(() => 50);
+      const currentPage = spy(() => 5);
+      const pageSize = spy(() => 10);
       const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => true);
       const getIndex = infiniteScroll.getIndex = spy((val) => {
         return val === 21 ? 0 : 4;
       });
       const setPage = infiniteScroll.setPage = spy();
       const state = <any>{
+        ...infiniteScroll.state,
         scroller: { root },
         firstEl: { index: 31 },
         lastEl: { index: 60 },
         items: [1, 2, 3, 4, 5],
+        recordCount,
+        currentPage,
+        pageSize,
       };
-      stub(Selectors, 'page').returns(5);
-      stub(Selectors, 'recordCount').returns(recordCount);
       infiniteScroll.state = state;
       infiniteScroll.flux = <any>{ store: { getState } };
 
@@ -379,16 +499,16 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         firstEl: 1,
         lastEl: 5,
       });
-      expect(setPage).to.be.calledWithExactly(recordCount, page - 1);
+      expect(setPage).to.be.calledWithExactly(recordCount(), currentPage() - 1);
     });
 
     it('should call setPage when last exists and it is above the offset', () => {
       const getItem = infiniteScroll.getItem = spy(() => 30);
       const root = { a: 'b' };
       const getState = spy();
-      const recordCount = 50;
-      const page = 5;
-      const pageSize = stub(Selectors, 'pageSize').returns(10);
+      const recordCount = spy(() => 50);
+      const currentPage = spy(() => 5);
+      const pageSize = spy(() => 10);
       const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => false);
       const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset = spy(() => true);
       const getIndex = infiniteScroll.getIndex = spy((val) => {
@@ -400,6 +520,9 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         firstEl: { index: 31 },
         lastEl: { index: 60 },
         items: [1, 2, 3, 4, 5],
+        recordCount,
+        currentPage,
+        pageSize,
       };
       stub(Selectors, 'page').returns(5);
       stub(Selectors, 'recordCount').returns(recordCount);
@@ -414,55 +537,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         firstEl: 5,
         lastEl: 1,
       });
-      expect(setPage).to.be.calledWithExactly(recordCount, page + 1);
-    });
-
-    it('should not call setPage if no first or last exists', () => {
-      const getItem = infiniteScroll.getItem = spy();
-      const root = { a: 'b' };
-      const getState = spy();
-      const recordCount = 50;
-      const page = 5;
-      const pageSize = stub(Selectors, 'pageSize').returns(10);
-      const setPage = infiniteScroll.setPage = spy();
-      const state = <any>{
-        scroller: { root },
-        firstEl: { index: 31 },
-        lastEl: { index: 60 },
-      };
-      stub(Selectors, 'page').returns(5);
-      stub(Selectors, 'recordCount').returns(recordCount);
-      infiniteScroll.state = state;
-      infiniteScroll.flux = <any>{ store: { getState } };
-
-      infiniteScroll.calculatePageChange();
-
-      expect(setPage).to.not.be.called;
-    });
-
-    it('should not call setPage if topElBelowOffset and bottomElAboveOffset are both false', () => {
-      const getItem = infiniteScroll.getItem = spy(() => 30);
-      const root = { a: 'b' };
-      const getState = spy();
-      const recordCount = 50;
-      const page = 5;
-      const pageSize = stub(Selectors, 'pageSize').returns(10);
-      const topElBelowOffset = infiniteScroll.topElBelowOffset = spy(() => false);
-      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset = spy(() => false);
-      const setPage = infiniteScroll.setPage = spy();
-      const state = <any>{
-        scroller: { root },
-        firstEl: { index: 31 },
-        lastEl: { index: 60 },
-      };
-      stub(Selectors, 'page').returns(5);
-      stub(Selectors, 'recordCount').returns(recordCount);
-      infiniteScroll.state = state;
-      infiniteScroll.flux = <any>{ store: { getState } };
-
-      infiniteScroll.calculatePageChange();
-
-      expect(setPage).to.not.be.called;
+      expect(setPage).to.be.calledWithExactly(recordCount(), currentPage() + 1);
     });
   });
 
@@ -533,19 +608,29 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     it('should call receivePage() with page info', () => {
       const count = 30;
       const page = 3;
-      const receivePage = spy();
-      infiniteScroll.actions = <any>{ receivePage };
+      const receivePage = spy(() => ({}));
+      const dispatch = spy();
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        receivePage,
+      };
+      infiniteScroll.flux = <any>{ store: { dispatch } };
 
       infiniteScroll.setPage(count, page);
 
       expect(receivePage).to.be.calledWithExactly(count, page);
+      expect(dispatch).to.be.calledWithExactly(receivePage());
     });
   });
 
   describe('replaceState()', () => {
-    it('should call replaceState with search route if oneTime is false', () => {
+    it('should call replaceState with route if oneTime is false', () => {
       const replaceState = spy();
-      infiniteScroll.state = <any>{ oneTime: false };
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        oneTime: false,
+        route: 'search',
+      };
       infiniteScroll.flux = <any>{ replaceState };
 
       infiniteScroll.replaceState();
@@ -566,29 +651,43 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
   describe('fetchMoreItems()', () => {
     it('should set state and fetch forward', () => {
-      const page = 2;
-      const fetchMoreProducts = spy();
-      infiniteScroll.actions = <any>{ fetchMoreProducts };
-      infiniteScroll.flux = <any>{ store: { getState: () => null } };
-      infiniteScroll.state = <any>{ oneTime: true };
-      stub(Selectors, 'pageSize').returns(page);
+      const page = 12;
+      const fetchMore = spy(() => ({}));
+      const pageSize = spy(() => page);
+      const dispatch = spy();
+      infiniteScroll.flux = <any>{ store: { getState: () => null, dispatch } };
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        oneTime: true,
+        pageSize,
+        fetchMore
+      };
 
       infiniteScroll.fetchMoreItems();
 
       expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, oneTime: false });
-      expect(fetchMoreProducts).to.be.calledWithExactly(page, true);
+      expect(fetchMore).to.be.calledWithExactly(page, true);
+      expect(dispatch).to.be.calledWithExactly(fetchMore());
     });
 
     it('should set state and fetch backward', () => {
-      const page = 3;
-      const fetchMoreProducts = spy();
-      infiniteScroll.actions = <any>{ fetchMoreProducts };
-      infiniteScroll.flux = <any>{ store: { getState: () => null } };
-      stub(Selectors, 'pageSize').returns(page);
+      const page = 12;
+      const fetchMore = spy(() => ({}));
+      const pageSize = spy(() => page);
+      const dispatch = spy();
+      infiniteScroll.flux = <any>{ store: { getState: () => null, dispatch } };
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        oneTime: true,
+        pageSize,
+        fetchMore
+      };
 
       infiniteScroll.fetchMoreItems(false);
 
-      expect(fetchMoreProducts).to.be.calledWithExactly(page, false);
+      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, oneTime: false });
+      expect(fetchMore).to.be.calledWithExactly(page, false);
+      expect(dispatch).to.be.calledWithExactly(fetchMore());
     });
   });
 });

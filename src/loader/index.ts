@@ -1,3 +1,6 @@
-import { view } from '@storefront/core';
+import { tag } from '@storefront/core';
 
-view('gb-loader', '<span>Loading...</span>');
+@tag('gb-infinite-loader', require('./index.html'))
+class InfiniteLoader {}
+
+export default InfiniteLoader;

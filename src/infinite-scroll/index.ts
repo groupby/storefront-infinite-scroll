@@ -13,6 +13,7 @@ import { Adapters, Routes } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
 export const PADDING = 20;
+export const LOADLABEL = 'loading...';
 
 @configurable
 @alias('infinite')
@@ -65,7 +66,6 @@ class InfiniteScroll {
         this.flux.on(Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
         this.flux.on(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
         this.flux.on(Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);
-        // this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
         this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case StoreSections.SEARCH:
@@ -83,8 +83,9 @@ class InfiniteScroll {
     const scroller = this.tags['gb-infinite-list'];
     const wrapper = scroller.refs.wrapper;
     const loadMore = this.props.loadMore || this.state.loadMore;
+    const loaderLabel = this.props.loaderLabel || LOADLABEL;
 
-    this.state = { ...this.state, scroller, wrapper, oneTime: true, loadMore };
+    this.state = { ...this.state, scroller, wrapper, oneTime: true, loadMore, loaderLabel };
   }
 
   onUpdated = () => {
@@ -315,6 +316,7 @@ interface InfiniteScroll extends Tag<InfiniteScroll.Props, InfiniteScroll.State>
 namespace InfiniteScroll {
   export interface Props extends Tag.Props {
     loadMore: boolean;
+    loaderLabel: string;
   }
 
   export interface Methods {
@@ -330,6 +332,7 @@ namespace InfiniteScroll {
     items: any[];
     oneTime: boolean;
     loadMore: boolean;
+    loadLabel: string;
     isFetchingForward: boolean;
     isFetchingBackward: boolean;
     setScroll: boolean;

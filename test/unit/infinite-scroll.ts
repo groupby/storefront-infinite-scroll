@@ -1,6 +1,6 @@
 import { Events, ProductTransformer, Selectors } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
-import InfiniteScroll, { PADDING } from '../../src/infinite-scroll';
+import InfiniteScroll, { LOADLABEL, PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
 
 const STRUCTURE = { a: 'b' };
@@ -119,21 +119,29 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
       infiniteScroll.onMount();
 
-      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: false });
+      expect(infiniteScroll.state).to.eql({
+        ...state,
+        scroller,
+        wrapper,
+        oneTime: true,
+        loadMore: false,
+        loaderLabel: LOADLABEL,
+      });
     });
 
-    it('should set loadMore from props', () => {
+    it('should set from props', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
       const state = infiniteScroll.state = <any>{ a: 'b' };
+      const loaderLabel = 'heyyoloading';
       infiniteScroll.tags = {
         'gb-infinite-list': scroller
       };
-      infiniteScroll.props = <any>{ loadMore: true };
+      infiniteScroll.props = <any>{ loadMore: true, loaderLabel };
 
       infiniteScroll.onMount();
 
-      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: true });
+      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: true, loaderLabel });
     });
   });
 

@@ -14,7 +14,3 @@ gb-infinite-list.gb-ui .gb-list__wrapper--grid,
 gb-infinite-list.gb-ui .load {
   flex-basis: 100%;
 }
-
-gb-infinite-list .gb-list__item {
-  min-width: 364px;
-}

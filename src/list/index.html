@@ -1,0 +1,18 @@
+<ul ref="wrapper" class="gb-list__wrapper { isGrid() ? 'gb-list__wrapper--grid' : 'gb-list__wrapper--column' }">
+  <li data-is="gb-list-item" class="load first-loader" if="{ $infinite.isFetchingBackward }">
+    <gb-loader></gb-loader>
+  </li>
+  { console.log($infinite.prevExists) }
+  <li class="load" if="{ $infinite.loadMore && $infinite.prevExists }">
+    <gb-button class="load-prev" on-click="{ $infinite.clickPrev }">Load Previous</gb-button>
+  </li>
+  <li data-is="gb-list-item" class="gb-list__item" each="{ item, i in $list.items }">
+    <yield/>
+  </li>
+  <li data-is="gb-list-item" class="load second-loader" if="{ $infinite.isFetchingForward }">
+    <gb-loader></gb-loader>
+  </li>
+  <li data-is="gb-list-item" class="load" if="{ $infinite.loadMore && $infinite.moreExists }">
+    <gb-button class="load-more" on-click="{ $infinite.clickMore }">Load More</gb-button>
+  </li>
+</ul>

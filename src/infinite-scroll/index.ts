@@ -147,7 +147,16 @@ class InfiniteScroll {
   }
 
   updateProducts = () => {
-    const items = this.setProducts();
+    const items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+    this.set(<any>{
+      items,
+      setScroll: true,
+      rememberScrollTop: !this.state.loadMore ? PADDING : 0,
+      prevExists: items.length > 0 ? items[0].index !== 1 : false,
+      // tslint:disable-next-line max-line-length
+      moreExists: items.length > 0 ? this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index : false,
+    });
+    this.state.scroller.root.removeEventListener('scroll', this.scroll);
 
     this.state = {
       ...this.state,
@@ -184,17 +193,6 @@ class InfiniteScroll {
         });
         this.state.scroller.root.removeEventListener('scroll', this.scroll);
       }
-    } else {
-      items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
-      this.set(<any>{
-        items,
-        setScroll: true,
-        rememberScrollTop: !this.state.loadMore ? PADDING : 0,
-        prevExists: items.length > 0 ? items[0].index !== 1 : false,
-        // tslint:disable-next-line max-line-length
-        moreExists: items.length > 0 ? this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index : false,
-      });
-      this.state.scroller.root.removeEventListener('scroll', this.scroll);
     }
     return items;
   }

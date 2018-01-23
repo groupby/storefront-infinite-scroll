@@ -255,21 +255,40 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('updateProducts()', () => {
-    it('should update state', () => {
+    it('should set items and state and update state', () => {
       const items = ['a', 'b', 'c'];
       const children = ['e', 'f', 'g'];
       const wrapper = { children };
-      const setProducts = infiniteScroll.setProducts = spy(() => items);
-      infiniteScroll.state = <any>{ wrapper };
+      const products = [1,2,3];
+      const state = { a: 'b' };
+      const getState = () => state;
+      const removeEventListener = spy();
+      const scroller = { root: { removeEventListener } };
+      const productsWithMetadata = spy(() => [1,2,3]);
+      const productTransformer = infiniteScroll.productTransformer = spy((item) => item);
+      const recordCount = spy(() => 20);
+      const newState = {
+        items: products,
+        setScroll: true,
+        rememberScrollTop: PADDING,
+        prevExists: true,
+        moreExists: true
+      };
+      infiniteScroll.state = <any>{ wrapper, productsWithMetadata, recordCount, scroller };
+      infiniteScroll.flux = <any>{ store: { getState } };
 
       infiniteScroll.updateProducts();
 
-      expect(setProducts).to.be.calledOnce;
+      expect(productsWithMetadata).to.be.calledWithExactly(state);
+      expect(productTransformer).to.be.calledThrice;
+      expect(set).to.be.calledWithExactly(newState);
+      expect(removeEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
       expect(infiniteScroll.state).to.eql({
+        ...infiniteScroll.state,
         wrapper,
         elItems: children,
-        firstEl: items[0],
-        lastEl: items[items.length - 1],
+        firstEl: products[0],
+        lastEl: products[products.length - 1],
         getPage: false,
         firstLoad: true,
       });
@@ -336,31 +355,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       });
       expect(result).to.eql([...products, ...items]);
       expect(removeEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
-    });
-
-    it('should get and set items if did not receive products from an add more event', () => {
-      const products = <any>[{ index: 0 }, { index: 1 }, { index: 2 }];
-      const productsWithMetadata = spy(() => products);
-      const removeEventListener = spy();
-      infiniteScroll.state = <any>{
-        ...infiniteScroll.state,
-        productsWithMetadata,
-        scroller: { root: { removeEventListener } }
-      };
-      infiniteScroll.flux = <any>{ store: { getState } };
-
-      const result = infiniteScroll.setProducts();
-
-      expect(productsWithMetadata).to.be.calledWithExactly(getState());
-      expect(productTransformer).to.be.calledThrice;
-      expect(set).to.be.calledWithExactly({
-        items: result,
-        setScroll: true,
-        rememberScrollTop: PADDING,
-        prevExists: true,
-        moreExists: true,
-      });
-      expect(result).to.eql(products);
     });
   });
 

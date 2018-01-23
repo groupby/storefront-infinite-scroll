@@ -22,7 +22,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       it('should have initial value', () => {
         expect(infiniteScroll.state.items).to.eql([]);
         expect(infiniteScroll.state.lastScroll).to.eq(0);
-        expect(infiniteScroll.state.oneTime).to.be.true;
+        expect(infiniteScroll.state.firstLoad).to.be.true;
         expect(infiniteScroll.state.loadMore).to.be.false;
         expect(infiniteScroll.state.isFetchingForward).to.be.false;
         expect(infiniteScroll.state.isFetchingBackward).to.be.false;
@@ -108,7 +108,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('onMount()', () => {
-    it('should update state with scroller, wrapper, and oneTime', () => {
+    it('should update state with scroller, wrapper, and firstLoad', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
       const state = infiniteScroll.state = <any>{ a: 'b', loadMore: false };
@@ -123,7 +123,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         ...state,
         scroller,
         wrapper,
-        oneTime: true,
         loadMore: false,
         loaderLabel: LOADLABEL,
       });
@@ -141,7 +140,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
       infiniteScroll.onMount();
 
-      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, oneTime: true, loadMore: true, loaderLabel });
+      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, loadMore: true, loaderLabel });
     });
   });
 
@@ -159,7 +158,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         items: [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }],
         prevExists: true,
         wrapper,
-        oneTime: true,
+        firstLoad: true,
         scroller,
         setScroll: false,
       };
@@ -175,7 +174,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
 
     it('should only set padding on state when loadMore is false', () => {
-      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', oneTime: true };
+      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', firstLoad: true };
       const padding = 200;
       const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
       const setScroll = infiniteScroll.setScroll = spy();
@@ -189,8 +188,8 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       expect(scroller.root.addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
     });
 
-    it('should still set eventListener if loadMore is true and oneTime is true', () => {
-      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', loadMore: true, oneTime: true };
+    it('should still set eventListener if loadMore is true and firstLoad is true', () => {
+      const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', loadMore: true, firstLoad: true };
       const setScroll = infiniteScroll.setScroll = spy();
 
       infiniteScroll.onUpdated();
@@ -272,7 +271,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         firstEl: items[0],
         lastEl: items[items.length - 1],
         getPage: false,
-        oneTime: true,
+        firstLoad: true,
       });
     });
   });
@@ -377,15 +376,15 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('setFlag()', () => {
-    it('should set oneTime to true', () => {
+    it('should set firstLoad to true', () => {
       infiniteScroll.setFlag();
 
-      expect(set).to.be.calledWithExactly({ oneTime: true });
+      expect(set).to.be.calledWithExactly({ firstLoad: true });
     });
   });
 
   describe('setFetchFlags()', () => {
-    it('should set oneTime to true', () => {
+    it('should set firstLoad to true', () => {
       const fetchState = { isFetchingForward: true, isFetchingBackward: false };
       infiniteScroll.setFetchFlags(fetchState);
 
@@ -632,11 +631,11 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   });
 
   describe('replaceState()', () => {
-    it('should call replaceState with route if oneTime is false', () => {
+    it('should call replaceState with route if firstLoad is false', () => {
       const replaceState = spy();
       infiniteScroll.state = <any>{
         ...infiniteScroll.state,
-        oneTime: false,
+        firstLoad: false,
         route: 'search',
       };
       infiniteScroll.flux = <any>{ replaceState };
@@ -646,9 +645,9 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       expect(replaceState).to.be.calledWithExactly(Routes.SEARCH);
     });
 
-    it('should not call replaceState if oneTime is true', () => {
+    it('should not call replaceState if firstLoad is true', () => {
       const replaceState = spy();
-      infiniteScroll.state = <any>{ oneTime: true };
+      infiniteScroll.state = <any>{ firstLoad: true };
       infiniteScroll.flux = <any>{ replaceState };
 
       infiniteScroll.replaceState();
@@ -666,14 +665,14 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.flux = <any>{ store: { getState: () => null, dispatch } };
       infiniteScroll.state = <any>{
         ...infiniteScroll.state,
-        oneTime: true,
+        firstLoad: true,
         pageSize,
         fetchMore
       };
 
       infiniteScroll.fetchMoreItems();
 
-      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, oneTime: false });
+      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, firstLoad: false });
       expect(fetchMore).to.be.calledWithExactly(page, true);
       expect(dispatch).to.be.calledWithExactly(fetchMore());
     });
@@ -686,14 +685,14 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.flux = <any>{ store: { getState: () => null, dispatch } };
       infiniteScroll.state = <any>{
         ...infiniteScroll.state,
-        oneTime: true,
+        firstLoad: true,
         pageSize,
         fetchMore
       };
 
       infiniteScroll.fetchMoreItems(false);
 
-      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, oneTime: false });
+      expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, firstLoad: false });
       expect(fetchMore).to.be.calledWithExactly(page, false);
       expect(dispatch).to.be.calledWithExactly(fetchMore());
     });

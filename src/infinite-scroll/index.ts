@@ -9,7 +9,7 @@ import {
   StoreSections,
   Tag
 } from '@storefront/core';
-import { Adapters, Routes } from '@storefront/flux-capacitor';
+import { Routes } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
 export const PADDING = 20;
@@ -33,7 +33,7 @@ class InfiniteScroll {
   pastPurchaseMethods: any = {
     pageSize: Selectors.pastPurchasePageSize,
     productsWithMetadata: Selectors.pastPurchaseProductsWithMetadata,
-    recordCount: Selectors.pastPurchaseAllRecordCount,
+    recordCount: Selectors.pastPurchaseCurrentRecordCount,
     currentPage: Selectors.pastPurchasePage,
     receivePage: (count, page) => this.flux.actions.receivePastPurchasePage(count, page),
     fetchMore: (state, forward) => this.flux.actions.fetchMorePastPurchaseProducts(state, forward),
@@ -47,7 +47,7 @@ class InfiniteScroll {
   state: any = {
     items: [],
     lastScroll: 0,
-    oneTime: true,
+    firstLoad: true,
     loadMore: false,
     isFetchingForward: false,
     isFetchingBackward: false,
@@ -85,7 +85,7 @@ class InfiniteScroll {
     const loadMore = this.props.loadMore || this.state.loadMore;
     const loaderLabel = this.props.loaderLabel || LOADLABEL;
 
-    this.state = { ...this.state, scroller, wrapper, oneTime: true, loadMore, loaderLabel };
+    this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel };
   }
 
   onUpdated = () => {
@@ -102,11 +102,11 @@ class InfiniteScroll {
 
         state = { ...state, padding };
 
-        if (this.state.oneTime) {
+        if (this.state.firstLoad) {
           if (this.state.prevExists) this.state.scroller.root.scrollTop = PADDING;
           this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
-      } else if (this.state.oneTime) {
+      } else if (this.state.firstLoad) {
         this.state.scroller.root.addEventListener('scroll', this.scroll);
       }
 
@@ -155,7 +155,7 @@ class InfiniteScroll {
       firstEl: items[0],
       lastEl: items[items.length - 1],
       getPage: false,
-      oneTime: true,
+      firstLoad: true,
     };
   }
 
@@ -203,7 +203,7 @@ class InfiniteScroll {
     this.state.scroller.root.scrollTop = scrollTop
 
   setFlag = () =>
-    this.set({ oneTime: true })
+    this.set({ firstLoad: true })
 
   setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) =>
     this.set({ isFetchingForward, isFetchingBackward })
@@ -300,13 +300,13 @@ class InfiniteScroll {
     this.flux.store.dispatch(this.state.receivePage(count, page))
 
   replaceState = () => {
-    if (!this.state.oneTime) this.flux.replaceState(this.state.route);
+    if (!this.state.firstLoad) this.flux.replaceState(this.state.route);
   }
 
   fetchMoreItems = (forward: boolean = true) => {
     this.state = {
       ...this.state,
-      oneTime: false,
+      firstLoad: false,
     };
     this.flux.store.dispatch(this.state.fetchMore(this.state.pageSize(this.flux.store.getState()), forward));
   }
@@ -330,7 +330,7 @@ namespace InfiniteScroll {
 
   export interface State extends Methods {
     items: any[];
-    oneTime: boolean;
+    firstLoad: boolean;
     loadMore: boolean;
     loadLabel: string;
     isFetchingForward: boolean;

@@ -88,7 +88,7 @@ class InfiniteScroll {
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel };
   }
 
-  onUpdated = () => {
+  onUpdate = () => {
     const firstItem = this.state.items[0];
     let state = <any>{ getPage: false };
 
@@ -129,7 +129,7 @@ class InfiniteScroll {
         imgs[i].onload = () => {
           count++;
           if (imgsLoaded(count, pageSize, imgs.length)) {
-            this.maintainScrollTop(this.state.rememberScroll);
+            this.maintainScrollTop(this.state.rememberScrollTop);
             this.state.scroller.root.addEventListener('scroll', this.scroll);
           }
         };
@@ -137,7 +137,7 @@ class InfiniteScroll {
       // need to still add scrollTop & scroll listener if imgs don't load
       setTimeout(() => {
         if (!imgsLoaded(count, pageSize, imgs.length)) {
-          this.maintainScrollTop(this.state.rememberScroll);
+          this.maintainScrollTop(this.state.rememberScrollTop);
           this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
       }, 500);
@@ -172,13 +172,13 @@ class InfiniteScroll {
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         const pageSize = this.state.pageSize(this.flux.store.getState());
-        const rememberScroll = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
+        const rememberScrollTop = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
         this.set(<any>{
           ...this.state,
           items,
           setScroll: true,
-          rememberScroll,
+          rememberScrollTop,
           prevExists: items[0].index !== 1,
           moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
@@ -189,7 +189,7 @@ class InfiniteScroll {
       this.set(<any>{
         items,
         setScroll: true,
-        rememberScroll: !this.state.loadMore ? PADDING : 0,
+        rememberScrollTop: !this.state.loadMore ? PADDING : 0,
         prevExists: items.length > 0 ? items[0].index !== 1 : false,
         // tslint:disable-next-line max-line-length
         moreExists: items.length > 0 ? this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index : false,
@@ -219,7 +219,7 @@ class InfiniteScroll {
 
     // TODO: decide on breakpoints for fetching & move into constants
     // tslint:disable-next-line max-line-length
-    if (!this.state.loadMore && this.state.scroller !== this.state.rememberScroll) {
+    if (!this.state.loadMore && this.state.scroller !== this.state.rememberScrollTop) {
       if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
         // tslint:disable-next-line max-line-length
         if (this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
@@ -341,7 +341,7 @@ namespace InfiniteScroll {
     clickPrev: () => void;
     prevExists?: boolean;
     moreExists?: boolean;
-    rememberScroll?: number;
+    rememberScrollTop?: number;
     scroller?: List;
     wrapper?: HTMLUListElement;
     // set type to proper type rather than any

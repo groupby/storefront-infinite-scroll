@@ -144,7 +144,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
   });
 
-  describe('onUpdated()', () => {
+  describe('onUpdate()', () => {
     let initialState;
     let wrapper;
     let scroller;
@@ -168,7 +168,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const state = infiniteScroll.state = <any>{ a: 'b', items: [] };
       set = infiniteScroll.set = spy();
 
-      infiniteScroll.onUpdated();
+      infiniteScroll.onUpdate();
 
       expect(infiniteScroll.state).to.eq(state);
     });
@@ -179,7 +179,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
       const setScroll = infiniteScroll.setScroll = spy();
 
-      infiniteScroll.onUpdated();
+      infiniteScroll.onUpdate();
 
       expect(infiniteScroll.state).to.eql({ ...state, padding, getPage: false });
       expect(calculatePadding).to.be.calledWithExactly(0);
@@ -192,7 +192,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', loadMore: true, firstLoad: true };
       const setScroll = infiniteScroll.setScroll = spy();
 
-      infiniteScroll.onUpdated();
+      infiniteScroll.onUpdate();
 
       expect(infiniteScroll.state).to.eql({ ...state, getPage: false });
       expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
@@ -206,13 +206,13 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const querySelectorAll = spy(() => imgs);
       const pageSize = spy(() => 3);
       const getState = spy();
-      const rememberScroll = 15;
+      const rememberScrollTop = 15;
       const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
       const addEventListener = spy();
       infiniteScroll.state = <any>{
         wrapper: { querySelectorAll },
         pageSize,
-        rememberScroll,
+        rememberScrollTop,
         scroller: { root: { addEventListener } },
       };
       infiniteScroll.flux = <any>{ store: { getState } };
@@ -222,7 +222,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       imgs[1].onload();
       imgs[2].onload();
 
-      expect(maintainScrollTop).to.be.calledWithExactly(rememberScroll);
+      expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollTop);
       expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
       expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, setScroll: false });
     });
@@ -233,13 +233,13 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const querySelectorAll = spy(() => imgs);
       const pageSize = spy(() => 3);
       const getState = spy();
-      const rememberScroll = 15;
+      const rememberScrollTop = 15;
       const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
       const addEventListener = spy();
       infiniteScroll.state = <any>{
         wrapper: { querySelectorAll },
         pageSize,
-        rememberScroll,
+        rememberScrollTop,
         scroller: { root: { addEventListener } },
       };
       infiniteScroll.flux = <any>{ store: { getState } };
@@ -247,7 +247,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.setScroll();
 
       setTimeout(function() {
-        expect(maintainScrollTop).to.be.calledWithExactly(rememberScroll);
+        expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollTop);
         expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
         done();
       }, 501);
@@ -330,7 +330,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         ...state,
         items: result,
         setScroll: true,
-        rememberScroll: 3412,
+        rememberScrollTop: 3412,
         prevExists: false,
         moreExists: true,
       });
@@ -356,7 +356,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       expect(set).to.be.calledWithExactly({
         items: result,
         setScroll: true,
-        rememberScroll: PADDING,
+        rememberScrollTop: PADDING,
         prevExists: true,
         moreExists: true,
       });

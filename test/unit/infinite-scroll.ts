@@ -100,7 +100,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         expect(on).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
         expect(on).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
         expect(on).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
-        expect(on).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFlag);
+        expect(on).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFirstLoadFlag);
         expect(on).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
         expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.searchMethods });
       });
@@ -369,9 +369,9 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
   });
 
-  describe('setFlag()', () => {
+  describe('setFirstLoadFlag()', () => {
     it('should set firstLoad to true', () => {
-      infiniteScroll.setFlag();
+      infiniteScroll.setFirstLoadFlag();
 
       expect(set).to.be.calledWithExactly({ firstLoad: true });
     });

@@ -9,7 +9,7 @@
     <yield/>
   </li>
   <li data-is="gb-list-item" class="load second-loader" if="{ $infinite.isFetchingForward }">
-    <gb-infinite-loader></gb-infinite-loader>
+    <gb-infinite-loader label="{ $infinite.loaderLabel }"></gb-infinite-loader>
   </li>
   <li data-is="gb-list-item" class="load" if="{ $infinite.loadMore && $infinite.moreExists }">
     <gb-button class="load-more" on-click="{ $infinite.clickMore }">Load More</gb-button>

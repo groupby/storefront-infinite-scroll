@@ -14,6 +14,9 @@ import { List } from '@storefront/structure';
 
 export const PADDING = 20;
 export const LOADLABEL = 'loading...';
+export const BREAKPOINT_SCROLL_DOWN = .75;
+export const BREAKPOINT_SCROLL_UP = 1.25;
+export const BREAKPOINT_ITEM_HEIGHT = .25;
 
 @configurable
 @alias('infinite')
@@ -74,7 +77,7 @@ class InfiniteScroll {
         this.flux.on(Events.PRODUCTS_UPDATED, this.updateProducts);
         this.flux.on(Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.flux.on(Events.PAGE_UPDATED, this.replaceState);
-        this.flux.on(Events.SEARCH_CHANGED, this.setFlag);
+        this.flux.on(Events.SEARCH_CHANGED, this.setFirstLoadFlag);
         this.flux.on(Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
   }
@@ -200,7 +203,7 @@ class InfiniteScroll {
   maintainScrollTop = (scrollTop: number) =>
     this.state.scroller.root.scrollTop = scrollTop
 
-  setFlag = () =>
+  setFirstLoadFlag = () =>
     this.set({ firstLoad: true })
 
   setFetchFlags = ({ isFetchingForward, isFetchingBackward }: Store.InfiniteScroll) =>
@@ -210,21 +213,24 @@ class InfiniteScroll {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
     const scrollerHeight = scroller.root.getBoundingClientRect().height;
+    const scrollTop = scroller.root.scrollTop;
 
     if (this.state.getPage) {
       this.calculatePageChange();
     }
 
-    // TODO: decide on breakpoints for fetching & move into constants
     // tslint:disable-next-line max-line-length
-    if (!this.state.loadMore && this.state.scroller !== this.state.rememberScrollTop) {
-      if (this.state.lastScroll < scroller.root.scrollTop && scroller.root.scrollTop >= (wrapperHeight - scrollerHeight) * .75) {
+    if (!this.state.loadMore && scrollTop !== this.state.rememberScrollTop) {
+      // if user is scrolling down and hits point past breakpoint, should fetch
+      // tslint:disable-next-line max-line-length
+      if (this.state.lastScroll < scrollTop && scrollTop >= (wrapperHeight - scrollerHeight) * BREAKPOINT_SCROLL_DOWN) {
         // tslint:disable-next-line max-line-length
         if (this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
           this.fetchMoreItems();
         }
-        // tslint:disable-next-line max-line-length
-      } else if (this.state.lastScroll > scroller.root.scrollTop && scroller.root.scrollTop <= this.state.padding * 1.25) {
+      // if user is scrolling up and hits point past breakpoint, should fetch
+      // tslint:disable-next-line max-line-length
+    } else if (this.state.lastScroll > scrollTop && scrollTop <= this.state.padding * BREAKPOINT_SCROLL_UP) {
         if (this.state.prevExists) {
           this.fetchMoreItems(false);
         }
@@ -233,7 +239,7 @@ class InfiniteScroll {
 
     this.state = {
       ...this.state,
-      lastScroll: scroller.root.scrollTop,
+      lastScroll: scrollTop,
       getPage: true,
     };
   }
@@ -282,13 +288,13 @@ class InfiniteScroll {
   topElBelowOffset = (element: HTMLElement, parent: HTMLElement) => {
     const { top, height } = element.getBoundingClientRect();
     const { top: parentTop } = parent.getBoundingClientRect();
-    return top > (parentTop - (height * .25));
+    return top > (parentTop - (height * BREAKPOINT_ITEM_HEIGHT));
   }
 
   bottomElAboveOffset = (element: HTMLElement, parent: HTMLElement) => {
     const { bottom, height } = element.getBoundingClientRect();
     const { bottom: parentBottom } = parent.getBoundingClientRect();
-    return bottom < (parentBottom + (height * .25));
+    return bottom < (parentBottom + (height * BREAKPOINT_ITEM_HEIGHT));
   }
 
   getIndex = (recordIndex: number) =>

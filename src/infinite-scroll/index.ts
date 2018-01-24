@@ -249,8 +249,8 @@ class InfiniteScroll {
     if (listItems.length > 0) {
       const itemDimensions = listItems[0].root.getBoundingClientRect();
       const width = this.state.scroller.root.getBoundingClientRect().width;
-      const row = Math.floor(width / itemDimensions.width);
-      const rows = totalItems / row;
+      const itemsPerRow = Math.floor(width / itemDimensions.width);
+      const rows = totalItems / itemsPerRow;
       return (rows * itemDimensions.height);
     }
   }

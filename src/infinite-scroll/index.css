@@ -1,0 +1,4 @@
+gb-infinite-scroll > gb-infinite-list {
+  display: block;
+  overflow-y: scroll;
+}

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+esnext/
+bundle/
+coverage/
+typings/
+.scratch/
+src/**/*.js
+src/**/*.d.ts
+test/**/*.js
+test/**/*.d.ts
+
+*.log

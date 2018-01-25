@@ -57,17 +57,17 @@
   "devDependencies": {
     "@storefront/testing": "^1.0.2",
     "@team-griffin/install-self-peers": "^1.1.1",
-    "@types/node": "^8.0.17",
+    "@types/node": "^9.3.0",
     "babel-preset-stage-3": "^6.24.1",
     "chai": "^4.1.0",
-    "condition-circle": "^1.5.0",
+    "condition-circle": "^2.0.1",
     "cz-conventional-changelog": "^2.0.0",
     "husky": "^0.14.3",
     "re-start": "^1.14.8",
     "start-simple-cli": "^4.1.1",
     "tslint": "^5.5.0",
     "tslint-config-groupby": "^1.0.0",
-    "typedoc": "^0.8.0",
+    "typedoc": "^0.9.0",
     "typescript": "^2.4.2"
   },
   "peerDependencies": {

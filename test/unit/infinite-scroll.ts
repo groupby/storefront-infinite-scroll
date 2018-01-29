@@ -144,7 +144,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
   });
 
-  describe('onUpdate()', () => {
+  describe('onUpdated()', () => {
     let initialState;
     let wrapper;
     let scroller;
@@ -168,7 +168,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const state = infiniteScroll.state = <any>{ a: 'b', items: [] };
       set = infiniteScroll.set = spy();
 
-      infiniteScroll.onUpdate();
+      infiniteScroll.onUpdated();
 
       expect(infiniteScroll.state).to.eq(state);
     });
@@ -179,7 +179,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const calculatePadding = infiniteScroll.calculateOffset = spy(() => padding);
       const setScroll = infiniteScroll.setScroll = spy();
 
-      infiniteScroll.onUpdate();
+      infiniteScroll.onUpdated();
 
       expect(infiniteScroll.state).to.eql({ ...state, padding, getPage: false });
       expect(calculatePadding).to.be.calledWithExactly(0);
@@ -192,7 +192,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const state = infiniteScroll.state = <any>{ ...initialState, a: 'b', loadMore: true, firstLoad: true };
       const setScroll = infiniteScroll.setScroll = spy();
 
-      infiniteScroll.onUpdate();
+      infiniteScroll.onUpdated();
 
       expect(infiniteScroll.state).to.eql({ ...state, getPage: false });
       expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);

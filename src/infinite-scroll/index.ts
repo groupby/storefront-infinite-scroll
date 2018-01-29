@@ -91,7 +91,7 @@ class InfiniteScroll {
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel };
   }
 
-  onUpdate = () => {
+  onUpdated = () => {
     const firstItem = this.state.items[0];
     let state = <any>{ getPage: false };
 

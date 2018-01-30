@@ -2,6 +2,7 @@ import {
   alias,
   configurable,
   tag,
+  utils,
   Events,
   ProductTransformer,
   Selectors,
@@ -52,6 +53,7 @@ class InfiniteScroll {
     lastScroll: 0,
     firstLoad: true,
     loadMore: false,
+    windowScroll: false,
     isFetchingForward: false,
     isFetchingBackward: false,
     setScroll: false,
@@ -87,8 +89,9 @@ class InfiniteScroll {
     const wrapper = scroller.refs.wrapper;
     const loadMore = this.props.loadMore || this.state.loadMore;
     const loaderLabel = this.props.loaderLabel || LOADLABEL;
+    const windowScroll = this.props.windowScroll || this.state.windowScroll;
 
-    this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel };
+    this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel, windowScroll };
   }
 
   onUpdated = () => {
@@ -107,10 +110,14 @@ class InfiniteScroll {
 
         if (this.state.firstLoad) {
           if (this.state.prevExists) this.state.scroller.root.scrollTop = PADDING;
-          this.state.scroller.root.addEventListener('scroll', this.scroll);
+          this.state.windowScroll
+            ? utils.WINDOW().addEventListener('scroll', this.scroll)
+            : this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
       } else if (this.state.firstLoad) {
-        this.state.scroller.root.addEventListener('scroll', this.scroll);
+        this.state.windowScroll
+          ? utils.WINDOW().addEventListener('scroll', this.scroll)
+          : this.state.scroller.root.addEventListener('scroll', this.scroll);
       }
 
       this.state = { ...this.state, ...state };
@@ -132,16 +139,20 @@ class InfiniteScroll {
         imgs[i].onload = () => {
           count++;
           if (imgsLoaded(count, pageSize, imgs.length)) {
-            this.maintainScrollTop(this.state.rememberScrollTop);
-            this.state.scroller.root.addEventListener('scroll', this.scroll);
+            this.maintainScrollTop(this.state.rememberScrollY);
+            this.state.windowScroll
+              ? utils.WINDOW().addEventListener('scroll', this.scroll)
+              : this.state.scroller.root.addEventListener('scroll', this.scroll);
           }
         };
       }
       // need to still add scrollTop & scroll listener if imgs don't load
       setTimeout(() => {
         if (!imgsLoaded(count, pageSize, imgs.length)) {
-          this.maintainScrollTop(this.state.rememberScrollTop);
-          this.state.scroller.root.addEventListener('scroll', this.scroll);
+          this.maintainScrollTop(this.state.rememberScrollY);
+          this.state.windowScroll
+            ? utils.WINDOW().addEventListener('scroll', this.scroll)
+            : this.state.scroller.root.addEventListener('scroll', this.scroll);
         }
       }, 500);
     }
@@ -154,12 +165,14 @@ class InfiniteScroll {
     this.set(<any>{
       items,
       setScroll: true,
-      rememberScrollTop: !this.state.loadMore ? PADDING : 0,
+      rememberScrollY: !this.state.loadMore ? PADDING : 0,
       prevExists: items.length > 0 ? items[0].index !== 1 : false,
       // tslint:disable-next-line max-line-length
       moreExists: items.length > 0 ? this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index : false,
     });
-    this.state.scroller.root.removeEventListener('scroll', this.scroll);
+    this.state.windowScroll
+      ? utils.WINDOW().removeEventListener('scroll', this.scroll)
+      : this.state.scroller.root.removeEventListener('scroll', this.scroll);
 
     this.state = {
       ...this.state,
@@ -172,7 +185,6 @@ class InfiniteScroll {
   }
 
   setProducts = (products?: Store.ProductWithMetadata[]) => {
-    // TODO: put the products at the end if they're forward, at the beginning if they're backward
     let items;
     if (products) {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {
@@ -184,17 +196,20 @@ class InfiniteScroll {
         });
       } else if (products[products.length - 1].index < this.state.items[0].index) {
         const pageSize = this.state.pageSize(this.flux.store.getState());
-        const rememberScrollTop = this.calculateOffset(pageSize) + this.state.scroller.root.scrollTop;
+        // tslint:disable-next-line max-line-length
+        const rememberScrollY = this.calculateOffset(pageSize) + this.state.windowScroll ? utils.WINDOW().scrollY : this.state.scroller.root.scrollTop;
         items = [...products.map(this.productTransformer), ...this.state.items];
         this.set(<any>{
           ...this.state,
           items,
           setScroll: true,
-          rememberScrollTop,
+          rememberScrollY,
           prevExists: items[0].index !== 1,
           moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
-        this.state.scroller.root.removeEventListener('scroll', this.scroll);
+        this.state.windowScroll
+          ? utils.WINDOW().removeEventListener('scroll', this.scroll)
+          : this.state.scroller.root.removeEventListener('scroll', this.scroll);
       }
     }
     return items;
@@ -212,25 +227,24 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    const scrollerHeight = scroller.root.getBoundingClientRect().height;
-    const scrollTop = scroller.root.scrollTop;
+    const scrollY = this.state.windowScroll ? utils.WINDOW().scrollY : scroller.root.scrollTop;
 
     if (this.state.getPage) {
       this.calculatePageChange();
     }
 
     // tslint:disable-next-line max-line-length
-    if (!this.state.loadMore && scrollTop !== this.state.rememberScrollTop) {
+    if (!this.state.loadMore && scrollY !== this.state.rememberScrollY) {
       // if user is scrolling down and hits point past breakpoint, should fetch
       // tslint:disable-next-line max-line-length
-      if (this.state.lastScroll < scrollTop && scrollTop >= (wrapperHeight - scrollerHeight) * BREAKPOINT_SCROLL_DOWN) {
+      if (this.state.lastScroll < scrollY) {
         // tslint:disable-next-line max-line-length
         if (this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
           this.fetchMoreItems();
         }
       // if user is scrolling up and hits point past breakpoint, should fetch
       // tslint:disable-next-line max-line-length
-    } else if (this.state.lastScroll > scrollTop && scrollTop <= this.state.padding * BREAKPOINT_SCROLL_UP) {
+    } else if (this.state.lastScroll > scrollY) {
         if (this.state.prevExists) {
           this.fetchMoreItems(false);
         }
@@ -239,7 +253,7 @@ class InfiniteScroll {
 
     this.state = {
       ...this.state,
-      lastScroll: scrollTop,
+      lastScroll: scrollY,
       getPage: true,
     };
   }
@@ -264,37 +278,50 @@ class InfiniteScroll {
     const page = this.state.currentPage(state);
     const pageSize = this.state.pageSize(state);
 
-    if (first && this.topElBelowOffset(first, scroller)) {
-      this.state = {
-        ...this.state,
-        firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
-        lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
-      };
-      this.setPage(recordCount, page - 1);
-    } else if (last && this.bottomElAboveOffset(last, scroller)) {
-      this.state = {
-        ...this.state,
-        firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
-        lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
-      };
-      this.setPage(recordCount, page + 1);
+    if (first) {
+      // tslint:disable-next-line max-line-length
+      const topCheck = this.state.windowScroll ? this.topElBelowOffsetWindow(first) : this.topElBelowOffset(first, scroller.getBoundingClientRect().top);
+      if (this.topElBelowOffsetWindow(first)) {
+        this.state = {
+          ...this.state,
+          firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
+          lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
+        };
+        this.setPage(recordCount, page - 1);
+      }
+    } else if (last) {
+      // tslint:disable-next-line max-line-length
+      const bottomCheck = this.state.windowScroll ? this.bottomElAboveOffsetWindow(last, utils.WINDOW().innerHeight) : this.bottomElAboveOffset(last, scroller.getBoundingClientRect().bottom);
+      if (this.bottomElAboveOffsetWindow(last, utils.WINDOW().innerHeight)) {
+        this.state = {
+          ...this.state,
+          firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
+          lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
+        };
+        this.setPage(recordCount, page + 1);
+      }
     }
   }
 
   getItem = (recordIndex: number) =>
     this.state.elItems[this.getIndex(recordIndex)]
 
-  // TODO: logic for changing page should happen when first item of next/prev page is at the top
-  topElBelowOffset = (element: HTMLElement, parent: HTMLElement) => {
+  topElBelowOffset = (element: HTMLElement, parentTop: number) => {
     const { top, height } = element.getBoundingClientRect();
-    const { top: parentTop } = parent.getBoundingClientRect();
     return top > (parentTop - (height * BREAKPOINT_ITEM_HEIGHT));
   }
 
-  bottomElAboveOffset = (element: HTMLElement, parent: HTMLElement) => {
+  bottomElAboveOffset = (element: HTMLElement, parentBottom: number) => {
     const { bottom, height } = element.getBoundingClientRect();
-    const { bottom: parentBottom } = parent.getBoundingClientRect();
     return bottom < (parentBottom + (height * BREAKPOINT_ITEM_HEIGHT));
+  }
+
+  topElBelowOffsetWindow = (element: HTMLElement) => {
+    return element.getBoundingClientRect().top > 1;
+  }
+
+  bottomElAboveOffsetWindow = (element: HTMLElement, parentBottom: number) => {
+    return element.getBoundingClientRect().top < parentBottom;
   }
 
   getIndex = (recordIndex: number) =>
@@ -321,6 +348,7 @@ namespace InfiniteScroll {
   export interface Props extends Tag.Props {
     loadMore: boolean;
     loaderLabel: string;
+    windowScroll: boolean;
   }
 
   export interface Methods {
@@ -337,6 +365,7 @@ namespace InfiniteScroll {
     firstLoad: boolean;
     loadMore: boolean;
     loadLabel: string;
+    windowScroll: boolean;
     isFetchingForward: boolean;
     isFetchingBackward: boolean;
     setScroll: boolean;
@@ -345,7 +374,7 @@ namespace InfiniteScroll {
     clickPrev: () => void;
     prevExists?: boolean;
     moreExists?: boolean;
-    rememberScrollTop?: number;
+    rememberScrollY?: number;
     scroller?: List;
     wrapper?: HTMLUListElement;
     // set type to proper type rather than any

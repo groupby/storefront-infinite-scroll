@@ -242,9 +242,9 @@ class InfiniteScroll {
         if (this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index) {
           this.fetchMoreItems();
         }
-      // if user is scrolling up and hits point past breakpoint, should fetch
-      // tslint:disable-next-line max-line-length
-    } else if (this.state.lastScroll > scrollY) {
+        // if user is scrolling up and hits point past breakpoint, should fetch
+        // tslint:disable-next-line max-line-length
+      } else if (this.state.lastScroll > scrollY) {
         if (this.state.prevExists) {
           this.fetchMoreItems(false);
         }
@@ -277,29 +277,27 @@ class InfiniteScroll {
     const recordCount = this.state.recordCount(state);
     const page = this.state.currentPage(state);
     const pageSize = this.state.pageSize(state);
+    const topCheck = this.state.windowScroll
+      ? () => this.topElBelowOffsetWindow(first)
+      : () => this.topElBelowOffset(first, scroller.getBoundingClientRect().top);
+    const bottomCheck = this.state.windowScroll
+      ? () => this.bottomElAboveOffsetWindow(last, utils.WINDOW().innerHeight)
+      : () => this.bottomElAboveOffset(last, scroller.getBoundingClientRect().bottom);
 
-    if (first) {
-      // tslint:disable-next-line max-line-length
-      const topCheck = this.state.windowScroll ? this.topElBelowOffsetWindow(first) : this.topElBelowOffset(first, scroller.getBoundingClientRect().top);
-      if (this.topElBelowOffsetWindow(first)) {
-        this.state = {
-          ...this.state,
-          firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
-          lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
-        };
-        this.setPage(recordCount, page - 1);
-      }
-    } else if (last) {
-      // tslint:disable-next-line max-line-length
-      const bottomCheck = this.state.windowScroll ? this.bottomElAboveOffsetWindow(last, utils.WINDOW().innerHeight) : this.bottomElAboveOffset(last, scroller.getBoundingClientRect().bottom);
-      if (this.bottomElAboveOffsetWindow(last, utils.WINDOW().innerHeight)) {
-        this.state = {
-          ...this.state,
-          firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
-          lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
-        };
-        this.setPage(recordCount, page + 1);
-      }
+    if (first && topCheck()) {
+      this.state = {
+        ...this.state,
+        firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
+        lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
+      };
+      this.setPage(recordCount, page - 1);
+    } else if (last && bottomCheck()) {
+      this.state = {
+        ...this.state,
+        firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
+        lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
+      };
+      this.setPage(recordCount, page + 1);
     }
   }
 

@@ -111,7 +111,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     it('should update state with scroller, wrapper, and firstLoad', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
-      const state = infiniteScroll.state = <any>{ a: 'b', loadMore: false };
+      const state = infiniteScroll.state = <any>{ a: 'b', loadMore: false, windowScroll: false };
       infiniteScroll.props = <any>{};
       infiniteScroll.tags = {
         'gb-infinite-list': scroller
@@ -125,6 +125,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         wrapper,
         loadMore: false,
         loaderLabel: LOADLABEL,
+        windowScroll: false,
       });
     });
 
@@ -136,11 +137,18 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.tags = {
         'gb-infinite-list': scroller
       };
-      infiniteScroll.props = <any>{ loadMore: true, loaderLabel };
+      infiniteScroll.props = <any>{ loadMore: true, loaderLabel, windowScroll: true };
 
       infiniteScroll.onMount();
 
-      expect(infiniteScroll.state).to.eql({ ...state, scroller, wrapper, loadMore: true, loaderLabel });
+      expect(infiniteScroll.state).to.eql({
+        ...state,
+        scroller,
+        wrapper,
+        loadMore: true,
+        loaderLabel,
+        windowScroll: true
+      });
     });
   });
 
@@ -206,13 +214,13 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const querySelectorAll = spy(() => imgs);
       const pageSize = spy(() => 3);
       const getState = spy();
-      const rememberScrollTop = 15;
+      const rememberScrollY = 15;
       const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
       const addEventListener = spy();
       infiniteScroll.state = <any>{
         wrapper: { querySelectorAll },
         pageSize,
-        rememberScrollTop,
+        rememberScrollY,
         scroller: { root: { addEventListener } },
       };
       infiniteScroll.flux = <any>{ store: { getState } };
@@ -222,7 +230,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       imgs[1].onload();
       imgs[2].onload();
 
-      expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollTop);
+      expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollY);
       expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
       expect(infiniteScroll.state).to.eql({ ...infiniteScroll.state, setScroll: false });
     });
@@ -233,13 +241,13 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const querySelectorAll = spy(() => imgs);
       const pageSize = spy(() => 3);
       const getState = spy();
-      const rememberScrollTop = 15;
+      const rememberScrollY = 15;
       const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
       const addEventListener = spy();
       infiniteScroll.state = <any>{
         wrapper: { querySelectorAll },
         pageSize,
-        rememberScrollTop,
+        rememberScrollY,
         scroller: { root: { addEventListener } },
       };
       infiniteScroll.flux = <any>{ store: { getState } };
@@ -247,7 +255,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       infiniteScroll.setScroll();
 
       setTimeout(function() {
-        expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollTop);
+        expect(maintainScrollTop).to.be.calledWithExactly(rememberScrollY);
         expect(addEventListener).to.be.calledWithExactly('scroll', infiniteScroll.scroll);
         done();
       }, 501);
@@ -259,18 +267,18 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
       const items = ['a', 'b', 'c'];
       const children = ['e', 'f', 'g'];
       const wrapper = { children };
-      const products = [1,2,3];
+      const products = [1, 2, 3];
       const state = { a: 'b' };
       const getState = () => state;
       const removeEventListener = spy();
       const scroller = { root: { removeEventListener } };
-      const productsWithMetadata = spy(() => [1,2,3]);
+      const productsWithMetadata = spy(() => [1, 2, 3]);
       const productTransformer = infiniteScroll.productTransformer = spy((item) => item);
       const recordCount = spy(() => 20);
       const newState = {
         items: products,
         setScroll: true,
-        rememberScrollTop: PADDING,
+        rememberScrollY: PADDING,
         prevExists: true,
         moreExists: true
       };
@@ -349,7 +357,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         ...state,
         items: result,
         setScroll: true,
-        rememberScrollTop: 3412,
+        rememberScrollY: 3412,
         prevExists: false,
         moreExists: true,
       });
@@ -469,7 +477,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   describe('calculatePageChange()', () => {
     it('should call setPage when first exists and it is below the offset', () => {
       const getItem = infiniteScroll.getItem = spy(() => 30);
-      const root = { a: 'b' };
+      const root = { a: 'b', getBoundingClientRect: () => ({ top: 2, bottom: 3 }) };
       const getState = spy();
       const recordCount = spy(() => 50);
       const currentPage = spy(() => 5);
@@ -494,7 +502,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
       infiniteScroll.calculatePageChange();
 
-      expect(topElBelowOffset).to.be.calledWithExactly(30, root);
+      expect(topElBelowOffset).to.be.calledWithExactly(30, root.getBoundingClientRect().top);
       expect(infiniteScroll.state).to.eql({
         ...state,
         firstEl: 1,
@@ -505,7 +513,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
     it('should call setPage when last exists and it is above the offset', () => {
       const getItem = infiniteScroll.getItem = spy(() => 30);
-      const root = { a: 'b' };
+      const root = { a: 'b', getBoundingClientRect: () => ({ top: 2, bottom: 3 }) };
       const getState = spy();
       const recordCount = spy(() => 50);
       const currentPage = spy(() => 5);
@@ -532,7 +540,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
 
       infiniteScroll.calculatePageChange();
 
-      expect(topElBelowOffset).to.be.calledWithExactly(30, root);
+      expect(topElBelowOffset).to.be.calledWithExactly(30, root.getBoundingClientRect().top);
       expect(infiniteScroll.state).to.eql({
         ...state,
         firstEl: 5,
@@ -558,18 +566,16 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   describe('topElBelowOffset()', () => {
     it('should return true if element\'s top is greater than offset', () => {
       const element = <any>{ getBoundingClientRect: () => ({ top: 1000, height: 20 }) };
-      const parent = <any>{ getBoundingClientRect: () => ({ top: 200 }) };
 
-      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, parent);
+      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, 200);
 
       expect(topElBelowOffset).to.be.true;
     });
 
     it('should return false if element\'s top is less than offset', () => {
       const element = <any>{ getBoundingClientRect: () => ({ top: 100, height: 20 }) };
-      const parent = <any>{ getBoundingClientRect: () => ({ top: 200 }) };
 
-      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, parent);
+      const topElBelowOffset = infiniteScroll.topElBelowOffset(element, 200);
 
       expect(topElBelowOffset).to.be.false;
     });
@@ -578,20 +584,46 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
   describe('bottomElAboveOffset()', () => {
     it('should return true if element\'s bottom is less than offset', () => {
       const element = <any>{ getBoundingClientRect: () => ({ bottom: 100, height: 20 }) };
-      const parent = <any>{ getBoundingClientRect: () => ({ bottom: 200 }) };
 
-      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, parent);
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, 200);
 
       expect(bottomElAboveOffset).to.be.true;
     });
 
     it('should return false if element\'s bottom is greater than offset', () => {
       const element = <any>{ getBoundingClientRect: () => ({ bottom: 1000, height: 20 }) };
-      const parent = <any>{ getBoundingClientRect: () => ({ bottom: 200 }) };
 
-      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, parent);
+      const bottomElAboveOffset = infiniteScroll.bottomElAboveOffset(element, 200);
 
       expect(bottomElAboveOffset).to.be.false;
+    });
+  });
+
+  describe('topElBelowOffsetWindow()', () => {
+    it('should return true if top > 1', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: 100 }) };
+
+      expect(infiniteScroll.topElBelowOffsetWindow(element)).to.be.true;
+    });
+
+    it('should return false', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: -100 }) };
+
+      expect(infiniteScroll.topElBelowOffsetWindow(element)).to.be.false;
+    });
+  });
+
+  describe('bottomElBelowOffsetWindow()', () => {
+    it('should return true if top < parentBottom', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: 0 }) };
+
+      expect(infiniteScroll.bottomElAboveOffsetWindow(element, 100)).to.be.true;
+    });
+
+    it('should return false', () => {
+      const element = <any>{ getBoundingClientRect: () => ({ top: 200 }) };
+
+      expect(infiniteScroll.bottomElAboveOffsetWindow(element, 100)).to.be.false;
     });
   });
 

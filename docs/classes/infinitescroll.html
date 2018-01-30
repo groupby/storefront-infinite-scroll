@@ -128,6 +128,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#bottomelaboveoffset" class="tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#bottomelaboveoffsetwindow" class="tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset<wbr>Window</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#calculateoffset" class="tsd-kind-icon">calculate<wbr>Offset</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#calculatepagechange" class="tsd-kind-icon">calculate<wbr>Page<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="infinitescroll.html#dispatch" class="tsd-kind-icon">dispatch</a></li>
@@ -150,6 +151,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#setproducts" class="tsd-kind-icon">set<wbr>Products</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#setscroll" class="tsd-kind-icon">set<wbr>Scroll</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#topelbelowoffset" class="tsd-kind-icon">top<wbr>ElBelow<wbr>Offset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#topelbelowoffsetwindow" class="tsd-kind-icon">top<wbr>ElBelow<wbr>Offset<wbr>Window</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="infinitescroll.html#unexpose" class="tsd-kind-icon">unexpose</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="infinitescroll.html#updatealias" class="tsd-kind-icon">update<wbr>Alias</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="infinitescroll.html#updateproducts" class="tsd-kind-icon">update<wbr>Products</a></li>
@@ -243,7 +245,7 @@
 					<div class="tsd-signature tsd-kind-icon">tags<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L46">src/infinite-scroll/index.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L47">src/infinite-scroll/index.ts:47</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -416,13 +418,13 @@
 					<a name="bottomelaboveoffset" class="tsd-anchor"></a>
 					<h3>bottom<wbr>ElAbove<wbr>Offset</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>, parent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>, parentBottom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L294">src/infinite-scroll/index.ts:294</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L312">src/infinite-scroll/index.ts:312</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -431,7 +433,33 @@
 									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
 								</li>
 								<li>
-									<h5>parent: <span class="tsd-signature-type">HTMLElement</span></h5>
+									<h5>parentBottom: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bottomelaboveoffsetwindow" class="tsd-anchor"></a>
+					<h3>bottom<wbr>ElAbove<wbr>Offset<wbr>Window</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset<wbr>Window<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>, parentBottom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L321">src/infinite-scroll/index.ts:321</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
+								</li>
+								<li>
+									<h5>parentBottom: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -448,7 +476,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L247">src/infinite-scroll/index.ts:247</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L261">src/infinite-scroll/index.ts:261</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -471,7 +499,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L258">src/infinite-scroll/index.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L272">src/infinite-scroll/index.ts:272</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -539,7 +567,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L310">src/infinite-scroll/index.ts:310</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L335">src/infinite-scroll/index.ts:335</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -562,7 +590,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L300">src/infinite-scroll/index.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L325">src/infinite-scroll/index.ts:325</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -585,7 +613,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L284">src/infinite-scroll/index.ts:284</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L304">src/infinite-scroll/index.ts:304</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -608,7 +636,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L65">src/infinite-scroll/index.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L67">src/infinite-scroll/index.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -625,7 +653,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L203">src/infinite-scroll/index.ts:203</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L218">src/infinite-scroll/index.ts:218</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -648,7 +676,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L85">src/infinite-scroll/index.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L87">src/infinite-scroll/index.ts:87</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -665,7 +693,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L94">src/infinite-scroll/index.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L97">src/infinite-scroll/index.ts:97</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -682,7 +710,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L62">src/infinite-scroll/index.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L64">src/infinite-scroll/index.ts:64</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -734,7 +762,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L306">src/infinite-scroll/index.ts:306</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L331">src/infinite-scroll/index.ts:331</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -751,7 +779,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L212">src/infinite-scroll/index.ts:212</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L227">src/infinite-scroll/index.ts:227</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -840,7 +868,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L209">src/infinite-scroll/index.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L224">src/infinite-scroll/index.ts:224</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -871,7 +899,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L206">src/infinite-scroll/index.ts:206</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L221">src/infinite-scroll/index.ts:221</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -888,7 +916,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L303">src/infinite-scroll/index.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L328">src/infinite-scroll/index.ts:328</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -914,7 +942,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L174">src/infinite-scroll/index.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L187">src/infinite-scroll/index.ts:187</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -937,7 +965,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L122">src/infinite-scroll/index.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L129">src/infinite-scroll/index.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -948,13 +976,13 @@
 					<a name="topelbelowoffset" class="tsd-anchor"></a>
 					<h3>top<wbr>ElBelow<wbr>Offset</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">top<wbr>ElBelow<wbr>Offset<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>, parent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">top<wbr>ElBelow<wbr>Offset<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>, parentTop<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L288">src/infinite-scroll/index.ts:288</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L307">src/infinite-scroll/index.ts:307</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -963,7 +991,30 @@
 									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
 								</li>
 								<li>
-									<h5>parent: <span class="tsd-signature-type">HTMLElement</span></h5>
+									<h5>parentTop: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="topelbelowoffsetwindow" class="tsd-anchor"></a>
+					<h3>top<wbr>ElBelow<wbr>Offset<wbr>Window</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">top<wbr>ElBelow<wbr>Offset<wbr>Window<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L317">src/infinite-scroll/index.ts:317</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1031,7 +1082,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L152">src/infinite-scroll/index.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L163">src/infinite-scroll/index.ts:163</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1459,7 +1510,7 @@
 					<div class="tsd-signature tsd-kind-icon">past<wbr>Purchase<wbr>Methods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L36">src/infinite-scroll/index.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L37">src/infinite-scroll/index.ts:37</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1468,7 +1519,7 @@
 						<div class="tsd-signature tsd-kind-icon">current<wbr>Page<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.pastPurchasePage</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L40">src/infinite-scroll/index.ts:40</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L41">src/infinite-scroll/index.ts:41</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1499,7 +1550,7 @@
 						<div class="tsd-signature tsd-kind-icon">page<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.pastPurchasePageSize</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L37">src/infinite-scroll/index.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L38">src/infinite-scroll/index.ts:38</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1530,7 +1581,7 @@
 						<div class="tsd-signature tsd-kind-icon">products<wbr>With<wbr>Metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.pastPurchaseProductsWithMetadata</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L38">src/infinite-scroll/index.ts:38</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L39">src/infinite-scroll/index.ts:39</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1561,7 +1612,7 @@
 						<div class="tsd-signature tsd-kind-icon">record<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.pastPurchaseCurrentRecordCount</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L39">src/infinite-scroll/index.ts:39</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L40">src/infinite-scroll/index.ts:40</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1592,7 +1643,7 @@
 						<div class="tsd-signature tsd-kind-icon">route<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;Routes.PAST_PURCHASE</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L43">src/infinite-scroll/index.ts:43</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L44">src/infinite-scroll/index.ts:44</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1606,7 +1657,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L42">src/infinite-scroll/index.ts:42</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L43">src/infinite-scroll/index.ts:43</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1632,7 +1683,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L41">src/infinite-scroll/index.ts:41</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L42">src/infinite-scroll/index.ts:42</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1673,7 +1724,7 @@
 					<div class="tsd-signature tsd-kind-icon">search<wbr>Methods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L26">src/infinite-scroll/index.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L27">src/infinite-scroll/index.ts:27</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1682,7 +1733,7 @@
 						<div class="tsd-signature tsd-kind-icon">current<wbr>Page<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.page</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L30">src/infinite-scroll/index.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L31">src/infinite-scroll/index.ts:31</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1713,7 +1764,7 @@
 						<div class="tsd-signature tsd-kind-icon">page<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.pageSize</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L27">src/infinite-scroll/index.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L28">src/infinite-scroll/index.ts:28</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1744,7 +1795,7 @@
 						<div class="tsd-signature tsd-kind-icon">products<wbr>With<wbr>Metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.productsWithMetadata</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L28">src/infinite-scroll/index.ts:28</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L29">src/infinite-scroll/index.ts:29</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1775,7 +1826,7 @@
 						<div class="tsd-signature tsd-kind-icon">record<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;Selectors.recordCount</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L29">src/infinite-scroll/index.ts:29</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L30">src/infinite-scroll/index.ts:30</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1806,7 +1857,7 @@
 						<div class="tsd-signature tsd-kind-icon">route<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;Routes.SEARCH</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L33">src/infinite-scroll/index.ts:33</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L34">src/infinite-scroll/index.ts:34</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1820,7 +1871,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L32">src/infinite-scroll/index.ts:32</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L33">src/infinite-scroll/index.ts:33</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1846,7 +1897,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L31">src/infinite-scroll/index.ts:31</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L32">src/infinite-scroll/index.ts:32</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1888,7 +1939,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides Tag.state</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L50">src/infinite-scroll/index.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L51">src/infinite-scroll/index.ts:51</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1897,7 +1948,7 @@
 						<div class="tsd-signature tsd-kind-icon">first<wbr>Load<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L53">src/infinite-scroll/index.ts:53</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L54">src/infinite-scroll/index.ts:54</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1907,7 +1958,7 @@
 						<div class="tsd-signature tsd-kind-icon">is<wbr>Fetching<wbr>Backward<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L56">src/infinite-scroll/index.ts:56</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L58">src/infinite-scroll/index.ts:58</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1917,7 +1968,7 @@
 						<div class="tsd-signature tsd-kind-icon">is<wbr>Fetching<wbr>Forward<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L55">src/infinite-scroll/index.ts:55</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L57">src/infinite-scroll/index.ts:57</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1927,7 +1978,7 @@
 						<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L51">src/infinite-scroll/index.ts:51</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L52">src/infinite-scroll/index.ts:52</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1937,7 +1988,7 @@
 						<div class="tsd-signature tsd-kind-icon">last<wbr>Scroll<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L52">src/infinite-scroll/index.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L53">src/infinite-scroll/index.ts:53</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1947,7 +1998,7 @@
 						<div class="tsd-signature tsd-kind-icon">load<wbr>More<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L54">src/infinite-scroll/index.ts:54</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L55">src/infinite-scroll/index.ts:55</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1957,7 +2008,17 @@
 						<div class="tsd-signature tsd-kind-icon">set<wbr>Scroll<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L57">src/infinite-scroll/index.ts:57</a></li>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L59">src/infinite-scroll/index.ts:59</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="state-1.windowscroll" class="tsd-anchor"></a>
+						<h3>window<wbr>Scroll</h3>
+						<div class="tsd-signature tsd-kind-icon">window<wbr>Scroll<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L56">src/infinite-scroll/index.ts:56</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1971,7 +2032,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L58">src/infinite-scroll/index.ts:58</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L60">src/infinite-scroll/index.ts:60</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1988,7 +2049,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/182318c/src/infinite-scroll/index.ts#L59">src/infinite-scroll/index.ts:59</a></li>
+										<li>Defined in <a href="https://github.com/groupby/storefront-infinite-scroll/blob/bd4d433/src/infinite-scroll/index.ts#L61">src/infinite-scroll/index.ts:61</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -2080,6 +2141,9 @@
 								<a href="infinitescroll.html#bottomelaboveoffset" class="tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="infinitescroll.html#bottomelaboveoffsetwindow" class="tsd-kind-icon">bottom<wbr>ElAbove<wbr>Offset<wbr>Window</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="infinitescroll.html#calculateoffset" class="tsd-kind-icon">calculate<wbr>Offset</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -2144,6 +2208,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="infinitescroll.html#topelbelowoffset" class="tsd-kind-icon">top<wbr>ElBelow<wbr>Offset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="infinitescroll.html#topelbelowoffsetwindow" class="tsd-kind-icon">top<wbr>ElBelow<wbr>Offset<wbr>Window</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="infinitescroll.html#unexpose" class="tsd-kind-icon">unexpose</a>

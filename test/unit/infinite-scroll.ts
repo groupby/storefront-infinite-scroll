@@ -260,6 +260,32 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
         done();
       }, 501);
     });
+
+    it('should set event listeners for number of images, not page size', () => {
+      const onload = spy();
+      const imgs = [{ onload }, { onload }, { onload }];
+      const querySelectorAll = spy(() => imgs);
+      const pageSize = spy(() => 20);
+      const getState = spy();
+      const rememberScrollTop = 15;
+      const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
+      const addEventListener = spy();
+
+      infiniteScroll.state = <any>{
+        wrapper: { querySelectorAll },
+        pageSize,
+        rememberScrollTop,
+        scroller: { root: { addEventListener } },
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+
+      infiniteScroll.setScroll();
+      imgs[0].onload();
+      imgs[1].onload();
+      imgs[2].onload();
+
+      expect(addEventListener).to.be.calledOnce;
+    });
   });
 
   describe('updateProducts()', () => {

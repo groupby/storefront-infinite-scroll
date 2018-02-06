@@ -262,22 +262,18 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldHa
     });
 
     it('should set event listeners for number of images, not page size', () => {
-      const onload = spy();
+      const onload = () => null;
       const imgs = [{ onload }, { onload }, { onload }];
-      const querySelectorAll = spy(() => imgs);
-      const pageSize = spy(() => 20);
-      const getState = spy();
-      const rememberScrollTop = 15;
-      const maintainScrollTop = infiniteScroll.maintainScrollTop = spy();
+      const querySelectorAll = () => imgs;
       const addEventListener = spy();
 
       infiniteScroll.state = <any>{
         wrapper: { querySelectorAll },
-        pageSize,
-        rememberScrollTop,
+        pageSize:() => 20,
+        rememberScrollTop: 15,
         scroller: { root: { addEventListener } },
       };
-      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.flux = <any>{ store: { getState: () => null } };
 
       infiniteScroll.setScroll();
       imgs[0].onload();

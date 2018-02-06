@@ -135,7 +135,7 @@ class InfiniteScroll {
       count === size || count === imgs.length;
 
     if (imgs.length > 0) {
-      for (let i = 0; i < pageSize; i++) {
+      for (let i = 0; i < Math.min(pageSize,imgs.length); i++) {
         imgs[i].onload = () => {
           count++;
           if (imgsLoaded(count, pageSize, imgs.length)) {

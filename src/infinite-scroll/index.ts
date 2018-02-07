@@ -227,7 +227,7 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    const scrollY = this.state.windowScroll ? utils.WINDOW().scrollY : scroller.root.scrollTop;
+    const scrollY = this.state.windowScroll ? utils.WINDOW().pageYOffset : scroller.root.scrollTop;
 
     if (this.state.getPage) {
       this.calculatePageChange();

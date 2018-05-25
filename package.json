@@ -35,6 +35,14 @@
     "docs": "typedoc src/**/*.ts",
     "docs:json": "npm run docs -- --json component.docs.json"
   },
+  "prettier": {
+    "printWidth": 120,
+    "parser": "typescript",
+    "trailingComma": "es5",
+    "arrowParens": "always",
+    "jsxBracketSameLine": true,
+    "singleQuote": true
+  },
   "release": {
     "verifyConditions": "condition-circle"
   },
@@ -55,7 +63,7 @@
     }
   },
   "devDependencies": {
-    "@storefront/testing": "^1.0.2",
+    "@storefront/testing": "1.1.0",
     "@team-griffin/install-self-peers": "^1.1.1",
     "@types/node": "^8.0.17",
     "babel-preset-stage-3": "^6.24.1",
@@ -63,15 +71,17 @@
     "condition-circle": "^1.5.0",
     "cz-conventional-changelog": "^2.0.0",
     "husky": "^0.14.3",
+    "prettier": "^1.12.1",
     "re-start": "^1.14.8",
     "start-simple-cli": "^4.1.1",
     "tslint": "^5.5.0",
     "tslint-config-groupby": "^1.0.0",
+    "tslint-config-prettier": "^1.13.0",
     "typedoc": "^0.8.0",
     "typescript": "^2.4.2"
   },
   "peerDependencies": {
-    "@storefront/core": "~1.38.0",
+    "@storefront/core": "~1.40.0",
     "@storefront/structure": "^1.33.0"
   }
 }

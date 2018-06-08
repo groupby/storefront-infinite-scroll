@@ -107,16 +107,27 @@ jobs:
               exit 1
             fi
 
-            yarn upgrade "@storefront/${component_name}@${component_version}"
-
-            git add "components/${component_name}" package.json yarn.lock
-            git commit -m "fix(package): update @storefront/${component_name} to ${component_version}" || true
-
             # other components may push to the branch in the meantime
-            until git push; do
-              sleep ${RANDOM:1:1}
-              git pull --rebase
+            for ((i=0; i < 20; i++)); do
+              yarn upgrade "@storefront/${component_name}@${component_version}"
+
+              git add "components/${component_name}" package.json yarn.lock
+              git commit -m "fix(package): update @storefront/${component_name} to ${component_version}" || true
+
+              git push && break || true
+              git reset --hard HEAD^
+
+              backoff_delay=${RANDOM:1:1}
+
+              echo "Backing off for ${backoff_delay} seconds..."
+              sleep $backoff_delay
+
+              git pull
             done
+            if ((i == 20)); then
+              echo "Too many tries. Aborting."
+              exit 1
+            fi
   documentation:
     docker:
       - image: kkarczmarczyk/node-yarn

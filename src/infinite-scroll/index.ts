@@ -37,7 +37,7 @@ class InfiniteScroll {
   };
 
   state: any = {
-    items: this.select(Selectors.products),
+    items: [],
     lastScroll: 0,
     firstLoad: true,
     loadMore: false,
@@ -66,7 +66,11 @@ class InfiniteScroll {
         break;
       case Core.StoreSections.SEARCH:
       default:
-        this.state = { ...this.state, ...this.searchMethods };
+        this.state = {
+          ...this.state,
+          ...this.searchMethods,
+          items: this.searchMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
+        };
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.PAGE_UPDATED, this.replaceState);

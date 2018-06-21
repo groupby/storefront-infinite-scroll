@@ -1,5 +1,5 @@
 import * as Core from '@storefront/core';
-import { Routes } from '@storefront/flux-capacitor';
+import { Routes, Selectors } from '@storefront/flux-capacitor';
 import { List } from '@storefront/structure';
 
 export const PADDING = 20;
@@ -37,7 +37,7 @@ class InfiniteScroll {
   };
 
   state: any = {
-    items: [],
+    items: this.select(Selectors.products),
     lastScroll: 0,
     firstLoad: true,
     loadMore: false,

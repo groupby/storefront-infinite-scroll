@@ -39,32 +39,6 @@
     conventional-changelog "0.0.17"
     github-url-from-git "^1.4.0"
 
-"@simple-dom/document@^1.4.0-alpha.82914663":
-  version "1.4.0-alpha.82914663"
-  resolved "https://registry.yarnpkg.com/@simple-dom/document/-/document-1.4.0-alpha.82914663.tgz#a88f70743ffe2dee664bc3e7be8657268229d3d1"
-  dependencies:
-    "@simple-dom/interface" "^1.4.0-alpha.82914663"
-
-"@simple-dom/interface@^1.4.0-alpha.82914663":
-  version "1.4.0-alpha.dc2f50c1"
-  resolved "https://registry.yarnpkg.com/@simple-dom/interface/-/interface-1.4.0-alpha.dc2f50c1.tgz#44d15bcf933b77d0740b91e9403042c8f32857c3"
-
-"@simple-dom/parser@^1.4.0-alpha.82914663":
-  version "1.4.0-alpha.82914663"
-  resolved "https://registry.yarnpkg.com/@simple-dom/parser/-/parser-1.4.0-alpha.82914663.tgz#3b2291a164823c37806800784cd52093459be336"
-  dependencies:
-    "@simple-dom/interface" "^1.4.0-alpha.82914663"
-
-"@simple-dom/serializer@^1.4.0-alpha.82914663":
-  version "1.4.0-alpha.82914663"
-  resolved "https://registry.yarnpkg.com/@simple-dom/serializer/-/serializer-1.4.0-alpha.82914663.tgz#8444de7207b175f48e8594bb948791075ffb1fb1"
-  dependencies:
-    "@simple-dom/interface" "^1.4.0-alpha.82914663"
-
-"@simple-dom/void-map@^1.4.0-alpha.82914663":
-  version "1.4.0-alpha.82914663"
-  resolved "https://registry.yarnpkg.com/@simple-dom/void-map/-/void-map-1.4.0-alpha.82914663.tgz#0669dd8d3a1cb3a391e548a139a3cdc327e07e09"
-
 "@sinonjs/formatio@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/formatio/-/formatio-2.0.0.tgz#84db7e9eb5531df18a8c5e0bfb6e449e55e654b2"
@@ -181,8 +155,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
 
 "@types/lodash@^4.14.70":
-  version "4.14.109"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
+  version "4.14.110"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.110.tgz#fb07498f84152947f30ea09d89207ca07123461e"
 
 "@types/loglevel@^1.4.29":
   version "1.5.3"
@@ -205,8 +179,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.17.tgz#677bc8c118cfb76013febb62ede1f31d2c7222a1"
 
 "@types/node@^7.0.14":
-  version "7.0.65"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.65.tgz#c160979ff66c4842adc76cc181a11b5e8722d13d"
+  version "7.0.66"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.66.tgz#3d1dc4d6f52e484e843806ff456379f7e6ad5553"
 
 "@types/node@^9.3.0":
   version "9.6.18"
@@ -992,14 +966,14 @@ codecov-lite@^0.1.2:
     request-promise-native "^1.0.3"
 
 color-convert@^1.9.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.1.tgz#c1261107aeb2f294ebffec9ed9ecad529a6097ed"
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.2.tgz#49881b8fba67df12a96bdf3f56c0aab9e7913147"
   dependencies:
-    color-name "^1.1.1"
+    color-name "1.1.1"
 
-color-name@^1.1.1:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
+color-name@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.1.tgz#4b1415304cf50028ea81643643bd82ea05803689"
 
 colors@^1.1.2:
   version "1.1.2"
@@ -1623,13 +1597,17 @@ extsprintf@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.0.2.tgz#e1080e0658e300b06294990cc70e1502235fd550"
 
-fast-equals@^1.3.1:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-1.5.2.tgz#e46681481d53c3b38046be65299c2d2ed37c7f29"
+fast-equals@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-1.5.3.tgz#22087aee55a87d440b881445f19424a2f4f4282e"
 
 fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
+
+fast-stringify@^1.0.3:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/fast-stringify/-/fast-stringify-1.0.4.tgz#7279707663aea3efbed1d9f5da36d7adbeadf5b6"
 
 fetch-ponyfill@^4.1.0:
   version "4.1.0"
@@ -2456,7 +2434,7 @@ json-stable-stringify@^1.0.0, json-stable-stringify@^1.0.1:
   dependencies:
     jsonify "~0.0.0"
 
-json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
+json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
@@ -2746,7 +2724,7 @@ meow@^3.3.0:
     redent "^1.0.0"
     trim-newlines "^1.0.0"
 
-micro-memoize@^2.0.1:
+micro-memoize@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-2.0.3.tgz#5122131971eae6c69249a8a63a91b7b5cee20111"
 
@@ -2847,12 +2825,12 @@ mock-require@^2.0.2:
     caller-id "^0.1.0"
 
 moize@^5.2.3:
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/moize/-/moize-5.2.3.tgz#0a0d8d070c4f4adf48cbc10b065dc3cf206698a7"
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/moize/-/moize-5.3.1.tgz#72a8d2bcd2fad5214f9d8bc19cac317ead222c1b"
   dependencies:
-    fast-equals "^1.3.1"
-    json-stringify-safe "^5.0.1"
-    micro-memoize "^2.0.1"
+    fast-equals "^1.5.3"
+    fast-stringify "^1.0.3"
+    micro-memoize "^2.0.3"
 
 ms@0.7.1:
   version "0.7.1"
@@ -3483,8 +3461,8 @@ redux-logger@^3.0.6:
     deep-diff "^0.3.5"
 
 redux-persist@^5.1.0:
-  version "5.9.1"
-  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.9.1.tgz#83bd4abd526ef768f63fceee338fa9d8ed6552d6"
+  version "5.10.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
 
 redux-saga@^0.16.0:
   version "0.16.0"
@@ -3695,7 +3673,7 @@ riot-cli@^4.0.1:
     riot-compiler "^3.4.0"
     rollup "^0.52.1"
 
-riot-compiler@^3.4.0:
+riot-compiler@^3.4.0, riot-compiler@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/riot-compiler/-/riot-compiler-3.5.1.tgz#ab4abb861fdb630765de6685091f967061de49df"
   dependencies:
@@ -3714,14 +3692,14 @@ riot-tmpl@^3.0.8:
     eslint-config-riot "^1.0.0"
 
 riot@^3.9.5:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/riot/-/riot-3.10.1.tgz#a0890c20deb190ea40f9743236a8923d00323be7"
+  version "3.10.3"
+  resolved "https://registry.yarnpkg.com/riot/-/riot-3.10.3.tgz#feef51140eac6e4029d7fbfb10fb29f22c080267"
   dependencies:
     riot-cli "^4.0.1"
-    riot-compiler "^3.4.0"
+    riot-compiler "^3.5.1"
     riot-observable "^3.0.0"
     riot-tmpl "^3.0.8"
-    simple-dom "1.4.0-alpha.82914663"
+    simple-dom "1.3.0"
     simple-html-tokenizer "^0.5.1"
 
 ripemd160@^2.0.0, ripemd160@^2.0.1:
@@ -3866,19 +3844,13 @@ signal-exit@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-simple-dom@1.4.0-alpha.82914663:
-  version "1.4.0-alpha.82914663"
-  resolved "https://registry.yarnpkg.com/simple-dom/-/simple-dom-1.4.0-alpha.82914663.tgz#fda73c0522a81a9526677508b04ebfbe81fb571d"
-  dependencies:
-    "@simple-dom/document" "^1.4.0-alpha.82914663"
-    "@simple-dom/interface" "^1.4.0-alpha.82914663"
-    "@simple-dom/parser" "^1.4.0-alpha.82914663"
-    "@simple-dom/serializer" "^1.4.0-alpha.82914663"
-    "@simple-dom/void-map" "^1.4.0-alpha.82914663"
+simple-dom@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/simple-dom/-/simple-dom-1.3.0.tgz#8473e0d34e340544b061410dba3faf4f1b7aa282"
 
 simple-html-tokenizer@^0.5.1:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/simple-html-tokenizer/-/simple-html-tokenizer-0.5.2.tgz#37369afb804891c095ddddf2527fa67e05a1b11c"
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/simple-html-tokenizer/-/simple-html-tokenizer-0.5.5.tgz#110e63f2fe095e1f21f2f07e8c259a5ab6d6bebb"
 
 sinon-chai@^2.12.0:
   version "2.12.0"
@@ -4504,8 +4476,8 @@ universalify@^0.1.0:
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.1.tgz#fa71badd4437af4c148841e3b3b165f9e9e590b7"
 
 url-parse@^1.1.9:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.0.tgz#6bfdaad60098c7fe06f623e42b22de62de0d3d75"
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.1.tgz#4dec9dad3dc8585f862fed461d2e19bbf623df30"
   dependencies:
     querystringify "^2.0.0"
     requires-port "^1.0.0"

@@ -58,7 +58,11 @@ class InfiniteScroll {
   init() {
     switch (this.props.storeSection) {
       case Core.StoreSections.PAST_PURCHASES:
-        this.state = { ...this.state, ...this.pastPurchaseMethods };
+        this.state = {
+          ...this.state,
+          ...this.pastPurchaseMethods,
+          items: this.pastPurchaseMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
+        };
         this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);

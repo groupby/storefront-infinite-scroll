@@ -75,6 +75,15 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       it('should  listen for correct events and set state', () => {
         const subscribe = (infiniteScroll.subscribe = spy());
         const initialState = infiniteScroll.state;
+        const products = ['1.', '2.', '3.'];
+        const productsWithMetadata = (infiniteScroll.pastPurchaseMethods.productsWithMetadata = spy(() => [
+          '1',
+          '2',
+          '3',
+        ]));
+        const storeState = { a: 'b' };
+        infiniteScroll.flux = <any>{ store: { getState: () => storeState } };
+        infiniteScroll.productTransformer = <any>((input) => input + '.');
         infiniteScroll.props = <any>{ storeSection: 'pastPurchases' };
 
         infiniteScroll.init();
@@ -83,7 +92,12 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
         expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_PAGE_UPDATED, infiniteScroll.replaceState);
         expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
-        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.pastPurchaseMethods });
+        expect(productsWithMetadata).to.be.calledWithExactly(storeState);
+        expect(infiniteScroll.state).to.eql({
+          ...initialState,
+          ...infiniteScroll.pastPurchaseMethods,
+          items: products,
+        });
       });
     });
 
@@ -91,6 +105,11 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       it('should  listen for correct events and set state', () => {
         const subscribe = (infiniteScroll.subscribe = spy());
         const initialState = infiniteScroll.state;
+        const products = ['1.', '2.', '3.'];
+        const productsWithMetadata = (infiniteScroll.searchMethods.productsWithMetadata = spy(() => ['1', '2', '3']));
+        const storeState = { a: 'b' };
+        infiniteScroll.flux = <any>{ store: { getState: () => storeState } };
+        infiniteScroll.productTransformer = <any>((input) => input + '.');
         infiniteScroll.props = <any>{ storeSection: 'search' };
 
         infiniteScroll.init();
@@ -100,7 +119,12 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         expect(subscribe).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
         expect(subscribe).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFirstLoadFlag);
         expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
-        expect(infiniteScroll.state).to.eql({ ...initialState, ...infiniteScroll.searchMethods });
+        expect(productsWithMetadata).to.be.calledWithExactly(storeState);
+        expect(infiniteScroll.state).to.eql({
+          ...initialState,
+          ...infiniteScroll.searchMethods,
+          items: products,
+        });
       });
     });
   });

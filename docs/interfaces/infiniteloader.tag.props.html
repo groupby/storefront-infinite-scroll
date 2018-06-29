@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Mixin | @storefront/infinite-scroll</title>
+	<title>Props | @storefront/infinite-scroll</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,16 +56,16 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../classes/infinitescroll.html">InfiniteScroll</a>
+					<a href="../classes/infiniteloader.html">InfiniteLoader</a>
 				</li>
 				<li>
-					<a href="../modules/infinitescroll.tag.html">Tag</a>
+					<a href="../modules/infiniteloader.tag.html">Tag</a>
 				</li>
 				<li>
-					<a href="infinitescroll.tag.mixin.html">Mixin</a>
+					<a href="infiniteloader.tag.props.html">Props</a>
 				</li>
 			</ul>
-			<h1>Interface Mixin</h1>
+			<h1>Interface Props</h1>
 		</div>
 	</div>
 </header>
@@ -76,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Mixin</span>
+						<span class="target">Props</span>
 					</li>
 				</ul>
 			</section>
@@ -87,11 +87,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infinitescroll.tag.mixin.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infinitescroll.tag.mixin.html#flux" class="tsd-kind-icon">flux</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infinitescroll.tag.mixin.html#init" class="tsd-kind-icon">init</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infinitescroll.tag.mixin.html#log" class="tsd-kind-icon">log</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infinitescroll.tag.mixin.html#services" class="tsd-kind-icon">services</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infiniteloader.tag.props.html#storesection" class="tsd-kind-icon">store<wbr>Section</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infiniteloader.tag.props.html#stylish" class="tsd-kind-icon">stylish</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="infiniteloader.tag.props.html#ui" class="tsd-kind-icon">ui</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,73 +98,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="config" class="tsd-anchor"></a>
-					<h3>config</h3>
-					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Configuration</span></div>
+					<a name="storesection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> store<wbr>Section</h3>
+					<div class="tsd-signature tsd-kind-icon">store<wbr>Section<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:92</li>
+							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:70</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="flux" class="tsd-anchor"></a>
-					<h3>flux</h3>
-					<div class="tsd-signature tsd-kind-icon">flux<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">FluxCapacitor</span></div>
+					<a name="stylish" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> stylish</h3>
+					<div class="tsd-signature tsd-kind-icon">stylish<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:93</li>
+							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:69</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="init" class="tsd-anchor"></a>
-					<h3>init</h3>
-					<div class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="ui" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ui</h3>
+					<div class="tsd-signature tsd-kind-icon">ui<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:96</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TagInterface</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>this: <span class="tsd-signature-type">TagInterface</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="log" class="tsd-anchor"></a>
-					<h3>log</h3>
-					<div class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Logger</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:95</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="services" class="tsd-anchor"></a>
-					<h3>services</h3>
-					<div class="tsd-signature tsd-kind-icon">services<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SystemServices</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:94</li>
+							<li>Defined in node_modules/@storefront/core/dist/core/tag/index.d.ts:68</li>
 						</ul>
 					</aside>
 				</section>
@@ -178,10 +135,10 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-class">
+					<li class="current tsd-kind-module tsd-parent-kind-class">
 						<a href="../modules/infiniteloader.tag.html">Infinite<wbr>Loader.<wbr>Tag</a>
 					</li>
-					<li class="current tsd-kind-module tsd-parent-kind-class">
+					<li class=" tsd-kind-module tsd-parent-kind-class">
 						<a href="../modules/infinitescroll.tag.html">Infinite<wbr>Scroll.<wbr>Tag</a>
 					</li>
 				</ul>
@@ -189,70 +146,64 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="infinitescroll.tag.description.html" class="tsd-kind-icon">Description</a>
+						<a href="infiniteloader.tag.description.html" class="tsd-kind-icon">Description</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="infinitescroll.tag.event.html" class="tsd-kind-icon">Event</a>
+						<a href="infiniteloader.tag.event.html" class="tsd-kind-icon">Event</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="infinitescroll.tag.lifecycle.html" class="tsd-kind-icon">Lifecycle</a>
+						<a href="infiniteloader.tag.lifecycle.html" class="tsd-kind-icon">Lifecycle</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="infinitescroll.tag.metadata.html" class="tsd-kind-icon">Metadata</a>
+						<a href="infiniteloader.tag.metadata.html" class="tsd-kind-icon">Metadata</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="infiniteloader.tag.mixin.html" class="tsd-kind-icon">Mixin</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="infinitescroll.tag.mixin.html" class="tsd-kind-icon">Mixin</a>
+						<a href="infiniteloader.tag.props.html" class="tsd-kind-icon">Props</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="infinitescroll.tag.mixin.html#config" class="tsd-kind-icon">config</a>
+								<a href="infiniteloader.tag.props.html#storesection" class="tsd-kind-icon">store<wbr>Section</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="infinitescroll.tag.mixin.html#flux" class="tsd-kind-icon">flux</a>
+								<a href="infiniteloader.tag.props.html#stylish" class="tsd-kind-icon">stylish</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="infinitescroll.tag.mixin.html#init" class="tsd-kind-icon">init</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="infinitescroll.tag.mixin.html#log" class="tsd-kind-icon">log</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="infinitescroll.tag.mixin.html#services" class="tsd-kind-icon">services</a>
+								<a href="infiniteloader.tag.props.html#ui" class="tsd-kind-icon">ui</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="infinitescroll.tag.props.html" class="tsd-kind-icon">Props</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#transform" class="tsd-kind-icon">Transform</a>
+						<a href="../modules/infiniteloader.tag.html#transform" class="tsd-kind-icon">Transform</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#create" class="tsd-kind-icon">create</a>
+						<a href="../modules/infiniteloader.tag.html#create" class="tsd-kind-icon">create</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#findaliases" class="tsd-kind-icon">find<wbr>Aliases</a>
+						<a href="../modules/infiniteloader.tag.html#findaliases" class="tsd-kind-icon">find<wbr>Aliases</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#findconsumes" class="tsd-kind-icon">find<wbr>Consumes</a>
+						<a href="../modules/infiniteloader.tag.html#findconsumes" class="tsd-kind-icon">find<wbr>Consumes</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#getdescription" class="tsd-kind-icon">get<wbr>Description</a>
+						<a href="../modules/infiniteloader.tag.html#getdescription" class="tsd-kind-icon">get<wbr>Description</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#getmeta" class="tsd-kind-icon">get<wbr>Meta</a>
+						<a href="../modules/infiniteloader.tag.html#getmeta" class="tsd-kind-icon">get<wbr>Meta</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#getname" class="tsd-kind-icon">get<wbr>Name</a>
+						<a href="../modules/infiniteloader.tag.html#getname" class="tsd-kind-icon">get<wbr>Name</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#mixin-1" class="tsd-kind-icon">mixin</a>
+						<a href="../modules/infiniteloader.tag.html#mixin-1" class="tsd-kind-icon">mixin</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/infinitescroll.tag.html#setdescription" class="tsd-kind-icon">set<wbr>Description</a>
+						<a href="../modules/infiniteloader.tag.html#setdescription" class="tsd-kind-icon">set<wbr>Description</a>
 					</li>
 				</ul>
 			</nav>

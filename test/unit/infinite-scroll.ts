@@ -130,10 +130,11 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
   });
 
   describe('onMount()', () => {
-    it('should update state with scroller, wrapper, and firstLoad', () => {
+    it('should update state with scroller, wrapper, and firstLoad, and update products', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
       const state = (infiniteScroll.state = <any>{ a: 'b', loadMore: false, windowScroll: false });
+      const updateProducts = (infiniteScroll.updateProducts = spy());
       infiniteScroll.props = <any>{};
       infiniteScroll.tags = {
         'gb-infinite-list': scroller,
@@ -149,6 +150,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         loaderLabel: LOADLABEL,
         windowScroll: false,
       });
+      expect(updateProducts).to.be.called;
     });
 
     it('should set from props', () => {
@@ -156,6 +158,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const scroller = { refs: { wrapper } };
       const state = (infiniteScroll.state = <any>{ a: 'b' });
       const loaderLabel = 'heyyoloading';
+      infiniteScroll.updateProducts = () => null;
       infiniteScroll.tags = {
         'gb-infinite-list': scroller,
       };

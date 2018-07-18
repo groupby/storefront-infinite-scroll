@@ -91,6 +91,7 @@ class InfiniteScroll {
     const windowScroll = this.props.windowScroll || this.state.windowScroll;
 
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel, windowScroll };
+    this.updateProducts();
   }
 
   onUpdated = () => {

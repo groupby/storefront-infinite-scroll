@@ -1,4 +1,15 @@
-<gb-infinite-list items="{state.items}" layout="grid">
+<gb-infinite-list 
+  is-fetching-backward="{state.isFetchingBackward}" 
+  prev-exists="{state.prevExists}" 
+  click-prev="{state.clickPrev}" 
+  is-fetching-forward="{state.isFetchingForward}" 
+  loader-label="{state.loaderLabel}"
+  onclick="{state.clickMore}" 
+  load-more="{state.loadMore}" 
+  more-exists="{state.moreExists}" 
+  items="{state.items}" 
+  layout="grid"
+>
   <yield>
     <gb-product product="{item}"></gb-product>
   </yield>

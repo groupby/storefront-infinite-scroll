@@ -9,7 +9,6 @@ export const BREAKPOINT_SCROLL_UP = 1.25;
 export const BREAKPOINT_ITEM_HEIGHT = 0.25;
 
 @Core.configurable
-@Core.provide('infinite')
 @Core.tag('gb-infinite-scroll', require('./index.html'), require('./index.css'))
 class InfiniteScroll {
   searchMethods: any = {

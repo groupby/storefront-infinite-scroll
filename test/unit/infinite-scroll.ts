@@ -15,7 +15,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
   });
 
   itShouldBeConfigurable(InfiniteScroll);
-  itShouldProvideAlias(InfiniteScroll, 'infinite');
+//  itShouldProvideAlias(InfiniteScroll, 'infinite');
 
   describe('constructor()', () => {
     describe('state', () => {

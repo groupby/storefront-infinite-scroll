@@ -1,5 +1,18 @@
 <gb-infinite-list items="{state.items}" layout="grid">
-  <yield>
-    <gb-product product="{item}"></gb-product>
+  <yield to='productT'>
+    <yield from='product'>
+      <!-- <gb-product product="{item}"></gb-product> -->
+    </yield>
+  </yield>
+
+  <yield to='buttonMore'>
+    <yield from='button'>
+      3
+    </yield>
+  </yield>
+  <yield to='buttonPrevious'>
+    <yield from='buttonP'>
+     5
+    </yield>
   </yield>
 </gb-infinite-list>

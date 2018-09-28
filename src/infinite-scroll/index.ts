@@ -65,7 +65,6 @@ class InfiniteScroll {
         };
         this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
-        this.subscribe(Core.Events.PAST_PURCHASE_PAGE_UPDATED, this.replaceState);
         this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case Core.StoreSections.SEARCH:
@@ -77,7 +76,6 @@ class InfiniteScroll {
         };
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
-        this.subscribe(Core.Events.PAGE_UPDATED, this.replaceState);
         this.subscribe(Core.Events.SEARCH_CHANGED, this.setFirstLoadFlag);
         this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
@@ -325,7 +323,21 @@ class InfiniteScroll {
 
   getIndex = (recordIndex: number) => this.state.items.findIndex((item) => item.index === recordIndex);
 
-  setPage = (count: number, page: number) => this.flux.store.dispatch(this.state.receivePage(count, page));
+  setPage = (count: number, page: number) => {
+    let event;
+    switch(this.props.storeSection) {
+      case Core.StoreSections.PAST_PURCHASES:
+        event = Core.Events.PAST_PURCHASE_PAGE_UPDATED;
+        break;
+      case Core.StoreSections.SEARCH:
+      default:
+        event = Core.Events.PAGE_UPDATED;
+        break;
+    }
+
+    this.subscribeOnce(event, this.replaceState);
+    this.flux.store.dispatch(this.state.receivePage(count, page));
+  };
 
   replaceState = () => {
     if (!this.state.firstLoad) this.flux.replaceState(this.state.route);

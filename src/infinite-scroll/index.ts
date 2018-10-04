@@ -68,7 +68,6 @@ class InfiniteScroll {
         this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case Core.StoreSections.SEARCH:
-      default:
         this.state = {
           ...this.state,
           ...this.searchMethods,
@@ -330,9 +329,7 @@ class InfiniteScroll {
         event = Core.Events.PAST_PURCHASE_PAGE_UPDATED;
         break;
       case Core.StoreSections.SEARCH:
-      default:
         event = Core.Events.PAGE_UPDATED;
-        break;
     }
 
     this.subscribeOnce(event, this.replaceState);

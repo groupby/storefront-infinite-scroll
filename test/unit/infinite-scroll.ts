@@ -1,4 +1,4 @@
-import { Events, ProductTransformer, Selectors } from '@storefront/core';
+import { Events, ProductTransformer, Selectors, StoreSections } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
 import InfiniteScroll, { LOADLABEL, PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
@@ -84,13 +84,12 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         const storeState = { a: 'b' };
         infiniteScroll.flux = <any>{ store: { getState: () => storeState } };
         infiniteScroll.productTransformer = <any>((input) => input + '.');
-        infiniteScroll.props = <any>{ storeSection: 'pastPurchases' };
+        infiniteScroll.props = <any>{ storeSection: StoreSections.PAST_PURCHASES };
 
         infiniteScroll.init();
 
         expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_PRODUCTS_UPDATED, infiniteScroll.updateProducts);
         expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_PAGE_UPDATED, infiniteScroll.replaceState);
         expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
         expect(productsWithMetadata).to.be.calledWithExactly(storeState);
         expect(infiniteScroll.state).to.eql({
@@ -110,13 +109,12 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         const storeState = { a: 'b' };
         infiniteScroll.flux = <any>{ store: { getState: () => storeState } };
         infiniteScroll.productTransformer = <any>((input) => input + '.');
-        infiniteScroll.props = <any>{ storeSection: 'search' };
+        infiniteScroll.props = <any>{ storeSection: StoreSections.SEARCH };
 
         infiniteScroll.init();
 
         expect(subscribe).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
         expect(subscribe).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
         expect(subscribe).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFirstLoadFlag);
         expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
         expect(productsWithMetadata).to.be.calledWithExactly(storeState);
@@ -684,11 +682,15 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
   });
 
   describe('setPage()', () => {
-    it('should call receivePage() with page info', () => {
+    it('should call receivePage() with page info and subscribeOnce to PAGE_UPDATED', () => {
       const count = 30;
       const page = 3;
       const receivePage = spy(() => ({}));
       const dispatch = spy();
+      const subscribeOnce = infiniteScroll.subscribeOnce = spy();
+      infiniteScroll.props = <any>{
+        storeSection: StoreSections.SEARCH
+      }
       infiniteScroll.state = <any>{
         ...infiniteScroll.state,
         receivePage,
@@ -699,6 +701,29 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
 
       expect(receivePage).to.be.calledWithExactly(count, page);
       expect(dispatch).to.be.calledWithExactly(receivePage());
+      expect(subscribeOnce).to.be.calledWithExactly(Events.PAGE_UPDATED, infiniteScroll.replaceState);
+    });
+
+    it('should call receivePage() with page info and subscribeOnce to PAST_PURCHASE_PAGE_UPDATED', () => {
+      const count = 30;
+      const page = 3;
+      const receivePage = spy(() => ({}));
+      const dispatch = spy();
+      const subscribeOnce = infiniteScroll.subscribeOnce = spy();
+      infiniteScroll.props = <any>{
+        storeSection: StoreSections.PAST_PURCHASES
+      }
+      infiniteScroll.state = <any>{
+        ...infiniteScroll.state,
+        receivePage,
+      };
+      infiniteScroll.flux = <any>{ store: { dispatch } };
+
+      infiniteScroll.setPage(count, page);
+
+      expect(receivePage).to.be.calledWithExactly(count, page);
+      expect(dispatch).to.be.calledWithExactly(receivePage());
+      expect(subscribeOnce).to.be.calledWithExactly(Events.PAST_PURCHASE_PAGE_UPDATED, infiniteScroll.replaceState);
     });
   });
 

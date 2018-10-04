@@ -41,11 +41,11 @@
   dependencies:
     samsam "1.3.0"
 
-"@storefront/core@~1.46.9":
-  version "1.46.9"
-  resolved "https://registry.yarnpkg.com/@storefront/core/-/core-1.46.9.tgz#3b6b6c631aaf2c05df99e2e67fa080a344a969ef"
+"@storefront/core@~1.47.0":
+  version "1.47.0"
+  resolved "https://registry.yarnpkg.com/@storefront/core/-/core-1.47.0.tgz#c0c5d85d410d468b395e9eda0bccb996989ff8f0"
   dependencies:
-    "@storefront/flux-capacitor" "1.54.0"
+    "@storefront/flux-capacitor" "1.57.0"
     "@types/clone" "^0.1.30"
     "@types/deep-assign" "^0.1.0"
     "@types/js-cookie" "^2.0.28"
@@ -62,16 +62,17 @@
     riot "^3.9.5"
     url-parse "^1.1.9"
 
-"@storefront/flux-capacitor@1.54.0":
-  version "1.54.0"
-  resolved "https://registry.yarnpkg.com/@storefront/flux-capacitor/-/flux-capacitor-1.54.0.tgz#46492e5d3561cda56978c17973189ca3744569fd"
+"@storefront/flux-capacitor@1.57.0":
+  version "1.57.0"
+  resolved "https://registry.yarnpkg.com/@storefront/flux-capacitor/-/flux-capacitor-1.57.0.tgz#b802b0cfea95c9a79a7f0ac186f652fd78923721"
   dependencies:
     "@types/redux-logger" "^3.0.0"
     cuid "^1.3.8"
     eventemitter3 "^3.0.0"
     fetch-ponyfill "^4.1.0"
-    groupby-api "2.5.0"
+    groupby-api "2.5.6"
     redux "^3.7.0"
+    redux-batch-enhancer "^0.1.3"
     redux-logger "^3.0.6"
     redux-persist "5.4.0"
     redux-saga "^0.16.0"
@@ -80,8 +81,8 @@
     sayt "^0.1.8"
 
 "@storefront/structure@^1.33.0":
-  version "1.40.1"
-  resolved "https://registry.yarnpkg.com/@storefront/structure/-/structure-1.40.1.tgz#eca534b599071e7ede9f0468629a921db0ad03e6"
+  version "1.40.2"
+  resolved "https://registry.yarnpkg.com/@storefront/structure/-/structure-1.40.2.tgz#d46d35c8991c0f6f079bc000e1e4e744ba0a943f"
 
 "@storefront/testing@1.1.0":
   version "1.1.0"
@@ -188,8 +189,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.17.tgz#677bc8c118cfb76013febb62ede1f31d2c7222a1"
 
 "@types/node@^7.0.14":
-  version "7.0.70"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.70.tgz#688aaeb6e6d374ed016c4dc2c46de695859d6887"
+  version "7.0.71"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.71.tgz#256bad647718bcdaed64c006687917d4d320aee1"
 
 "@types/node@^9.3.0":
   version "9.6.18"
@@ -1011,8 +1012,8 @@ chokidar@^2.0.3:
     fsevents "^1.2.2"
 
 chownr@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.0.1.tgz#e2a75042a9551908bebd25b8523d5f9769d79181"
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
 
 ci-info@^1.0.0:
   version "1.0.0"
@@ -1809,8 +1810,8 @@ extsprintf@1.0.2:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.0.2.tgz#e1080e0658e300b06294990cc70e1502235fd550"
 
 fast-equals@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-1.6.0.tgz#171c5dbcae34761b337d839105a11c5e91a4fe3b"
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-1.6.1.tgz#66cc5a0922ea747599f41aedf44a76ec2908adc0"
 
 fast-levenshtein@~2.0.4:
   version "2.0.6"
@@ -2192,9 +2193,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.5, graceful-fs@^4.1.6:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-groupby-api@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/groupby-api/-/groupby-api-2.5.0.tgz#520468dcbb83ff4e45ffd7f9f9e70b291cc07551"
+groupby-api@2.5.6:
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/groupby-api/-/groupby-api-2.5.6.tgz#0b7955961a4c150c25ef4e48f521009dd002aed6"
   dependencies:
     "@types/clone" "^0.1.30"
     "@types/deep-equal" "^0.0.30"
@@ -2852,7 +2853,7 @@ just-extend@^1.1.27:
 
 kind-of@^2.0.1:
   version "2.0.1"
-  resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-2.0.1.tgz#018ec7a4ce7e3a86cb9141be519d24c8faa981b5"
+  resolved "http://registry.npmjs.org/kind-of/-/kind-of-2.0.1.tgz#018ec7a4ce7e3a86cb9141be519d24c8faa981b5"
   dependencies:
     is-buffer "^1.0.2"
 
@@ -3149,9 +3150,9 @@ meow@^3.3.0:
     redent "^1.0.0"
     trim-newlines "^1.0.0"
 
-micro-memoize@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-2.1.0.tgz#52be7e6ea94cc02f8ca879ee5ad6fe3be13608f0"
+micro-memoize@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-2.1.1.tgz#5092f1ef475546b28f8da0e11f061850d5549ae4"
 
 micromatch@^2.1.5, micromatch@^2.2.0, micromatch@^2.3.11, micromatch@^2.3.7:
   version "2.3.11"
@@ -3288,12 +3289,12 @@ mock-require@^2.0.2:
     caller-id "^0.1.0"
 
 moize@^5.2.3:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/moize/-/moize-5.4.0.tgz#98497bb860e5b8c2ee39b764d07b125dc503bb38"
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/moize/-/moize-5.4.1.tgz#664a1a6856bd8dfe0ceda72f17e6765ff5910243"
   dependencies:
     fast-equals "^1.6.0"
     fast-stringify "^1.1.0"
-    micro-memoize "^2.1.0"
+    micro-memoize "^2.1.1"
 
 ms@0.7.1:
   version "0.7.1"
@@ -3316,8 +3317,8 @@ nan@^2.3.0:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.2.tgz#e4ff34e6c95fdfb5aecc08de6596f43605a7db45"
 
 nan@^2.9.2:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.1.tgz#90e22bccb8ca57ea4cd37cc83d3819b52eea6766"
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -3340,8 +3341,8 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
 needle@^2.2.1:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.3.tgz#c1b04da378cd634d8befe2de965dc2cfb0fd65ca"
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.4.tgz#51931bff82533b1928b7d1d69e01f1b00ffd2a4e"
   dependencies:
     debug "^2.1.2"
     iconv-lite "^0.4.4"
@@ -4016,6 +4017,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
+redux-batch-enhancer@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/redux-batch-enhancer/-/redux-batch-enhancer-0.1.3.tgz#bae2f370ddbffc2ac9acd42792f3ae749ef14297"
+
 redux-logger@^3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/redux-logger/-/redux-logger-3.0.6.tgz#f7555966f3098f3c88604c449cf0baf5778274bf"
@@ -4287,8 +4292,8 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     inherits "^2.0.1"
 
 rollup-pluginutils@^2.0.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.3.1.tgz#760d185ccc237dedc12d7ae48c6bcd127b4892d0"
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.3.3.tgz#3aad9b1eb3e7fe8262820818840bf091e5ae6794"
   dependencies:
     estree-walker "^0.5.2"
     micromatch "^2.3.11"
@@ -4584,8 +4589,8 @@ source-map@^0.7.2:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
 
 sourcemap-codec@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.1.tgz#c8fd92d91889e902a07aee392bdd2c5863958ba2"
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.3.tgz#0ba615b73ec35112f63c2f2d9e7c3f87282b0e33"
 
 spdx-correct@~1.0.0:
   version "1.0.2"

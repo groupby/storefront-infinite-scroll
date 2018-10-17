@@ -7,7 +7,7 @@ export const LOADLABEL = 'loading...';
 export const BREAKPOINT_SCROLL_DOWN = 0.75;
 export const BREAKPOINT_SCROLL_UP = 1.25;
 export const BREAKPOINT_ITEM_HEIGHT = 0.25;
-export const BOTTOM_OFFSET = 50;
+export const SCROLL_OFFSET = 50;
 
 @Core.configurable
 @Core.provide('infinite')
@@ -234,7 +234,7 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper, windowScroll } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    const windowWrapper = Core.utils.WINDOW();
+    const windowWrapper = this.state.windowScroll && Core.utils.WINDOW();
     const scrollerDOM = scroller.root;
     const scrollY = windowScroll ? windowWrapper.pageYOffset : scrollerDOM.scrollTop;
     const wrapperScrollHeight = windowScroll ? document.documentElement.scrollHeight : scrollerDOM.scrollHeight;
@@ -248,7 +248,7 @@ class InfiniteScroll {
     if (!this.state.loadMore && scrollY !== this.state.rememberScrollY) {
       // if user is scrolling down and hits point past breakpoint, should fetch
       // tslint:disable-next-line max-line-length
-      if (this.state.lastScroll < scrollY && scrollY > wrapperScrollHeight - wrapperClientHeight - BOTTOM_OFFSET) {
+      if (this.state.lastScroll < scrollY && scrollY > wrapperScrollHeight - wrapperClientHeight - SCROLL_OFFSET) {
         // tslint:disable-next-line max-line-length
         if (
           this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index
@@ -257,7 +257,7 @@ class InfiniteScroll {
         }
         // if user is scrolling up and hits point past breakpoint, should fetch
         // tslint:disable-next-line max-line-length
-      } else if (this.state.lastScroll > scrollY) {
+      } else if (this.state.lastScroll > scrollY && scrollY < SCROLL_OFFSET) {
         if (this.state.prevExists) {
           this.fetchMoreItems(false);
         }

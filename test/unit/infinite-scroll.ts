@@ -496,7 +496,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const scrollTop = 100;
       const state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
-        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop } },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight:100, clientHeight: 50 } },
         lastScroll: 10,
         items: [{ index: 50 }],
         recordCount,

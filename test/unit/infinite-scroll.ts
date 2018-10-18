@@ -530,6 +530,53 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       expect(fetchMoreItems).to.be.calledWithExactly(false);
       expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
     });
+
+    it('should not call fetchMoreItems when  when the breakpoint to fetch forward isn\'t hit ', () => {
+      const getWrapperHeight = () => ({ height: 0 });
+      const getScrollerHeight = () => ({ height: 0 });
+      const recordCount = spy(() => 100);
+      const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
+      const getState = spy();
+      const scrollTop = 100;
+      const state = <any>{
+        wrapper: { getBoundingClientRect: getWrapperHeight },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
+        lastScroll: 10,
+        items: [{ index: 50 }],
+        recordCount,
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = state;
+
+      infiniteScroll.scroll();
+
+      expect(fetchMoreItems).to.be.not.called;
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
+
+    it('should not call fetchMoreItems with false when the breakpoint to fetch backwards isn\'t hit ', () => {
+      const getWrapperHeight = () => ({ height: 0 });
+      const getScrollerHeight = () => ({ height: 0 });
+      const recordCount = spy(() => 100);
+      const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
+      const getState = spy();
+      const scrollTop = 60;
+      const state = <any>{
+        wrapper: { getBoundingClientRect: getWrapperHeight },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
+        lastScroll: 100,
+        items: [{ index: 50 }],
+        recordCount,
+        prevExists: true
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = state;
+  
+      infiniteScroll.scroll();
+  
+      expect(fetchMoreItems).to.not.have.been.called;
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
   });
 
   describe('calculateOffset()', () => {

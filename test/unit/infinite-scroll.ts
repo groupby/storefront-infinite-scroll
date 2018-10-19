@@ -88,9 +88,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
 
         infiniteScroll.init();
 
-        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_PRODUCTS_UPDATED, infiniteScroll.updateProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
         expect(productsWithMetadata).to.be.calledWithExactly(storeState);
         expect(infiniteScroll.state).to.eql({
           ...initialState,
@@ -113,10 +110,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
 
         infiniteScroll.init();
 
-        expect(subscribe).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
-        expect(subscribe).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFirstLoadFlag);
-        expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
         expect(productsWithMetadata).to.be.calledWithExactly(storeState);
         expect(infiniteScroll.state).to.eql({
           ...initialState,
@@ -131,8 +124,9 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     it('should update state with scroller, wrapper, and firstLoad, and update products', () => {
       const wrapper = { a: 'b' };
       const scroller = { refs: { wrapper } };
-      const state = (infiniteScroll.state = <any>{ a: 'b', loadMore: false, windowScroll: false });
-      const updateProducts = (infiniteScroll.updateProducts = spy());
+      const state = infiniteScroll.state = <any>{ a: 'b', loadMore: false, windowScroll: false };
+      const setupListeners = infiniteScroll.setupListeners = spy();
+      const updateProducts = infiniteScroll.updateProducts = spy();
       infiniteScroll.props = <any>{};
       infiniteScroll.tags = {
         'gb-infinite-list': scroller,
@@ -148,7 +142,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         loaderLabel: LOADLABEL,
         windowScroll: false,
       });
-      expect(updateProducts).to.be.called;
+      expect(setupListeners).to.be.calledBefore(updateProducts);
     });
 
     it('should set from props', () => {
@@ -156,6 +150,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const scroller = { refs: { wrapper } };
       const state = (infiniteScroll.state = <any>{ a: 'b' });
       const loaderLabel = 'heyyoloading';
+      infiniteScroll.setupListeners = () => null;
       infiniteScroll.updateProducts = () => null;
       infiniteScroll.tags = {
         'gb-infinite-list': scroller,
@@ -172,6 +167,43 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         loaderLabel,
         windowScroll: true,
       });
+    });
+  });
+
+  describe('setupListeners()', () => {
+    describe('PAST_PURCHASES', () => {
+      it('should should listen for PAST_PURCHASE_PRODUCTS_UPDATED, PAST_PURCHASE_MORE_PRODUCTS_ADDED, and PAST_PURCHASE_CHANGED', () => {
+        const subscribe = infiniteScroll.subscribe = spy();
+        infiniteScroll.props = <any>{ storeSection: StoreSections.PAST_PURCHASES };
+
+        infiniteScroll.setupListeners();
+
+        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_PRODUCTS_UPDATED, infiniteScroll.updateProducts);
+        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
+        expect(subscribe).to.be.calledWithExactly(Events.PAST_PURCHASE_CHANGED, infiniteScroll.setFirstLoadFlag);
+      });
+    });
+
+    describe('SEARCH', () => {
+      it('should should listen for PRODUCTS_UPDATED, MORE_PRODUCTS_ADDED, and SEARCH_CHANGED', () => {
+        const subscribe = infiniteScroll.subscribe = spy();
+        infiniteScroll.props = <any>{ storeSection: StoreSections.SEARCH };
+
+        infiniteScroll.setupListeners();
+
+        expect(subscribe).to.be.calledWithExactly(Events.PRODUCTS_UPDATED, infiniteScroll.updateProducts);
+        expect(subscribe).to.be.calledWithExactly(Events.MORE_PRODUCTS_ADDED, infiniteScroll.setProducts);
+        expect(subscribe).to.be.calledWithExactly(Events.SEARCH_CHANGED, infiniteScroll.setFirstLoadFlag);
+      });
+    });
+
+    it('should always listen for INFINITE_SCROLL_UPDATED', () => {
+      const subscribe = infiniteScroll.subscribe = spy();
+      infiniteScroll.props = <any>{ storeSection: 'something' };
+
+      infiniteScroll.setupListeners();
+
+      expect(subscribe).to.be.calledWithExactly(Events.INFINITE_SCROLL_UPDATED, infiniteScroll.setFetchFlags);
     });
   });
 

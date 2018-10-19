@@ -82,14 +82,14 @@ class InfiniteScroll {
       case Core.StoreSections.PAST_PURCHASES:
         this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
-        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+        this.subscribe(Core.Events.PAST_PURCHASE_CHANGED, this.setFirstLoadFlag);
         break;
       case Core.StoreSections.SEARCH:
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.SEARCH_CHANGED, this.setFirstLoadFlag);
-        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
+    this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     // this.flux.emit(Core.Events.PRODUCTS_UPDATED, [{
     //   productThumbnail: {
     //     longDescription: "Perfect for formal occasions and evening events, Blondie Nites' gown is decked out in velvet-flocked lace and waist cutouts.",

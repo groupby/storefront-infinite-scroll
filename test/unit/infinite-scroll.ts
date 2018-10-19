@@ -548,6 +548,22 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
 
       expect(padding).to.eq(15);
     });
+
+    it('should return 0 if listItems does not exist', () => {
+      infiniteScroll.state = <any>{ scroller: { tags: {} } };
+
+      const padding = infiniteScroll.calculateOffset(10);
+
+      expect(padding).to.eq(0);
+    });
+
+    it('should return 0 if listItems are empty', () => {
+      infiniteScroll.state = <any>{ scroller: { tags: { 'gb-list-item': [] } } };
+
+      const padding = infiniteScroll.calculateOffset(10);
+
+      expect(padding).to.eq(0);
+    });
   });
 
   describe('calculatePageChange()', () => {

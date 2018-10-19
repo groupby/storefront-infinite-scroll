@@ -63,9 +63,6 @@ class InfiniteScroll {
           ...this.pastPurchaseMethods,
           items: this.pastPurchaseMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
-        this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
-        this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
-        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case Core.StoreSections.SEARCH:
         this.state = {
@@ -73,11 +70,112 @@ class InfiniteScroll {
           ...this.searchMethods,
           items: this.searchMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
+    }
+  }
+
+  items(storeMethods: string) {
+    return this[storeMethods].productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+  }
+
+  setupListeners() {
+    switch (this.props.storeSection) {
+      case Core.StoreSections.PAST_PURCHASES:
+        this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
+        this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
+        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
+        break;
+      case Core.StoreSections.SEARCH:
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.SEARCH_CHANGED, this.setFirstLoadFlag);
         this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
+    // this.flux.emit(Core.Events.PRODUCTS_UPDATED, [{
+    //   productThumbnail: {
+    //     longDescription: "Perfect for formal occasions and evening events, Blondie Nites' gown is decked out in velvet-flocked lace and waist cutouts.",
+    //     offerDescription: "Extra 25% off select merchandise! CODE: VIP",
+    //     shortDescription: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   },
+    //   id: "2560384",
+    //   title: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   pdpData: {
+    //     categoryId: "18109",
+    //     categoryName: "Juniors - Dresses",
+    //     coach: "false",
+    //     giftCard: "false",
+    //     id: "2560384",
+    //     imageUrl: "http://slimages.macysassets.com/is/image/MCY/products/6/optimized/3244766_fpx.tif",
+    //     inStock: "true",
+    //     internationalMode: "true",
+    //     isChanel: "false",
+    //     isMaster: "false",
+    //     name: "Blondie Nites Juniors&#039; Flocked Lace Cutout Gown",
+    //     onlineExclusive: "false",
+    //     pageType: "SINGLE ITEM",
+    //     parentSku: "2560384",
+    //     ratingPercent: "0",
+    //     regularPrice: "179.0",
+    //     salePrice: "99.99",
+    //     showOffers: "true",
+    //     showQuestionAnswers: "true",
+    //     showReviews: "true",
+    //     specialOffers: [{
+    //       badgeText: "BADGE_TEXT",
+    //       checkoutDescription: "EXTRA 25% OFF regular, sale &amp; clearance prices, including select fine &amp; fashion jewelry during the VIP Sale!",
+    //       header: "EXTRA 25% OFF: USE VIP",
+    //       promoCode: "VIP",
+    //       promoCodeMessage: "Only one promo code may be used per Order.",
+    //       walletEligible: "false",
+    //     }],
+    //     suppressReviews: "false",
+    //     suppressedForIntlShipping: "false",
+    //     title: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   }
+    // }]);
+    // this.flux.emit(Core.Events.MORE_PRODUCTS_ADDED, [{
+    //   productThumbnail: {
+    //     longDescription: "Perfect for formal occasions and evening events, Blondie Nites' gown is decked out in velvet-flocked lace and waist cutouts.",
+    //     offerDescription: "Extra 25% off select merchandise! CODE: VIP",
+    //     shortDescription: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   },
+    //   id: "2560384",
+    //   title: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   pdpData: {
+    //     categoryId: "18109",
+    //     categoryName: "Juniors - Dresses",
+    //     coach: "false",
+    //     giftCard: "false",
+    //     id: "2560384",
+    //     imageUrl: "http://slimages.macysassets.com/is/image/MCY/products/6/optimized/3244766_fpx.tif",
+    //     inStock: "true",
+    //     internationalMode: "true",
+    //     isChanel: "false",
+    //     isMaster: "false",
+    //     name: "Blondie Nites Juniors&#039; Flocked Lace Cutout Gown",
+    //     onlineExclusive: "false",
+    //     pageType: "SINGLE ITEM",
+    //     parentSku: "2560384",
+    //     ratingPercent: "0",
+    //     regularPrice: "179.0",
+    //     salePrice: "99.99",
+    //     showOffers: "true",
+    //     showQuestionAnswers: "true",
+    //     showReviews: "true",
+    //     specialOffers: [{
+    //       badgeText: "BADGE_TEXT",
+    //       checkoutDescription: "EXTRA 25% OFF regular, sale &amp; clearance prices, including select fine &amp; fashion jewelry during the VIP Sale!",
+    //       header: "EXTRA 25% OFF: USE VIP",
+    //       promoCode: "VIP",
+    //       promoCodeMessage: "Only one promo code may be used per Order.",
+    //       walletEligible: "false",
+    //     }],
+    //     suppressReviews: "false",
+    //     suppressedForIntlShipping: "false",
+    //     title: "Blondie Nites Juniors' Flocked Lace Cutout Gown",
+    //   }
+    // }]);
+    // this.flux.emit(Core.Events.SEARCH_CHANGED, false);
+    // this.flux.emit(Core.Events.INFINITE_SCROLL_UPDATED, false);
   }
 
   onMount() {
@@ -88,6 +186,7 @@ class InfiniteScroll {
     const windowScroll = this.props.windowScroll || this.state.windowScroll;
 
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel, windowScroll };
+    this.setupListeners();
     this.updateProducts();
   }
 
@@ -183,7 +282,7 @@ class InfiniteScroll {
 
   setProducts = (products?: Core.Store.ProductWithMetadata[]) => {
     let items;
-    if (products) {
+    if (products.length && this.state.items.length) {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {
         items = [...this.state.items, ...products.map(this.productTransformer)];
         this.set(<any>{
@@ -259,12 +358,14 @@ class InfiniteScroll {
 
   calculateOffset = (totalItems: number) => {
     const listItems = this.state.scroller.tags['gb-list-item'];
-    if (listItems.length > 0) {
+    if (listItems && listItems.length > 0) {
       const itemDimensions = listItems[0].root.getBoundingClientRect();
       const width = this.state.scroller.root.getBoundingClientRect().width;
       const itemsPerRow = Math.floor(width / itemDimensions.width);
       const rows = totalItems / itemsPerRow;
       return rows * itemDimensions.height;
+    } else {
+      return 0;
     }
   };
 

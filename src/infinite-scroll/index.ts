@@ -73,10 +73,6 @@ class InfiniteScroll {
     }
   }
 
-  items(storeMethods: string) {
-    return this[storeMethods].productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
-  }
-
   setupListeners() {
     switch (this.props.storeSection) {
       case Core.StoreSections.PAST_PURCHASES:

@@ -9,7 +9,7 @@ export const BREAKPOINT_SCROLL_UP = 1.25;
 export const BREAKPOINT_ITEM_HEIGHT = 0.25;
 
 @Core.configurable
-@Core.provide('infinite')
+@Core.provide('infinite', (_, state) => ({ ...state, items: state.items() }))
 @Core.tag('gb-infinite-scroll', require('./index.html'), require('./index.css'))
 class InfiniteScroll {
   searchMethods: any = {
@@ -37,7 +37,7 @@ class InfiniteScroll {
   };
 
   state: any = {
-    items: [],
+    items: () => [],
     lastScroll: 0,
     firstLoad: true,
     loadMore: false,
@@ -55,13 +55,13 @@ class InfiniteScroll {
     index,
   });
 
-  init() {
+  setup() {
     switch (this.props.storeSection) {
       case Core.StoreSections.PAST_PURCHASES:
         this.state = {
           ...this.state,
           ...this.pastPurchaseMethods,
-          items: this.pastPurchaseMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
+          items: () => this.pastPurchaseMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
         this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
@@ -71,13 +71,17 @@ class InfiniteScroll {
         this.state = {
           ...this.state,
           ...this.searchMethods,
-          items: this.searchMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
+          items: () => this.searchMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.SEARCH_CHANGED, this.setFirstLoadFlag);
         this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
+    // this.flux.emit(Core.Events.PRODUCTS_UPDATED, [{}]);
+    // this.flux.emit(Core.Events.MORE_PRODUCTS_ADDED, [{}]);
+    // this.flux.emit(Core.Events.SEARCH_CHANGED, [{}]);
+    // this.flux.emit(Core.Events.INFINITE_SCROLL_UPDATED, [{}]);
   }
 
   onMount() {
@@ -88,11 +92,12 @@ class InfiniteScroll {
     const windowScroll = this.props.windowScroll || this.state.windowScroll;
 
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel, windowScroll };
+    this.setup();
     this.updateProducts();
   }
 
   onUpdated = () => {
-    const firstItem = this.state.items[0];
+    const firstItem = this.state.items()[0];
     let state = <any>{ getPage: false };
 
     if (firstItem) {
@@ -157,9 +162,8 @@ class InfiniteScroll {
   };
 
   updateProducts = () => {
-    const items = this.state.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer);
+    const items = this.state.items();
     this.set(<any>{
-      items,
       setScroll: true,
       rememberScrollY: !this.state.loadMore ? PADDING : 0,
       prevExists: items.length > 0 ? items[0].index !== 1 : false,
@@ -184,23 +188,22 @@ class InfiniteScroll {
   setProducts = (products?: Core.Store.ProductWithMetadata[]) => {
     let items;
     if (products) {
-      if (products[0].index > this.state.items[this.state.items.length - 1].index) {
-        items = [...this.state.items, ...products.map(this.productTransformer)];
+      const stateItems = this.state.items();
+      if (products[0].index > stateItems[stateItems.length - 1].index) {
+        items = [...stateItems, ...products.map(this.productTransformer)];
         this.set(<any>{
-          items,
           prevExists: items[0].index !== 1,
           moreExists: this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index,
         });
-      } else if (products[products.length - 1].index < this.state.items[0].index) {
+      } else if (products[products.length - 1].index < stateItems[0].index) {
         const pageSize = this.state.pageSize(this.flux.store.getState());
         // tslint:disable-next-line max-line-length
         const rememberScrollY =
           this.calculateOffset(pageSize) +
           (this.state.windowScroll ? Core.utils.WINDOW().pageYOffset : this.state.scroller.root.scrollTop);
-        items = [...products.map(this.productTransformer), ...this.state.items];
+        items = [...products.map(this.productTransformer), ...stateItems];
         this.set(<any>{
           ...this.state,
-          items,
           setScroll: true,
           rememberScrollY,
           prevExists: items[0].index !== 1,
@@ -236,9 +239,8 @@ class InfiniteScroll {
       // tslint:disable-next-line max-line-length
       if (this.state.lastScroll < scrollY) {
         // tslint:disable-next-line max-line-length
-        if (
-          this.state.recordCount(this.flux.store.getState()) !== this.state.items[this.state.items.length - 1].index
-        ) {
+        const items = this.state.items();
+        if (this.state.recordCount(this.flux.store.getState()) !== items[items.length - 1].index) {
           this.fetchMoreItems();
         }
         // if user is scrolling up and hits point past breakpoint, should fetch
@@ -259,12 +261,14 @@ class InfiniteScroll {
 
   calculateOffset = (totalItems: number) => {
     const listItems = this.state.scroller.tags['gb-list-item'];
-    if (listItems.length > 0) {
+    if (listItems && listItems.length > 0) {
       const itemDimensions = listItems[0].root.getBoundingClientRect();
       const width = this.state.scroller.root.getBoundingClientRect().width;
       const itemsPerRow = Math.floor(width / itemDimensions.width);
       const rows = totalItems / itemsPerRow;
       return rows * itemDimensions.height;
+    } else {
+      return 0;
     }
   };
 
@@ -282,19 +286,20 @@ class InfiniteScroll {
     const bottomCheck = this.state.windowScroll
       ? () => this.bottomElAboveOffsetWindow(last, Core.utils.WINDOW().innerHeight)
       : () => this.bottomElAboveOffset(last, scroller.getBoundingClientRect().bottom);
+    const items = this.state.items();
 
     if (first && topCheck()) {
       this.state = {
         ...this.state,
-        firstEl: this.state.items[this.getIndex(this.state.firstEl.index - pageSize)],
-        lastEl: this.state.items[this.getIndex(this.state.lastEl.index - pageSize)],
+        firstEl: items[this.getIndex(this.state.firstEl.index - pageSize)],
+        lastEl: items[this.getIndex(this.state.lastEl.index - pageSize)],
       };
       this.setPage(recordCount, page - 1);
     } else if (last && bottomCheck()) {
       this.state = {
         ...this.state,
-        firstEl: this.state.items[this.getIndex(this.state.firstEl.index + pageSize)],
-        lastEl: this.state.items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
+        firstEl: items[this.getIndex(this.state.firstEl.index + pageSize)],
+        lastEl: items[this.getIndex(Math.min(this.state.lastEl.index + pageSize, recordCount))],
       };
       this.setPage(recordCount, page + 1);
     }
@@ -320,7 +325,7 @@ class InfiniteScroll {
     return element.getBoundingClientRect().top < parentBottom;
   };
 
-  getIndex = (recordIndex: number) => this.state.items.findIndex((item) => item.index === recordIndex);
+  getIndex = (recordIndex: number) => this.state.items().findIndex((item) => item.index === recordIndex);
 
   setPage = (count: number, page: number) => {
     let event;

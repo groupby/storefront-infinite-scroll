@@ -234,10 +234,10 @@ class InfiniteScroll {
   scroll = () => {
     const { scroller, wrapper, windowScroll } = this.state;
     const wrapperHeight = wrapper.getBoundingClientRect().height;
-    const windowWrapper = windowScroll && Core.utils.WINDOW();
+    const windowWrapper = Core.utils.WINDOW();
     const scrollerDOM = scroller.root;
     const scrollY = windowScroll ? windowWrapper.pageYOffset : scrollerDOM.scrollTop;
-    const wrapperScrollHeight = windowScroll ? document.documentElement.scrollHeight : scrollerDOM.scrollHeight;
+    const wrapperScrollHeight = windowScroll ? windowWrapper.document.documentElement.scrollHeight : scrollerDOM.scrollHeight;
     const wrapperClientHeight = windowScroll ? windowWrapper.innerHeight : scrollerDOM.clientHeight;
 
     if (this.state.getPage) {

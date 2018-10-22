@@ -496,7 +496,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const scrollTop = 100;
       const state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
-        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight:100, clientHeight: 50 } },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 100, clientHeight: 50 } },
         lastScroll: 10,
         items: [{ index: 50 }],
         recordCount,
@@ -531,14 +531,14 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
     });
 
-    it('should not call fetchMoreItems when  when the breakpoint to fetch forward isn\'t hit ', () => {
+    it('should not call fetchMoreItems when the breakpoint to fetch forward is not hit', () => {
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);
       const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
       const getState = spy();
       const scrollTop = 100;
-      const state = <any>{
+      const state:any = {
         wrapper: { getBoundingClientRect: getWrapperHeight },
         scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
         lastScroll: 10,
@@ -554,14 +554,14 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
     });
 
-    it('should not call fetchMoreItems with false when the breakpoint to fetch backwards isn\'t hit ', () => {
+    it('should not call fetchMoreItems with false when the breakpoint to fetch backwards is not hit', () => {
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);
       const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
       const getState = spy();
       const scrollTop = 60;
-      const state = <any>{
+      const state:any = {
         wrapper: { getBoundingClientRect: getWrapperHeight },
         scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
         lastScroll: 100,

@@ -143,6 +143,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         windowScroll: false,
       });
       expect(setupListeners).to.be.calledBefore(updateProducts);
+      expect(updateProducts).to.be.called;
     });
 
     it('should set from props', () => {

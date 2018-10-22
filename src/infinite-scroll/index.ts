@@ -276,7 +276,7 @@ class InfiniteScroll {
     };
   };
 
-  setProducts = (products?: Core.Store.ProductWithMetadata[]) => {
+  setProducts = (products: Core.Store.ProductWithMetadata[]) => {
     let items;
     if (products.length && this.state.items.length) {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {

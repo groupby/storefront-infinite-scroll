@@ -41,11 +41,11 @@
   dependencies:
     samsam "1.3.0"
 
-"@storefront/core@~1.47.0":
-  version "1.47.0"
-  resolved "https://registry.yarnpkg.com/@storefront/core/-/core-1.47.0.tgz#c0c5d85d410d468b395e9eda0bccb996989ff8f0"
+"@storefront/core@~1.49.0":
+  version "1.49.0"
+  resolved "https://registry.yarnpkg.com/@storefront/core/-/core-1.49.0.tgz#437221231864408e5c410e13968bc155acc0a140"
   dependencies:
-    "@storefront/flux-capacitor" "1.57.0"
+    "@storefront/flux-capacitor" "1.61.0"
     "@types/clone" "^0.1.30"
     "@types/deep-assign" "^0.1.0"
     "@types/js-cookie" "^2.0.28"
@@ -62,9 +62,9 @@
     riot "^3.9.5"
     url-parse "^1.1.9"
 
-"@storefront/flux-capacitor@1.57.0":
-  version "1.57.0"
-  resolved "https://registry.yarnpkg.com/@storefront/flux-capacitor/-/flux-capacitor-1.57.0.tgz#b802b0cfea95c9a79a7f0ac186f652fd78923721"
+"@storefront/flux-capacitor@1.61.0":
+  version "1.61.0"
+  resolved "https://registry.yarnpkg.com/@storefront/flux-capacitor/-/flux-capacitor-1.61.0.tgz#d5691dfd8925ff58925b687b51cd1b11a22cf7e1"
   dependencies:
     "@types/redux-logger" "^3.0.0"
     cuid "^1.3.8"
@@ -81,8 +81,8 @@
     sayt "^0.1.8"
 
 "@storefront/structure@^1.33.0":
-  version "1.40.2"
-  resolved "https://registry.yarnpkg.com/@storefront/structure/-/structure-1.40.2.tgz#d46d35c8991c0f6f079bc000e1e4e744ba0a943f"
+  version "1.41.0"
+  resolved "https://registry.yarnpkg.com/@storefront/structure/-/structure-1.41.0.tgz#3dcdbaae0c6d70561ab2fcf134c9e6c10c440aea"
 
 "@storefront/testing@1.1.0":
   version "1.1.0"
@@ -120,7 +120,7 @@
 
 "@types/clone@^0.1.30":
   version "0.1.30"
-  resolved "https://registry.yarnpkg.com/@types/clone/-/clone-0.1.30.tgz#e7365648c1b42136a59c7d5040637b3b5c83b614"
+  resolved "http://registry.npmjs.org/@types/clone/-/clone-0.1.30.tgz#e7365648c1b42136a59c7d5040637b3b5c83b614"
 
 "@types/deep-assign@^0.1.0":
   version "0.1.1"
@@ -128,7 +128,7 @@
 
 "@types/deep-equal@^0.0.30":
   version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/deep-equal/-/deep-equal-0.0.30.tgz#c14df825c9201a1804980e7ebc3ef30e137bb64c"
+  resolved "http://registry.npmjs.org/@types/deep-equal/-/deep-equal-0.0.30.tgz#c14df825c9201a1804980e7ebc3ef30e137bb64c"
 
 "@types/es6-shim@^0.31.33":
   version "0.31.37"
@@ -165,8 +165,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
 
 "@types/lodash@^4.14.70":
-  version "4.14.116"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
+  version "4.14.117"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.117.tgz#695a7f514182771a1e0f4345d189052ee33c8778"
 
 "@types/loglevel@^1.4.29":
   version "1.5.3"
@@ -189,8 +189,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.17.tgz#677bc8c118cfb76013febb62ede1f31d2c7222a1"
 
 "@types/node@^7.0.14":
-  version "7.0.71"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.71.tgz#256bad647718bcdaed64c006687917d4d320aee1"
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.10.0.tgz#9a42f16e2b264cb63903989c5d1d0a7c5eb901c2"
 
 "@types/node@^9.3.0":
   version "9.6.18"
@@ -1818,8 +1818,8 @@ fast-levenshtein@~2.0.4:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
 fast-stringify@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/fast-stringify/-/fast-stringify-1.1.0.tgz#6caf0af2456296adac9d0c9c6f0522d18297f57a"
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/fast-stringify/-/fast-stringify-1.1.1.tgz#7abaff0e0ba09193a23cae940d6680f0c6f79e55"
 
 fetch-ponyfill@^4.1.0:
   version "4.1.0"
@@ -3151,8 +3151,8 @@ meow@^3.3.0:
     trim-newlines "^1.0.0"
 
 micro-memoize@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-2.1.1.tgz#5092f1ef475546b28f8da0e11f061850d5549ae4"
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-2.1.2.tgz#0787eeb1a12b4033a0fe162dfc9df4280291cee4"
 
 micromatch@^2.1.5, micromatch@^2.2.0, micromatch@^2.3.11, micromatch@^2.3.7:
   version "2.3.11"
@@ -3241,8 +3241,8 @@ minipass@^2.2.1, minipass@^2.3.3:
     yallist "^3.0.0"
 
 minizlib@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-1.1.0.tgz#11e13658ce46bc3a70a267aac58359d1e0c29ceb"
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-1.1.1.tgz#6734acc045a46e61d596a43bb9d9cd326e19cc42"
   dependencies:
     minipass "^2.2.1"
 
@@ -3490,8 +3490,8 @@ npm-bundled@^1.0.1:
     semver "^5.1.0"
 
 npm-packlist@^1.1.6:
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.11.tgz#84e8c683cbe7867d34b1d357d893ce29e28a02de"
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
   dependencies:
     ignore-walk "^3.0.1"
     npm-bundled "^1.0.1"
@@ -3882,8 +3882,8 @@ querystring@0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
 querystringify@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.0.0.tgz#fa3ed6e68eb15159457c89b37bc6472833195755"
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.1.0.tgz#7ded8dfbf7879dcc60d0a644ac6754b283ad17ef"
 
 ramda@0.22.1:
   version "0.22.1"
@@ -4032,8 +4032,8 @@ redux-persist@5.4.0:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.4.0.tgz#a1062313546a9d4ca6f9271464d18f736e8ca394"
 
 redux-saga@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.2.tgz#993662e86bc945d8509ac2b8daba3a8c615cc971"
 
 redux-undo@^0.6.1:
   version "0.6.1"

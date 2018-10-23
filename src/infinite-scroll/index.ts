@@ -63,9 +63,6 @@ class InfiniteScroll {
           ...this.pastPurchaseMethods,
           items: this.pastPurchaseMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
-        this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
-        this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
-        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
         break;
       case Core.StoreSections.SEARCH:
         this.state = {
@@ -73,11 +70,22 @@ class InfiniteScroll {
           ...this.searchMethods,
           items: this.searchMethods.productsWithMetadata(this.flux.store.getState()).map(this.productTransformer),
         };
+    }
+  }
+
+  setupListeners() {
+    switch (this.props.storeSection) {
+      case Core.StoreSections.PAST_PURCHASES:
+        this.subscribe(Core.Events.PAST_PURCHASE_PRODUCTS_UPDATED, this.updateProducts);
+        this.subscribe(Core.Events.PAST_PURCHASE_MORE_PRODUCTS_ADDED, this.setProducts);
+        this.subscribe(Core.Events.PAST_PURCHASE_CHANGED, this.setFirstLoadFlag);
+        break;
+      case Core.StoreSections.SEARCH:
         this.subscribe(Core.Events.PRODUCTS_UPDATED, this.updateProducts);
         this.subscribe(Core.Events.MORE_PRODUCTS_ADDED, this.setProducts);
         this.subscribe(Core.Events.SEARCH_CHANGED, this.setFirstLoadFlag);
-        this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
     }
+    this.subscribe(Core.Events.INFINITE_SCROLL_UPDATED, this.setFetchFlags);
   }
 
   onMount() {
@@ -88,6 +96,7 @@ class InfiniteScroll {
     const windowScroll = this.props.windowScroll || this.state.windowScroll;
 
     this.state = { ...this.state, scroller, wrapper, loadMore, loaderLabel, windowScroll };
+    this.setupListeners();
     this.updateProducts();
   }
 
@@ -181,9 +190,9 @@ class InfiniteScroll {
     };
   };
 
-  setProducts = (products?: Core.Store.ProductWithMetadata[]) => {
+  setProducts = (products: Core.Store.ProductWithMetadata[]) => {
     let items;
-    if (products) {
+    if (products.length && this.state.items.length) {
       if (products[0].index > this.state.items[this.state.items.length - 1].index) {
         items = [...this.state.items, ...products.map(this.productTransformer)];
         this.set(<any>{
@@ -259,12 +268,14 @@ class InfiniteScroll {
 
   calculateOffset = (totalItems: number) => {
     const listItems = this.state.scroller.tags['gb-list-item'];
-    if (listItems.length > 0) {
+    if (listItems && listItems.length > 0) {
       const itemDimensions = listItems[0].root.getBoundingClientRect();
       const width = this.state.scroller.root.getBoundingClientRect().width;
       const itemsPerRow = Math.floor(width / itemDimensions.width);
       const rows = totalItems / itemsPerRow;
       return rows * itemDimensions.height;
+    } else {
+      return 0;
     }
   };
 

@@ -1,6 +1,5 @@
 import { Events, ProductTransformer, Selectors, StoreSections } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
-import * as Core from '@storefront/core';
 import InfiniteScroll, { LOADLABEL, PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
 
@@ -496,7 +495,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     });
 
     it('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
-      global=<any>{window:{}};
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);

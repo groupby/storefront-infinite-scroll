@@ -1,9 +1,17 @@
 import { Events, ProductTransformer, Selectors, StoreSections } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
+import * as Core from '@storefront/core';
 import InfiniteScroll, { LOADLABEL, PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
 
 const STRUCTURE = { a: 'b' };
+
+interface Global {
+  window: any,
+}
+declare var global: Global;
+
+global.window = {};
 
 suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldProvideAlias }) => {
   let infiniteScroll: InfiniteScroll;
@@ -488,6 +496,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     });
 
     it('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
+      global=<any>{window:{}};
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);

@@ -1,4 +1,4 @@
-import { Events, ProductTransformer, Selectors, StoreSections } from '@storefront/core';
+import { Events, ProductTransformer, Selectors, StoreSections, utils } from '@storefront/core';
 import { Routes } from '@storefront/flux-capacitor';
 import InfiniteScroll, { LOADLABEL, PADDING } from '../../src/infinite-scroll';
 import suite from './_suite';
@@ -476,6 +476,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const getWrapperHeight = () => ({ height: 200 });
       const getScrollerHeight = () => ({ height: 500 });
       const calculatePageChange = (infiniteScroll.calculatePageChange = spy());
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
         scroller: { root: { getBoundingClientRect: getScrollerHeight } },
@@ -496,11 +497,12 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
       const scrollTop = 100;
       const state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
-        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop } },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 100, clientHeight: 50 } },
         lastScroll: 10,
         items: [{ index: 50 }],
         recordCount,
       };
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.flux = <any>{ store: { getState } };
       infiniteScroll.state = state;
 
@@ -523,11 +525,61 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         padding: 100,
         prevExists: true,
       };
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.state = state;
 
       infiniteScroll.scroll();
 
       expect(fetchMoreItems).to.be.calledWithExactly(false);
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
+
+    it('should not call fetchMoreItems when the breakpoint to fetch forward is not hit', () => {
+      const getWrapperHeight = () => ({ height: 0 });
+      const getScrollerHeight = () => ({ height: 0 });
+      const recordCount = spy(() => 100);
+      const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
+      const getState = spy();
+      const scrollTop = 100;
+      const state:any = {
+        wrapper: { getBoundingClientRect: getWrapperHeight },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
+        lastScroll: 10,
+        items: [{ index: 50 }],
+        recordCount,
+      };
+      stub(utils, 'WINDOW').returns({});
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = state;
+
+      infiniteScroll.scroll();
+
+      expect(fetchMoreItems).to.be.not.called;
+      expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
+    });
+
+    it('should not call fetchMoreItems with false when the breakpoint to fetch backwards is not hit', () => {
+      stub(utils, 'WINDOW').returns({});
+      const getWrapperHeight = () => ({ height: 0 });
+      const getScrollerHeight = () => ({ height: 0 });
+      const recordCount = spy(() => 100);
+      const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
+      const getState = spy();
+      const scrollTop = 60;
+      const state:any = {
+        wrapper: { getBoundingClientRect: getWrapperHeight },
+        scroller: { root: { getBoundingClientRect: getScrollerHeight, scrollTop, scrollHeight: 1300, clientHeight: 700 } },
+        lastScroll: 100,
+        items: [{ index: 50 }],
+        recordCount,
+        prevExists: true
+      };
+      infiniteScroll.flux = <any>{ store: { getState } };
+      infiniteScroll.state = state;
+  
+      infiniteScroll.scroll();
+  
+      expect(fetchMoreItems).to.not.have.been.called;
       expect(infiniteScroll.state).to.eql({ ...state, lastScroll: scrollTop, getPage: true });
     });
   });

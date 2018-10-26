@@ -473,10 +473,10 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
 
   describe('scroll()', () => {
     it('should call calculatePageChange', () => {
-      stub(utils, 'WINDOW').returns({});
       const getWrapperHeight = () => ({ height: 200 });
       const getScrollerHeight = () => ({ height: 500 });
       const calculatePageChange = (infiniteScroll.calculatePageChange = spy());
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.state = <any>{
         wrapper: { getBoundingClientRect: getWrapperHeight },
         scroller: { root: { getBoundingClientRect: getScrollerHeight } },
@@ -489,7 +489,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     });
 
     it('should call fetchMoreItems when hit breakpoint to fetch forward', () => {
-      stub(utils, 'WINDOW').returns({});
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);
@@ -503,6 +502,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         items: [{ index: 50 }],
         recordCount,
       };
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.flux = <any>{ store: { getState } };
       infiniteScroll.state = state;
 
@@ -513,7 +513,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     });
 
     it('should call fetchMoreItems with false when hit breakpoint to fetch backward', () => {
-      stub(utils, 'WINDOW').returns({});
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const fetchMoreItems = (infiniteScroll.fetchMoreItems = spy());
@@ -526,6 +525,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         padding: 100,
         prevExists: true,
       };
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.state = state;
 
       infiniteScroll.scroll();
@@ -535,7 +535,6 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
     });
 
     it('should not call fetchMoreItems when the breakpoint to fetch forward is not hit', () => {
-      stub(utils, 'WINDOW').returns({});
       const getWrapperHeight = () => ({ height: 0 });
       const getScrollerHeight = () => ({ height: 0 });
       const recordCount = spy(() => 100);
@@ -549,6 +548,7 @@ suite('InfiniteScroll', ({ expect, spy, stub, itShouldBeConfigurable, itShouldPr
         items: [{ index: 50 }],
         recordCount,
       };
+      stub(utils, 'WINDOW').returns({});
       infiniteScroll.flux = <any>{ store: { getState } };
       infiniteScroll.state = state;
 

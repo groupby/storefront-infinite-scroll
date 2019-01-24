@@ -1,4 +1,10 @@
-# StoreFront infinite-scroll
+# [MOVED] StoreFront infinite-scroll
+
+* * *
+
+**This repository has been moved to <https://github.com/groupby/storefront>.**
+
+* * *
 
 StoreFront `<gb-infinite-scroll>` component
 
